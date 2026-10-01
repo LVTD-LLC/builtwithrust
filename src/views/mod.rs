@@ -79,7 +79,7 @@ pub fn layout(state: &AppState, page: Page<'_>) -> Markup {
                             a href="/categories" { "Categories" }
                             a href="/submit" { "Submit a site" }
                             a href="/feature" { "Feature your project" }
-                            a href="https://github.com/rasulkireev/builtwithrust" rel="noopener" { "Source" }
+                            a href="https://github.com/LVTD-LLC/builtwithrust" rel="noopener" { "Source" }
                         }
                     }
                 }
