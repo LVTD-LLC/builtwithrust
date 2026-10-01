@@ -222,10 +222,15 @@ pub async fn category_by_slug(pool: &Pool, slug: &str) -> sqlx::Result<Option<Ca
 
 async fn ensure_category(pool: &Pool, slug: &str, name: Option<&str>) -> sqlx::Result<i64> {
     let slug = slugify(slug);
+    let name = name.map(str::trim).filter(|n| !n.is_empty()).map(String::from);
     if let Some(c) = category_by_slug(pool, &slug).await? {
+        // An explicit display name wins over whatever the category was created with.
+        if let Some(name) = name.filter(|n| *n != c.name) {
+            sqlx::query!(r#"UPDATE categories SET name = ? WHERE id = ?"#, name, c.id).execute(pool).await?;
+        }
         return Ok(c.id);
     }
-    let name = name.map(str::trim).filter(|n| !n.is_empty()).map(String::from).unwrap_or_else(|| humanize(&slug));
+    let name = name.unwrap_or_else(|| humanize(&slug));
     let rec = sqlx::query!(r#"INSERT INTO categories (slug, name) VALUES (?, ?) RETURNING id"#, slug, name)
         .fetch_one(pool)
         .await?;

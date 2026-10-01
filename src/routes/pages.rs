@@ -70,6 +70,10 @@ pub async fn category(
     Path(slug): Path<String>,
 ) -> Result<Response, AppError> {
     let path = format!("/categories/{slug}");
+    // Cache first: a hit must not touch the database.
+    if let Some(hit) = state.cache.get(&path) {
+        return Ok(hit.respond(&headers));
+    }
     let Some(cat) = db::category_by_slug(&state.pool, &slug).await? else {
         return Ok(not_found(State(state)).await);
     };
@@ -98,6 +102,9 @@ pub async fn project(
     Path(slug): Path<String>,
 ) -> Result<Response, AppError> {
     let path = format!("/projects/{slug}");
+    if let Some(hit) = state.cache.get(&path) {
+        return Ok(hit.respond(&headers));
+    }
     let Some(p) = db::project_by_slug(&state.pool, &slug).await?.filter(|p| p.published != 0) else {
         return Ok(not_found(State(state)).await);
     };
