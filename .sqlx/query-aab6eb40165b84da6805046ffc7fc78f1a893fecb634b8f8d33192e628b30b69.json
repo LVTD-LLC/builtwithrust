@@ -1,0 +1,57 @@
+{
+  "db_name": "SQLite",
+  "query": "SELECT c.id AS \"id!\", c.slug AS \"slug!\", c.name AS \"name!\",\n                  COUNT(p.id) AS \"count!: i64\"\n           FROM categories c\n           LEFT JOIN projects p ON p.category_id = c.id AND p.published = 1\n           GROUP BY c.id\n           HAVING COUNT(p.id) > 0\n           ORDER BY c.name",
+  "describe": {
+    "columns": [
+      {
+        "name": "id!",
+        "ordinal": 0,
+        "type_info": "Integer",
+        "origin": {
+          "Table": {
+            "table": "categories",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "name": "slug!",
+        "ordinal": 1,
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "categories",
+            "name": "slug"
+          }
+        }
+      },
+      {
+        "name": "name!",
+        "ordinal": 2,
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "categories",
+            "name": "name"
+          }
+        }
+      },
+      {
+        "name": "count!: i64",
+        "ordinal": 3,
+        "type_info": "Integer",
+        "origin": "Expression"
+      }
+    ],
+    "parameters": {
+      "Right": 0
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "aab6eb40165b84da6805046ffc7fc78f1a893fecb634b8f8d33192e628b30b69"
+}

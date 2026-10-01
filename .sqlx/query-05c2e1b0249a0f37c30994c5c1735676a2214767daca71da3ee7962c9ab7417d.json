@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "UPDATE projects\n           SET featured_until = CASE\n                 WHEN featured_until IS NOT NULL AND featured_until > ?1\n                   THEN strftime('%Y-%m-%dT%H:%M:%SZ', featured_until, ?2)\n                 ELSE ?3 END,\n               updated_at = ?1\n           WHERE id = ?4",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 4
+    },
+    "nullable": []
+  },
+  "hash": "05c2e1b0249a0f37c30994c5c1735676a2214767daca71da3ee7962c9ab7417d"
+}

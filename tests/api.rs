@@ -1,0 +1,282 @@
+//! End-to-end tests against the real router with a throwaway SQLite file.
+//! Run with `cargo test`. No network access is needed: PostHog is disabled
+//! and Stripe is only exercised through the webhook (signed locally).
+
+use axum::Router;
+use axum::body::Body;
+use axum::http::{Request, StatusCode, header};
+use builtwithrust::config::{Config, StripeConfig};
+use builtwithrust::{SharedState, db};
+use http_body_util::BodyExt;
+use serde_json::{Value, json};
+use tower::ServiceExt;
+
+const TOKEN: &str = "test-admin-token";
+const WEBHOOK_SECRET: &str = "whsec_test";
+
+async fn app() -> (SharedState, Router, tempfile::TempDir) {
+    let dir = tempfile::tempdir().unwrap();
+    let db_path = dir.path().join("t.db");
+    let cfg = Config {
+        bind_addr: "127.0.0.1:0".into(),
+        site_url: "http://test.local".into(),
+        database_url: format!("sqlite://{}?mode=rwc", db_path.display()),
+        admin_token: Some(TOKEN.into()),
+        posthog: None,
+        stripe: Some(StripeConfig {
+            secret_key: "sk_test_x".into(),
+            webhook_secret: WEBHOOK_SECRET.into(),
+            price_id: "price_x".into(),
+        }),
+        feature_days: 30,
+    };
+    let (state, router) = builtwithrust::build(cfg).await.unwrap();
+    (state, router, dir)
+}
+
+async fn send(router: &Router, req: Request<Body>) -> (StatusCode, axum::http::HeaderMap, String) {
+    let resp = router.clone().oneshot(req).await.unwrap();
+    let status = resp.status();
+    let headers = resp.headers().clone();
+    let body = resp.into_body().collect().await.unwrap().to_bytes();
+    (status, headers, String::from_utf8_lossy(&body).into_owned())
+}
+
+fn get(path: &str) -> Request<Body> {
+    Request::get(path).body(Body::empty()).unwrap()
+}
+
+fn admin_json(method: &str, path: &str, body: Value) -> Request<Body> {
+    Request::builder()
+        .method(method)
+        .uri(path)
+        .header(header::AUTHORIZATION, format!("Bearer {TOKEN}"))
+        .header(header::CONTENT_TYPE, "application/json")
+        .body(Body::from(body.to_string()))
+        .unwrap()
+}
+
+fn form(path: &str, body: &str) -> Request<Body> {
+    Request::post(path)
+        .header(header::CONTENT_TYPE, "application/x-www-form-urlencoded")
+        .body(Body::from(body.to_string()))
+        .unwrap()
+}
+
+fn sample_project(slug: &str) -> Value {
+    json!({
+        "slug": slug, "name": "Sample Tool", "tagline": "A sample tagline.",
+        "website_url": "https://sample.example", "repo_url": "https://github.com/x/y",
+        "stars": 1234, "license": "MIT", "stack": ["axum", "tokio"],
+        "category": "developer-tools", "verified": true
+    })
+}
+
+#[tokio::test]
+async fn public_pages_render() {
+    let (_state, app, _dir) = app().await;
+    for path in ["/", "/categories", "/submit", "/feature", "/sitemap.xml", "/robots.txt", "/healthz"] {
+        let (status, _, _) = send(&app, get(path)).await;
+        assert_eq!(status, StatusCode::OK, "{path}");
+    }
+    let (status, _, body) = send(&app, get("/projects/nope")).await;
+    assert_eq!(status, StatusCode::NOT_FOUND);
+    assert!(body.contains("Not found"));
+}
+
+#[tokio::test]
+async fn admin_requires_token() {
+    let (_state, app, _dir) = app().await;
+    let (status, _, _) = send(&app, get("/api/admin/stats")).await;
+    assert_eq!(status, StatusCode::UNAUTHORIZED);
+    let bad =
+        Request::get("/api/admin/stats").header(header::AUTHORIZATION, "Bearer wrong").body(Body::empty()).unwrap();
+    let (status, _, _) = send(&app, bad).await;
+    assert_eq!(status, StatusCode::UNAUTHORIZED);
+    let (status, _, body) = send(&app, admin_json("GET", "/api/admin/stats", json!({}))).await;
+    assert_eq!(status, StatusCode::OK);
+    assert!(body.contains("\"projects\":0"));
+}
+
+#[tokio::test]
+async fn upsert_project_appears_and_cache_purges() {
+    let (state, app, _dir) = app().await;
+    // Warm the cache with an empty home page.
+    let (_, _, body) = send(&app, get("/")).await;
+    assert!(!body.contains("Sample Tool"));
+    assert!(!state.cache.is_empty());
+
+    let (status, _, body) = send(&app, admin_json("POST", "/api/admin/projects", sample_project("sample-tool"))).await;
+    assert_eq!(status, StatusCode::OK, "{body}");
+    let p: Value = serde_json::from_str(&body).unwrap();
+    assert_eq!(p["slug"], "sample-tool");
+    assert_eq!(p["category_name"], "Developer Tools");
+
+    let (_, _, body) = send(&app, get("/")).await;
+    assert!(body.contains("Sample Tool"), "home should show the new project after purge");
+    let (status, _, body) = send(&app, get("/projects/sample-tool")).await;
+    assert_eq!(status, StatusCode::OK);
+    assert!(body.contains("1.2k"));
+    assert!(body.contains("tokio"));
+    let (status, _, _) = send(&app, get("/categories/developer-tools")).await;
+    assert_eq!(status, StatusCode::OK);
+
+    // Update in place: same slug, new name.
+    let mut updated = sample_project("sample-tool");
+    updated["name"] = json!("Renamed Tool");
+    let (status, _, _) = send(&app, admin_json("POST", "/api/admin/projects", updated)).await;
+    assert_eq!(status, StatusCode::OK);
+    let (_, _, body) = send(&app, get("/projects/sample-tool")).await;
+    assert!(body.contains("Renamed Tool"));
+
+    // Search is live and uncached.
+    let (_, _, body) = send(&app, get("/?q=renamed")).await;
+    assert!(body.contains("Renamed Tool"));
+    let (_, _, body) = send(&app, get("/?q=zzzzzz")).await;
+    assert!(body.contains("Nothing here yet"));
+
+    // Delete.
+    let (status, _, _) = send(&app, admin_json("DELETE", "/api/admin/projects/sample-tool", json!({}))).await;
+    assert_eq!(status, StatusCode::NO_CONTENT);
+    let (status, _, _) = send(&app, get("/projects/sample-tool")).await;
+    assert_eq!(status, StatusCode::NOT_FOUND);
+}
+
+#[tokio::test]
+async fn invalid_project_is_rejected() {
+    let (_state, app, _dir) = app().await;
+    let bad = json!({ "name": "X", "tagline": "y", "website_url": "ftp://nope" });
+    let (status, _, body) = send(&app, admin_json("POST", "/api/admin/projects", bad)).await;
+    assert_eq!(status, StatusCode::BAD_REQUEST);
+    assert!(body.contains("website_url"));
+}
+
+#[tokio::test]
+async fn cached_pages_send_etag_and_compression() {
+    let (_state, app, _dir) = app().await;
+    let req = Request::get("/").header(header::ACCEPT_ENCODING, "gzip, br").body(Body::empty()).unwrap();
+    let (status, headers, _) = send(&app, req).await;
+    assert_eq!(status, StatusCode::OK);
+    assert_eq!(headers.get(header::CONTENT_ENCODING).unwrap(), "br");
+    let etag = headers.get(header::ETAG).unwrap().clone();
+    let req = Request::get("/").header(header::IF_NONE_MATCH, etag).body(Body::empty()).unwrap();
+    let (status, _, _) = send(&app, req).await;
+    assert_eq!(status, StatusCode::NOT_MODIFIED);
+}
+
+#[tokio::test]
+async fn submission_flow() {
+    let (_state, app, _dir) = app().await;
+    // Honeypot filled: accepted silently, nothing stored.
+    let (status, _, _) = send(&app, form("/submit", "url=https%3A%2F%2Fspam.example&website=bot")).await;
+    assert_eq!(status, StatusCode::SEE_OTHER);
+    // Bad URL.
+    let (status, _, body) = send(&app, form("/submit", "url=not-a-url")).await;
+    assert_eq!(status, StatusCode::UNPROCESSABLE_ENTITY);
+    assert!(body.contains("full URL"));
+    // Good.
+    let (status, headers, _) =
+        send(&app, form("/submit", "url=https%3A%2F%2Fgood.example&email=a%40b.co&note=hi")).await;
+    assert_eq!(status, StatusCode::SEE_OTHER);
+    assert_eq!(headers.get(header::LOCATION).unwrap(), "/submit/thanks");
+
+    let (status, _, body) = send(&app, admin_json("GET", "/api/admin/submissions", json!({}))).await;
+    assert_eq!(status, StatusCode::OK);
+    let subs: Vec<Value> = serde_json::from_str(&body).unwrap();
+    assert_eq!(subs.len(), 1, "honeypot submission must not be stored");
+    assert_eq!(subs[0]["url"], "https://good.example");
+    assert_eq!(subs[0]["status"], "pending");
+    let id = subs[0]["id"].as_i64().unwrap();
+
+    // Approve and create the listing in one call.
+    let review = json!({ "status": "approved", "project": sample_project("good") });
+    let (status, _, body) =
+        send(&app, admin_json("POST", &format!("/api/admin/submissions/{id}/review"), review)).await;
+    assert_eq!(status, StatusCode::OK, "{body}");
+    let v: Value = serde_json::from_str(&body).unwrap();
+    assert_eq!(v["submission"]["status"], "approved");
+    assert_eq!(v["submission"]["project_id"], v["project"]["id"]);
+    let (status, _, _) = send(&app, get("/projects/good")).await;
+    assert_eq!(status, StatusCode::OK);
+
+    // Rate limit: 5 per day per IP.
+    for _ in 0..4 {
+        let (status, _, _) = send(&app, form("/submit", "url=https%3A%2F%2Fx.example")).await;
+        assert_eq!(status, StatusCode::SEE_OTHER);
+    }
+    let (status, _, body) = send(&app, form("/submit", "url=https%3A%2F%2Fx.example")).await;
+    assert_eq!(status, StatusCode::UNPROCESSABLE_ENTITY);
+    assert!(body.contains("try again tomorrow"));
+}
+
+#[tokio::test]
+async fn stripe_webhook_features_project_once() {
+    let (state, app, _dir) = app().await;
+    let (_, _, body) = send(&app, admin_json("POST", "/api/admin/projects", sample_project("paid"))).await;
+    let p: Value = serde_json::from_str(&body).unwrap();
+    let project_id = p["id"].as_i64().unwrap();
+    db::create_payment(&state.pool, "cs_test_123", project_id, Some("a@b.co")).await.unwrap();
+
+    let event = json!({
+        "id": "evt_1", "type": "checkout.session.completed",
+        "data": { "object": {
+            "id": "cs_test_123", "payment_status": "paid", "payment_intent": "pi_1",
+            "amount_total": 4900, "currency": "usd", "metadata": { "project_slug": "paid" }
+        }}
+    });
+    let payload = event.to_string();
+    let stripe = state.stripe.as_ref().unwrap();
+    let ts = time::OffsetDateTime::now_utc().unix_timestamp();
+
+    // Wrong signature.
+    let req = Request::post("/api/stripe/webhook")
+        .header("stripe-signature", format!("t={ts},v1=deadbeef"))
+        .body(Body::from(payload.clone()))
+        .unwrap();
+    let (status, _, _) = send(&app, req).await;
+    assert_eq!(status, StatusCode::BAD_REQUEST);
+
+    // Right signature.
+    let sig = stripe.sign_for_test(payload.as_bytes(), ts);
+    let req = Request::post("/api/stripe/webhook")
+        .header("stripe-signature", &sig)
+        .body(Body::from(payload.clone()))
+        .unwrap();
+    let (status, _, _) = send(&app, req).await;
+    assert_eq!(status, StatusCode::OK);
+    let project = db::project_by_slug(&state.pool, "paid").await.unwrap().unwrap();
+    assert!(project.is_featured());
+    let first_until = project.featured_until.clone().unwrap();
+
+    // Replay of the same event id is ignored (no double extension).
+    let req = Request::post("/api/stripe/webhook")
+        .header("stripe-signature", &sig)
+        .body(Body::from(payload.clone()))
+        .unwrap();
+    let (status, _, _) = send(&app, req).await;
+    assert_eq!(status, StatusCode::OK);
+    let project = db::project_by_slug(&state.pool, "paid").await.unwrap().unwrap();
+    assert_eq!(project.featured_until.unwrap(), first_until);
+
+    // Featured projects show up in the featured strip on the home page.
+    let (_, _, body) = send(&app, get("/")).await;
+    assert!(body.contains("Featured projects"));
+    // Success page resolves the project from the session id.
+    let (status, _, body) = send(&app, get("/feature/success?session_id=cs_test_123")).await;
+    assert_eq!(status, StatusCode::OK);
+    assert!(body.contains("Sample Tool"));
+}
+
+#[tokio::test]
+async fn admin_can_feature_manually() {
+    let (state, app, _dir) = app().await;
+    send(&app, admin_json("POST", "/api/admin/projects", sample_project("manual"))).await;
+    let (status, _, body) =
+        send(&app, admin_json("POST", "/api/admin/projects/manual/feature", json!({ "days": 7 }))).await;
+    assert_eq!(status, StatusCode::OK, "{body}");
+    let project = db::project_by_slug(&state.pool, "manual").await.unwrap().unwrap();
+    assert!(project.is_featured());
+    let (status, _, _) =
+        send(&app, admin_json("POST", "/api/admin/projects/manual/feature", json!({ "days": 0 }))).await;
+    assert_eq!(status, StatusCode::BAD_REQUEST);
+}

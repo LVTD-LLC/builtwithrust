@@ -1,0 +1,38 @@
+{
+  "db_name": "SQLite",
+  "query": "SELECT slug, updated_at FROM projects WHERE published = 1 ORDER BY slug",
+  "describe": {
+    "columns": [
+      {
+        "name": "slug",
+        "ordinal": 0,
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "projects",
+            "name": "slug"
+          }
+        }
+      },
+      {
+        "name": "updated_at",
+        "ordinal": 1,
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "projects",
+            "name": "updated_at"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Right": 0
+    },
+    "nullable": [
+      false,
+      false
+    ]
+  },
+  "hash": "0145577602b12d31867e2635489d66afeae491fea2d8a8d4ccac6a04008975e5"
+}

@@ -1,0 +1,26 @@
+{
+  "db_name": "SQLite",
+  "query": "SELECT p.slug AS \"slug?\" FROM payments pay LEFT JOIN projects p ON p.id = pay.project_id\n           WHERE pay.stripe_session_id = ?",
+  "describe": {
+    "columns": [
+      {
+        "name": "slug?",
+        "ordinal": 0,
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "projects",
+            "name": "slug"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      true
+    ]
+  },
+  "hash": "79cc7f066f8c5cca8139afe87f423e5c9da9f0c3b14b061779758679790f9d0d"
+}

@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "INSERT INTO payments (stripe_session_id, project_id, email) VALUES (?, ?, ?)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 3
+    },
+    "nullable": []
+  },
+  "hash": "98497925b8a0f092583897cc724e91fe098ed1985757da26f4b35a8c401ea8cb"
+}

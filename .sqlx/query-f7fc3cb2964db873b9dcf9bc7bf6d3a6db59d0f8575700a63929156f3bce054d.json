@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "INSERT INTO projects\n             (slug, name, tagline, description, website_url, repo_url, logo_url, stars, license,\n              stack, category_id, verified, published, created_at, updated_at)\n           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\n           ON CONFLICT(slug) DO UPDATE SET\n             name = excluded.name, tagline = excluded.tagline, description = excluded.description,\n             website_url = excluded.website_url, repo_url = excluded.repo_url,\n             logo_url = excluded.logo_url, stars = excluded.stars, license = excluded.license,\n             stack = excluded.stack, category_id = excluded.category_id,\n             verified = excluded.verified, published = excluded.published,\n             updated_at = excluded.updated_at",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 15
+    },
+    "nullable": []
+  },
+  "hash": "f7fc3cb2964db873b9dcf9bc7bf6d3a6db59d0f8575700a63929156f3bce054d"
+}

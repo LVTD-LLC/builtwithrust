@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "INSERT OR IGNORE INTO stripe_events (id, type) VALUES (?, ?)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": []
+  },
+  "hash": "bec5129481bf7b1bbd4f31aa4aa41eb2131bb58b6784671f4053b3a6f033c4ce"
+}

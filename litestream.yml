@@ -1,0 +1,14 @@
+# Continuous SQLite replication to object storage. Run next to the binary:
+#   litestream replicate -config litestream.yml
+# Restore: litestream restore -config litestream.yml -o data/builtwithrust.db data/builtwithrust.db
+dbs:
+  - path: data/builtwithrust.db
+    replicas:
+      - type: s3
+        bucket: ${LITESTREAM_BUCKET}
+        path: builtwithrust
+        endpoint: ${LITESTREAM_ENDPOINT}   # e.g. https://<account>.r2.cloudflarestorage.com
+        access-key-id: ${LITESTREAM_ACCESS_KEY_ID}
+        secret-access-key: ${LITESTREAM_SECRET_ACCESS_KEY}
+        sync-interval: 1s
+        retention: 72h

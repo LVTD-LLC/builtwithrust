@@ -1,0 +1,110 @@
+{
+  "db_name": "SQLite",
+  "query": "SELECT id, url, email, note, status, project_id, created_at, reviewed_at\n           FROM submissions WHERE id = ?",
+  "describe": {
+    "columns": [
+      {
+        "name": "id",
+        "ordinal": 0,
+        "type_info": "Integer",
+        "origin": {
+          "Table": {
+            "table": "submissions",
+            "name": "id"
+          }
+        }
+      },
+      {
+        "name": "url",
+        "ordinal": 1,
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "submissions",
+            "name": "url"
+          }
+        }
+      },
+      {
+        "name": "email",
+        "ordinal": 2,
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "submissions",
+            "name": "email"
+          }
+        }
+      },
+      {
+        "name": "note",
+        "ordinal": 3,
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "submissions",
+            "name": "note"
+          }
+        }
+      },
+      {
+        "name": "status",
+        "ordinal": 4,
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "submissions",
+            "name": "status"
+          }
+        }
+      },
+      {
+        "name": "project_id",
+        "ordinal": 5,
+        "type_info": "Integer",
+        "origin": {
+          "Table": {
+            "table": "submissions",
+            "name": "project_id"
+          }
+        }
+      },
+      {
+        "name": "created_at",
+        "ordinal": 6,
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "submissions",
+            "name": "created_at"
+          }
+        }
+      },
+      {
+        "name": "reviewed_at",
+        "ordinal": 7,
+        "type_info": "Text",
+        "origin": {
+          "Table": {
+            "table": "submissions",
+            "name": "reviewed_at"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false,
+      false,
+      true,
+      true,
+      false,
+      true,
+      false,
+      true
+    ]
+  },
+  "hash": "e65a909bb06ed409c91bbdc2ad47b6cd53dc50a51d635c66889235dbf4d0b5bd"
+}

@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "UPDATE submissions SET status = ?, project_id = ?, reviewed_at = ? WHERE id = ?",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 4
+    },
+    "nullable": []
+  },
+  "hash": "65eba2f0de9347c205c0c2f9a194a555145e98c30fb663171716e1971ea40014"
+}

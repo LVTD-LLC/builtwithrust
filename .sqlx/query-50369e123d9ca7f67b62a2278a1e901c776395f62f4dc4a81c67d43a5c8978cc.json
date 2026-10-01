@@ -1,0 +1,26 @@
+{
+  "db_name": "SQLite",
+  "query": "UPDATE payments\n           SET status = 'paid', stripe_payment_intent = ?, amount_cents = ?, currency = ?, paid_at = ?\n           WHERE stripe_session_id = ? AND status != 'paid'\n           RETURNING project_id",
+  "describe": {
+    "columns": [
+      {
+        "name": "project_id",
+        "ordinal": 0,
+        "type_info": "Integer",
+        "origin": {
+          "Table": {
+            "table": "payments",
+            "name": "project_id"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Right": 5
+    },
+    "nullable": [
+      true
+    ]
+  },
+  "hash": "50369e123d9ca7f67b62a2278a1e901c776395f62f4dc4a81c67d43a5c8978cc"
+}
