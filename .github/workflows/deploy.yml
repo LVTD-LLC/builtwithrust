@@ -38,6 +38,7 @@ jobs:
           context: .
           push: true
           tags: ghcr.io/lvtd-llc/builtwithrust:${{ github.sha }}
+          build-args: BUILD_REVISION=${{ github.sha }}
           labels: org.opencontainers.image.source=https://github.com/LVTD-LLC/builtwithrust
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -48,5 +49,20 @@ jobs:
           app: builtwithrust
           token: ${{ secrets.APP_TOKEN }}
           image: ghcr.io/lvtd-llc/builtwithrust:${{ github.sha }}
-      - name: Verify public health
-        run: curl --fail --silent --show-error --retry 12 --retry-all-errors --retry-delay 5 --max-time 10 https://builtwithrust.com/healthz
+      - name: Verify deployed revision and public health
+        env:
+          EXPECTED_REVISION: ${{ github.sha }}
+        run: |
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent --show-error --max-time 10 \
+              --dump-header /tmp/health-headers --output /tmp/health-body \
+              https://builtwithrust.com/healthz &&
+              tr -d '\r' < /tmp/health-headers | grep -Fxi "x-deployment-revision: ${EXPECTED_REVISION}" &&
+              test "$(cat /tmp/health-body)" = "ok"; then
+              exit 0
+            fi
+            echo "Waiting for revision ${EXPECTED_REVISION} (attempt ${attempt}/60)"
+            sleep 5
+          done
+          echo "Expected revision did not become healthy" >&2
+          exit 1

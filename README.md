@@ -32,6 +32,8 @@ Production runs on CapRover at https://builtwithrust.com. Pushes to `main`
 run the Rust checks, build an image tagged with the commit SHA in
 `ghcr.io/lvtd-llc/builtwithrust`, and deploy it using the app's deployment token.
 The workflow can also be run manually from `main`.
+It waits until `/healthz` reports the deployed commit in its
+`X-Deployment-Revision` header before marking the rollout successful.
 
 GitHub Actions secrets: `CAPROVER_SERVER` (dashboard origin) and `APP_TOKEN`
 (the `builtwithrust` app token). Image publishing uses `GITHUB_TOKEN`.

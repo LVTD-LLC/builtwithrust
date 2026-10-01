@@ -82,6 +82,11 @@ async fn public_pages_render() {
     let (status, _, body) = send(&app, get("/projects/nope")).await;
     assert_eq!(status, StatusCode::NOT_FOUND);
     assert!(body.contains("Not found"));
+
+    let (_, headers, body) = send(&app, get("/healthz")).await;
+    assert_eq!(body, "ok");
+    assert_eq!(headers[header::CACHE_CONTROL], "no-store");
+    assert_eq!(headers["x-deployment-revision"], option_env!("BUILD_REVISION").unwrap_or("development"));
 }
 
 #[tokio::test]

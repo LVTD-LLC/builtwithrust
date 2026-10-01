@@ -189,7 +189,9 @@ pub async fn stripe_webhook(
 
 pub async fn healthz(State(state): State<SharedState>) -> Result<Response, AppError> {
     db::project_count(&state.pool).await?;
-    Ok((StatusCode::OK, "ok").into_response())
+    // Deployments must distinguish the new container from an older healthy one.
+    let revision = option_env!("BUILD_REVISION").unwrap_or("development");
+    Ok((StatusCode::OK, [("x-deployment-revision", revision), ("cache-control", "no-store")], "ok").into_response())
 }
 
 pub async fn sitemap(State(state): State<SharedState>, headers: HeaderMap) -> Result<Response, AppError> {

@@ -6,6 +6,8 @@ COPY .sqlx .sqlx
 COPY src src
 COPY migrations migrations
 COPY assets assets
+ARG BUILD_REVISION=development
+ENV BUILD_REVISION=${BUILD_REVISION}
 RUN cargo build --locked --release
 
 FROM debian:bookworm-slim
