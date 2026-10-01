@@ -1,0 +1,14 @@
+*
+!Cargo.toml
+!Cargo.lock
+!.sqlx/
+!.sqlx/**
+!src/
+!src/**
+!migrations/
+!migrations/**
+!assets/
+!assets/**
+!seed/
+!seed/projects.json
+!Dockerfile
