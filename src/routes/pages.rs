@@ -30,7 +30,6 @@ pub async fn home(
         state.posthog.capture("search", "server", serde_json::json!({ "query": q, "results": projects.len() }));
         let body = v::home(v::HomeData {
             projects: &projects,
-            featured: &[],
             categories: &categories,
             total,
             query: Some(&q),
@@ -40,12 +39,10 @@ pub async fn home(
     }
     cached_html(&state, &headers, "/".into(), || async {
         let projects = db::list_projects(&state.pool, None, None).await?;
-        let featured = db::featured_projects(&state.pool).await?;
         let categories = db::categories_with_counts(&state.pool).await?;
         let total = db::project_count(&state.pool).await?;
         let body = v::home(v::HomeData {
             projects: &projects,
-            featured: &featured,
             categories: &categories,
             total,
             query: None,
@@ -85,7 +82,6 @@ pub async fn category(
         let desc = format!("{} built with Rust: {} projects.", cat.name, projects.len());
         let body = v::home(v::HomeData {
             projects: &projects,
-            featured: &[],
             categories: &categories,
             total,
             query: None,

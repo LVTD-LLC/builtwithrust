@@ -106,7 +106,7 @@ posthog.init('{key}',{{api_host:'{host}',defaults:'2025-05-24',person_profiles:'
 
 pub fn project_card(p: &Project) -> Markup {
     html! {
-        a class="card" href={ "/projects/" (p.slug) } {
+        a class={ "card" @if p.is_featured() { " card-featured" } } href={ "/projects/" (p.slug) } {
             div class="card-head" {
                 img class="logo" src=(p.logo()) alt="" width="32" height="32" loading="lazy" decoding="async";
                 h3 { (p.name) }

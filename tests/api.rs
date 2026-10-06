@@ -263,9 +263,11 @@ async fn stripe_webhook_features_project_once() {
     let project = db::project_by_slug(&state.pool, "paid").await.unwrap().unwrap();
     assert_eq!(project.featured_until.unwrap(), first_until);
 
-    // Featured projects show up in the featured strip on the home page.
+    // Featured projects appear once, in the normal listing.
     let (_, _, body) = send(&app, get("/")).await;
-    assert!(body.contains("Featured projects"));
+    assert!(!body.contains("Featured projects"));
+    assert_eq!(body.matches("href=\"/projects/paid\"").count(), 1);
+    assert!(body.contains("class=\"card card-featured\""));
     // Success page resolves the project from the session id.
     let (status, _, body) = send(&app, get("/feature/success?session_id=cs_test_123")).await;
     assert_eq!(status, StatusCode::OK);
@@ -281,6 +283,16 @@ async fn admin_can_feature_manually() {
     assert_eq!(status, StatusCode::OK, "{body}");
     let project = db::project_by_slug(&state.pool, "manual").await.unwrap().unwrap();
     assert!(project.is_featured());
+    let mut regular = sample_project("regular");
+    regular["stars"] = json!(999999);
+    send(&app, admin_json("POST", "/api/admin/projects", regular)).await;
+    for path in ["/", "/?q=Sample", "/categories/developer-tools"] {
+        let (status, _, body) = send(&app, get(path)).await;
+        assert_eq!(status, StatusCode::OK);
+        assert_eq!(body.matches("href=\"/projects/manual\"").count(), 1);
+        assert!(body.find("/projects/manual").unwrap() < body.find("/projects/regular").unwrap());
+        assert_eq!(body.matches("class=\"card card-featured\"").count(), 1);
+    }
     let (status, _, _) =
         send(&app, admin_json("POST", "/api/admin/projects/manual/feature", json!({ "days": 0 }))).await;
     assert_eq!(status, StatusCode::BAD_REQUEST);

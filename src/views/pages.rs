@@ -4,7 +4,6 @@ use maud::{Markup, html};
 
 pub struct HomeData<'a> {
     pub projects: &'a [Project],
-    pub featured: &'a [Project],
     pub categories: &'a [CategoryCount],
     pub total: i64,
     pub query: Option<&'a str>,
@@ -29,12 +28,6 @@ pub fn home(d: HomeData<'_>) -> Markup {
                 form class="search" action="/" method="get" role="search" {
                     input type="search" name="q" placeholder="Search by name, stack or description…" aria-label="Search projects" autocomplete="off";
                     button class="btn btn-primary" type="submit" { "Search" }
-                }
-            }
-            @if !d.featured.is_empty() {
-                section class="featured" {
-                    p class="section-label" { "Featured projects. " a href="/feature" { "Feature yours" } }
-                    (project_grid(d.featured))
                 }
             }
         }
