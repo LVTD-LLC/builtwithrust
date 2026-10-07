@@ -7,6 +7,7 @@
 pub mod admin;
 pub mod api;
 pub mod assets;
+pub mod newsletter;
 pub mod pages;
 
 use crate::SharedState;
@@ -28,6 +29,8 @@ use tower_http::trace::TraceLayer;
 pub fn router(state: SharedState) -> Router {
     Router::new()
         .route("/", get(pages::home))
+        .route("/newsletter", get(newsletter::form).post(newsletter::subscribe))
+        .route("/newsletter/thanks", get(newsletter::thanks))
         .route("/categories", get(pages::categories))
         .route("/categories/{slug}", get(pages::category))
         .route("/projects/{slug}", get(pages::project))

@@ -11,6 +11,13 @@ pub struct Config {
     pub posthog: Option<PosthogConfig>,
     pub stripe: Option<StripeConfig>,
     pub feature_days: i64,
+    pub newsletter: Option<NewsletterConfig>,
+}
+
+#[derive(Clone, Debug)]
+pub struct NewsletterConfig {
+    pub url: String,
+    pub list_uuid: String,
 }
 
 #[derive(Clone, Debug)]
@@ -50,6 +57,9 @@ impl Config {
                 .to_string(),
             database_url: opt("DATABASE_URL").unwrap_or_else(|| "sqlite://data/builtwithrust.db?mode=rwc".into()),
             admin_token: opt("ADMIN_TOKEN"),
+            newsletter: opt("NEWSLETTER_LISTMONK_URL")
+                .zip(opt("NEWSLETTER_LIST_UUID"))
+                .map(|(url, list_uuid)| NewsletterConfig { url: url.trim_end_matches('/').into(), list_uuid }),
             posthog,
             stripe,
             feature_days: opt("FEATURE_DAYS").and_then(|v| v.parse().ok()).unwrap_or(30),

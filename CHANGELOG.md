@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-10-07
+
+- Add weekly Rust newsletter signup with Listmonk double opt-in, validation, same-origin protection, bounded signup rate limiting, and recoverable provider errors.
+- Keep the homepage cached and add responsive light/dark signup styling; document dedicated Mailgun/Listmonk operations and recovery.
+
 ## 2026-10-06
 
 - Show featured projects once in the normal directory, preserving featured-first ordering.

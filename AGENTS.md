@@ -51,7 +51,8 @@ scripts/loadtest.sh  oha benchmark; run before and after perf changes
    404). Never cache anything that depends on cookies or auth.
 3. **No external calls on the request path** except: Stripe when creating a
    checkout session (user-initiated) and PostHog capture (spawned, never
-   awaited).
+   awaited), and Listmonk on explicit newsletter signup (8-second timeout).
+   Newsletter GET markup remains cached; never call Listmonk while rendering.
 4. **SQL lives in `db.rs`** and uses `sqlx::query!` / `query_as!` where the
    shape is static. The `project_select!` macro builds `&'static str` SQL for
    the shared project+category SELECT; sqlx 0.9 rejects runtime-built strings

@@ -6,6 +6,7 @@ pub struct HomeData<'a> {
     pub projects: &'a [Project],
     pub categories: &'a [CategoryCount],
     pub total: i64,
+    pub newsletter_enabled: bool,
     pub query: Option<&'a str>,
     pub active_category: Option<&'a CategoryCount>,
 }
@@ -30,6 +31,9 @@ pub fn home(d: HomeData<'_>) -> Markup {
                     button class="btn btn-primary" type="submit" { "Search" }
                 }
             }
+        }
+        @if d.newsletter_enabled && d.query.is_none() && d.active_category.is_none() {
+            (newsletter_form(None, ""))
         }
         section class="listing" {
             div class="listing-head" {
@@ -174,6 +178,27 @@ pub fn not_found() -> Markup {
             h1 { "Not found" }
             p class="lede" { "That page does not exist. The directory does, though." }
             a class="btn" href="/" { "Go home" (external_icon()) }
+        }
+    }
+}
+
+pub fn newsletter_form(error: Option<&str>, email: &str) -> Markup {
+    html! {
+        section class="newsletter" aria-labelledby="newsletter-title" {
+            div {
+                h2 id="newsletter-title" { "Weekly Rust news and projects" }
+                p { "New projects, useful crates, and news from the Rust community. One email a week." }
+            }
+            form method="post" action="/newsletter" class="newsletter-form" {
+                @if let Some(error) = error { p class="alert" role="alert" { (error) } }
+                label for="newsletter-email" { "Email address" }
+                div class="newsletter-fields" {
+                    input id="newsletter-email" name="email" type="email" required maxlength="254" autocomplete="email" placeholder="you@example.com" value=(email);
+                    button class="btn btn-primary" type="submit" { "Subscribe" }
+                }
+                div class="hp" aria-hidden="true" { input type="text" name="website" tabindex="-1" autocomplete="off"; }
+                p class="small" { "Confirm by email to join. Unsubscribe anytime." }
+            }
         }
     }
 }
