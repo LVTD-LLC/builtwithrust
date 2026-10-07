@@ -1,7 +1,7 @@
 FROM rust:1.98.1-bookworm AS builder
 WORKDIR /app
 ENV SQLX_OFFLINE=true
-COPY Cargo.toml Cargo.lock ./
+COPY Cargo.toml Cargo.lock indexnow-key.txt ./
 COPY .sqlx .sqlx
 COPY src src
 COPY migrations migrations

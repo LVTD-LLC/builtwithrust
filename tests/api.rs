@@ -298,3 +298,29 @@ async fn admin_can_feature_manually() {
         send(&app, admin_json("POST", "/api/admin/projects/manual/feature", json!({ "days": 0 }))).await;
     assert_eq!(status, StatusCode::BAD_REQUEST);
 }
+
+#[tokio::test]
+async fn indexnow_ownership_is_public_plain_text() {
+    let (_state, router, _dir) = app().await;
+    let key = include_str!("../indexnow-key.txt").trim();
+    let (status, headers, body) = send(&router, get(&format!("/{key}.txt"))).await;
+    assert_eq!(status, StatusCode::OK);
+    assert!(headers[header::CONTENT_TYPE].to_str().unwrap().starts_with("text/plain"));
+    assert_eq!(body.trim(), key);
+    let (status, _, _) = send(&router, get("/not-an-indexnow-key.txt")).await;
+    assert_eq!(status, StatusCode::NOT_FOUND);
+}
+
+#[tokio::test]
+async fn sitemap_preserves_full_modification_timestamp() {
+    let (state, router, _dir) = app().await;
+    let (status, _, _) =
+        send(&router, admin_json("POST", "/api/admin/projects", sample_project("timestamp-check"))).await;
+    assert_eq!(status, StatusCode::OK);
+    let projects = db::published_slugs(&state.pool).await.unwrap();
+    let (_, updated) = projects.iter().find(|(slug, _)| slug == "timestamp-check").unwrap();
+    assert!(updated.contains('T'));
+    let (status, _, body) = send(&router, get("/sitemap.xml")).await;
+    assert_eq!(status, StatusCode::OK);
+    assert!(body.contains(&format!("<lastmod>{updated}</lastmod>")));
+}

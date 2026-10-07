@@ -3,3 +3,7 @@
 /data/*.db-*
 .env
 *.log
+
+# Local IndexNow submission state
+.indexnow/
+__pycache__/
