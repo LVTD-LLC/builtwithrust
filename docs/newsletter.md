@@ -60,6 +60,10 @@ UUID confirmation, preference and unsubscribe routes remain accessible.
 
 The existing nightly `restic-main` job discovers PostgreSQL and includes Docker
 volumes. Initial dump: `/docker/data/builtwithrust-listmonk-backups/initial-2026-10-07.dump`.
+The initial dump passed an isolated database restore. Offsite Restic snapshot
+`d951235d` (tag `builtwithrust-listmonk-bootstrap`) was restored with byte-for-byte
+matching content. The first scheduled nightly run after provisioning remains
+unverified; check its success before maintenance.
 Before upgrades take a fresh consistent `pg_dump -Fc` plus uploads backup and
 restore to an isolated database. Do not downgrade after schema changes without
 restoring the matching backup. Keep each instance in the control-plane inventory.
