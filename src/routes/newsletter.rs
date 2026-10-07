@@ -108,7 +108,7 @@ pub async fn subscribe(State(state): State<SharedState>, headers: HeaderMap, For
     if let Ok(response) = result
         && response.status().is_success()
         && let Ok(body) = response.json::<Value>().await
-        && body.get("data") == Some(&Value::Bool(true))
+        && body.pointer("/data/has_optin").and_then(Value::as_bool).is_some()
     {
         return success();
     }
