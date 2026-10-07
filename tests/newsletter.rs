@@ -88,7 +88,7 @@ async fn signup_requires_same_origin_valid_email_and_config() {
 }
 #[tokio::test]
 async fn signup_uses_fixed_public_list_and_preserves_double_optin() {
-    let (url, calls, task) = mock(StatusCode::OK, json!({"data": true})).await;
+    let (url, calls, task) = mock(StatusCode::OK, json!({"data": {"has_optin": true}})).await;
     let (router, _dir) = app(Some(&url)).await;
     for _ in 0..2 {
         let response = router
@@ -137,7 +137,7 @@ async fn provider_errors_are_retryable_and_never_echoed() {
 }
 #[tokio::test]
 async fn rate_limit_stops_delivery_attempts() {
-    let (url, calls, task) = mock(StatusCode::OK, json!({"data":true})).await;
+    let (url, calls, task) = mock(StatusCode::OK, json!({"data": {"has_optin": true}})).await;
     let (router, _dir) = app(Some(&url)).await;
     for n in 0..10 {
         assert_eq!(
@@ -154,5 +154,15 @@ async fn rate_limit_stops_delivery_attempts() {
     assert_eq!(response.status(), StatusCode::TOO_MANY_REQUESTS);
     assert!(response.headers().contains_key(header::RETRY_AFTER));
     assert_eq!(calls.lock().unwrap().len(), 10);
+    task.abort();
+}
+
+#[tokio::test]
+async fn existing_subscriber_without_new_optin_is_also_successful() {
+    let (url, _, task) = mock(StatusCode::OK, json!({"data": {"has_optin": false}})).await;
+    let (router, _dir) = app(Some(&url)).await;
+    let response = router.oneshot(signup("email=reader%40example.com", Some("http://test.local"))).await.unwrap();
+    assert_eq!(response.status(), StatusCode::SEE_OTHER);
+    assert_eq!(response.headers()[header::LOCATION], "/newsletter/thanks");
     task.abort();
 }
