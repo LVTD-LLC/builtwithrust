@@ -2,6 +2,8 @@
 
 ## 2026-10-07
 
+- Add IndexNow ownership verification and automated hourly/post-deploy URL submissions, including updated and removed listings, with retry-safe snapshots. Preserve full sitemap modification timestamps for same-day edits.
+
 - Correct Listmonk public-subscription success parsing (`data.has_optin`) so accepted signups do not show a false delivery error. Cover both new confirmations and existing subscribers.
 
 - Add weekly Rust newsletter signup with Listmonk double opt-in, validation, same-origin protection, bounded signup rate limiting, and recoverable provider errors.

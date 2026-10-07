@@ -210,10 +210,7 @@ pub async fn sitemap(State(state): State<SharedState>, headers: HeaderMap) -> Re
         xml.push_str(&format!("<url><loc>{base}/categories/{}</loc></url>", c.slug));
     }
     for (slug, updated) in db::published_slugs(&state.pool).await? {
-        xml.push_str(&format!(
-            "<url><loc>{base}/projects/{slug}</loc><lastmod>{}</lastmod></url>",
-            &updated[..10.min(updated.len())]
-        ));
+        xml.push_str(&format!("<url><loc>{base}/projects/{slug}</loc><lastmod>{}</lastmod></url>", updated));
     }
     xml.push_str("</urlset>");
     let entry = state.cache.insert("/sitemap.xml".into(), Bytes::from(xml), "application/xml", "public, max-age=3600");

@@ -44,6 +44,10 @@ pub fn router(state: SharedState) -> Router {
         .route("/healthz", get(api::healthz))
         .route("/sitemap.xml", get(api::sitemap))
         .route("/robots.txt", get(api::robots))
+        .route(
+            &format!("/{}.txt", include_str!("../../indexnow-key.txt").trim()),
+            get(|| async { include_str!("../../indexnow-key.txt") }),
+        )
         .route("/assets/{*path}", get(assets::serve))
         .nest("/api/admin", admin::router(state.clone()))
         .fallback(pages::not_found)

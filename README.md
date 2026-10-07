@@ -61,3 +61,30 @@ provides a starting point for configuring backups separately.
 ## License
 
 MIT
+
+## IndexNow
+
+The root `/{key}.txt` route serves `indexnow-key.txt` as plain text. This is
+an intentionally public ownership-verification value, not an admin credential.
+No environment secrets or paid API are required.
+
+The **IndexNow** Actions workflow checks the public sitemap hourly and after a
+successful production deployment. It submits new/modified URLs and URLs removed
+since the last accepted snapshot (including unpublished/deleted projects).
+Full RFC3339 sitemap timestamps detect same-day listing edits. On any catalog
+change, all current sitemap URLs are refreshed too: directory/category pages
+and related-project cards may have changed. Successful deployments force a
+refresh to cover template/copy changes without database timestamp changes.
+Unchanged hourly runs make no submissions. GitHub schedules can be delayed.
+
+Snapshots use Actions cache, serialized across runs; they advance only when all
+batches return HTTP 200 or 202. Errors fail the workflow and the next run retries.
+An evicted/missing cache bootstraps all current URLs but cannot recover previously
+removed URLs. Edits made and reverted entirely between polls are not observed.
+For a missed deletion, submit the removed URL explicitly using the IndexNow API.
+HTTP 202 means ownership validation is pending; neither 200 nor 202 guarantees
+indexing. Submission is shared among participating engines, not Google.
+
+Run manually using `gh workflow run indexnow.yml`, or locally with
+`python scripts/indexnow.py --snapshot /tmp/bwr-indexnow.json`. Add `--force`
+for a deliberate full refresh. Protocol: https://www.indexnow.org/documentation.
