@@ -29,6 +29,7 @@ async fn app() -> (SharedState, Router, tempfile::TempDir) {
             price_id: "price_x".into(),
         }),
         feature_days: 30,
+        newsletter: None,
     };
     let (state, router) = builtwithrust::build(cfg).await.unwrap();
     (state, router, dir)

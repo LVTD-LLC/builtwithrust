@@ -174,3 +174,16 @@ p { margin: 0; }
   .project-actions { grid-column: 1 / -1; }
   .footer-inner { flex-direction: column; }
 }
+
+/* Newsletter: static markup keeps the directory's pre-compressed hot path. */
+.newsletter { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center; margin: 0 0 36px; padding: 28px; border: 1px solid var(--accent); border-radius: var(--radius); background: var(--accent-soft); }
+.newsletter h2 { font-size: 22px; margin-bottom: 10px; }
+.newsletter p { line-height: 1.5; }
+.newsletter-form { min-width: 0; }
+.newsletter-form label { display: block; font-weight: 500; margin-bottom: 6px; }
+.newsletter-fields { display: flex; gap: 8px; margin-bottom: 8px; }
+.newsletter-fields input { min-width: 0; width: 100%; height: 42px; padding: 0 12px; border: 1px solid var(--border-strong); border-radius: 8px; font: inherit; background: var(--card); color: var(--fg); }
+.newsletter-fields .btn { height: 42px; }
+.newsletter-fields input:focus { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (max-width: 720px) { .newsletter { grid-template-columns: 1fr; gap: 20px; padding: 20px; } }
+@media (max-width: 380px) { .newsletter-fields { flex-direction: column; } .newsletter-fields .btn { justify-content: center; } }

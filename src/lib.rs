@@ -12,6 +12,7 @@
 pub mod cache;
 pub mod config;
 pub mod db;
+pub mod newsletter;
 pub mod posthog;
 pub mod routes;
 pub mod stripe;
@@ -38,6 +39,7 @@ pub struct AppState {
     pub http: reqwest::Client,
     /// Short hash of all embedded assets, used to cache-bust asset URLs.
     pub asset_version: String,
+    pub signup_limiter: newsletter::SignupLimiter,
 }
 
 impl AppState {
@@ -68,7 +70,16 @@ pub async fn build(cfg: Config) -> anyhow::Result<(SharedState, axum::Router)> {
         }
         hex::encode(&h.finalize()[..6])
     };
-    let state = Arc::new(AppState { cfg, pool, cache: PageCache::default(), posthog, stripe, http, asset_version });
+    let state = Arc::new(AppState {
+        cfg,
+        pool,
+        cache: PageCache::default(),
+        posthog,
+        stripe,
+        http,
+        asset_version,
+        signup_limiter: newsletter::SignupLimiter::default(),
+    });
     let router = routes::router(state.clone());
     Ok((state, router))
 }

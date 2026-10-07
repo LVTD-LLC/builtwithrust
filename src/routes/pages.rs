@@ -32,6 +32,7 @@ pub async fn home(
             projects: &projects,
             categories: &categories,
             total,
+            newsletter_enabled: state.cfg.newsletter.is_some(),
             query: Some(&q),
             active_category: None,
         });
@@ -45,6 +46,7 @@ pub async fn home(
             projects: &projects,
             categories: &categories,
             total,
+            newsletter_enabled: state.cfg.newsletter.is_some(),
             query: None,
             active_category: None,
         });
@@ -84,6 +86,7 @@ pub async fn category(
             projects: &projects,
             categories: &categories,
             total,
+            newsletter_enabled: state.cfg.newsletter.is_some(),
             query: None,
             active_category: active,
         });
