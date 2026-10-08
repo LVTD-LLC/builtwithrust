@@ -2,6 +2,8 @@
 
 ## 2026-10-08
 
+- Scrub the actual Sentry v11 streamed-span payload and verify serialized envelopes with the real SDK; retain safe release/environment metadata and remove raw URLs.
+
 - Preserve SDK-only profile and thread identifiers through browser telemetry scrubbing so UI profiles remain linked to traces; continue dropping private URLs and arbitrary attributes.
 
 - Add privacy-filtered Sentry backend/browser errors, sampled request traces and structured logs, application metrics, masked public-page session replay and supported-browser UI profiling. Preserve page caching; document native Rust profiling limitations, verification and rollback. Add a public privacy notice.

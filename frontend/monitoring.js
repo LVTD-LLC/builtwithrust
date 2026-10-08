@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/browser';
-import { replayAllowed, routeName, cleanEvent, cleanSpan } from './privacy.mjs';
+import { replayAllowed, routeName, cleanEvent, cleanSpan, cleanEnvelope } from './privacy.mjs';
 
 const config = document.querySelector('meta[name="sentry-dsn"]');
 if (config?.content) {
@@ -17,7 +17,7 @@ if (config?.content) {
     networkCaptureBodies: false,
     beforeAddRecordingEvent: event => event.type === 5 ? null : event,
   }));
-  Sentry.init({
+  const client = Sentry.init({
     dsn: config.content,
     environment: document.querySelector('meta[name="sentry-environment"]').content,
     release: document.querySelector('meta[name="sentry-release"]').content,
@@ -25,6 +25,7 @@ if (config?.content) {
     sendDefaultPii: false,
     // Remove free-text console/DOM breadcrumbs at their source.
     beforeBreadcrumb: () => null,
+    traceLifecycle: 'stream',
     tracesSampleRate: 0.2,
     tracePropagationTargets: [/^\/api\/(?!admin)/, /^\/newsletter$/],
     profileSessionSampleRate: 0.2, profileLifecycle: 'trace',
@@ -33,11 +34,6 @@ if (config?.content) {
     enableLogs: true,
     beforeSend: cleanEvent,
     beforeSendSpan: cleanSpan,
-    beforeSendTransaction: event => {
-      cleanEvent(event); event.transaction = route;
-      event.spans = (event.spans || []).map(cleanSpan);
-      return event;
-    },
     beforeSendLog: log => {
       if (log.message !== 'Public page loaded') return null;
       log.attributes = { 'page.route': route };
@@ -48,6 +44,7 @@ if (config?.content) {
       return metric;
     },
   });
+  client.on('beforeEnvelope', cleanEnvelope);
   Sentry.setTag('page.route', route);
   Sentry.logger.info('Public page loaded', { 'page.route': route });
   Sentry.metrics.count('browser.page_loaded', 1, { attributes: { 'page.route': route } });

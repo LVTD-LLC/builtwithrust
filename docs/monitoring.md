@@ -35,6 +35,10 @@ npm run build:monitoring`. Commit the generated asset; CI checks it matches sour
   `Document-Policy: js-profiling`. Chromium only, restricted to the same query-free public catalog pages as replay. **Sentry does not support native
   Rust CPU profiling**; this integration must not be described as backend profiling.
 
+Browser span scrubbing handles the SDK v11 streamed `name`/`attributes` format
+and envelope dynamic-sampling metadata; a real-SDK transport regression checks
+serialized envelopes and preserves profile linkage and release/environment.
+
 Both SDKs disable default PII and remove free-text exception values, requests,
 user data, extras and breadcrumbs from error events. Backend transport batches on
 its own thread, with no Sentry network round trip in a request. `/privacy` discloses

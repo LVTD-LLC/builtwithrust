@@ -19,8 +19,33 @@ export function cleanEvent(event) {
   }
   return event;
 }
+const SAFE_SPAN_ATTRIBUTES = new Set([
+  'http.response.status_code', 'http.request.method', 'sentry.origin', 'sentry.op',
+  'sentry.profiler_id', 'sentry.profile_id', 'thread.id', 'thread.name',
+  'sentry.environment', 'sentry.release', 'sentry.sdk.name', 'sentry.sdk.version',
+  'sentry.trace_lifecycle', 'sentry.segment.id', 'sentry.status',
+  'sentry.client_sample_rate', 'sentry.sample_rate', 'sentry.exclusive_time',
+]);
+function cleanAttributes(attributes) {
+  return Object.fromEntries(Object.entries(attributes || {}).filter(([key]) => SAFE_SPAN_ATTRIBUTES.has(key)));
+}
 export function cleanSpan(span) {
-  span.description = span.op || 'operation';
-  span.data = Object.fromEntries(Object.entries(span.data || {}).filter(([key]) => ['http.response.status_code','http.request.method','sentry.origin','sentry.op','sentry.profiler_id','sentry.profile_id','thread.id','thread.name'].includes(key)));
+  // v11 defaults to streamed spans (name/attributes), not legacy description/data.
+  if ('name' in span || 'attributes' in span) {
+    const original = span.attributes || {};
+    span.name = span.is_segment ? routeName(span.name || '') : (original['sentry.op'] || 'operation');
+    span.attributes = cleanAttributes(original);
+    if (original['sentry.segment.name']) span.attributes['sentry.segment.name'] = routeName(original['sentry.segment.name']);
+    delete span.data; delete span.description;
+  } else {
+    span.description = span.op || 'operation';
+    span.data = cleanAttributes(span.data);
+  }
   return span;
+}
+
+export function cleanEnvelope(envelope) {
+  // Dynamic sampling context lives outside span payloads in the envelope header.
+  const trace = envelope[0]?.trace;
+  if (trace?.transaction) trace.transaction = routeName(trace.transaction);
 }

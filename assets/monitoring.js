@@ -21453,10 +21453,46 @@ Error:`,
     }
     return event;
   }
+  var SAFE_SPAN_ATTRIBUTES = /* @__PURE__ */ new Set([
+    "http.response.status_code",
+    "http.request.method",
+    "sentry.origin",
+    "sentry.op",
+    "sentry.profiler_id",
+    "sentry.profile_id",
+    "thread.id",
+    "thread.name",
+    "sentry.environment",
+    "sentry.release",
+    "sentry.sdk.name",
+    "sentry.sdk.version",
+    "sentry.trace_lifecycle",
+    "sentry.segment.id",
+    "sentry.status",
+    "sentry.client_sample_rate",
+    "sentry.sample_rate",
+    "sentry.exclusive_time"
+  ]);
+  function cleanAttributes(attributes) {
+    return Object.fromEntries(Object.entries(attributes || {}).filter(([key]) => SAFE_SPAN_ATTRIBUTES.has(key)));
+  }
   function cleanSpan(span) {
-    span.description = span.op || "operation";
-    span.data = Object.fromEntries(Object.entries(span.data || {}).filter(([key]) => ["http.response.status_code", "http.request.method", "sentry.origin", "sentry.op", "sentry.profiler_id", "sentry.profile_id", "thread.id", "thread.name"].includes(key)));
+    if ("name" in span || "attributes" in span) {
+      const original = span.attributes || {};
+      span.name = span.is_segment ? routeName(span.name || "") : original["sentry.op"] || "operation";
+      span.attributes = cleanAttributes(original);
+      if (original["sentry.segment.name"]) span.attributes["sentry.segment.name"] = routeName(original["sentry.segment.name"]);
+      delete span.data;
+      delete span.description;
+    } else {
+      span.description = span.op || "operation";
+      span.data = cleanAttributes(span.data);
+    }
     return span;
+  }
+  function cleanEnvelope(envelope) {
+    const trace2 = envelope[0]?.trace;
+    if (trace2?.transaction) trace2.transaction = routeName(trace2.transaction);
   }
 
   // frontend/monitoring.js
@@ -21479,7 +21515,7 @@ Error:`,
       networkCaptureBodies: false,
       beforeAddRecordingEvent: (event) => event.type === 5 ? null : event
     }));
-    init({
+    const client = init({
       dsn: config.content,
       environment: document.querySelector('meta[name="sentry-environment"]').content,
       release: document.querySelector('meta[name="sentry-release"]').content,
@@ -21487,6 +21523,7 @@ Error:`,
       sendDefaultPii: false,
       // Remove free-text console/DOM breadcrumbs at their source.
       beforeBreadcrumb: () => null,
+      traceLifecycle: "stream",
       tracesSampleRate: 0.2,
       tracePropagationTargets: [/^\/api\/(?!admin)/, /^\/newsletter$/],
       profileSessionSampleRate: 0.2,
@@ -21496,12 +21533,6 @@ Error:`,
       enableLogs: true,
       beforeSend: cleanEvent,
       beforeSendSpan: cleanSpan,
-      beforeSendTransaction: (event) => {
-        cleanEvent(event);
-        event.transaction = route;
-        event.spans = (event.spans || []).map(cleanSpan);
-        return event;
-      },
       beforeSendLog: (log2) => {
         if (log2.message !== "Public page loaded") return null;
         log2.attributes = { "page.route": route };
@@ -21512,6 +21543,7 @@ Error:`,
         return metric;
       }
     });
+    client.on("beforeEnvelope", cleanEnvelope);
     setTag("page.route", route);
     public_api_exports.info("Public page loaded", { "page.route": route });
     public_api_exports2.count("browser.page_loaded", 1, { attributes: { "page.route": route } });
