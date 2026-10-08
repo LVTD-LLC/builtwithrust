@@ -41,11 +41,9 @@
     "output_url_prefix": "/blog",
     "cms": null,
     "figure_style": {
-      "_comment": "Auto-detected visual recon (references/visuals.md). Never interview the user about this.",
-      "chart_component": null,
-      "tokens": null,
-      "dark_mode": "class | media | none",
-      "notes": null
+      "dark_mode": "data-theme",
+      "tokens": "assets/style.css",
+      "notes": "Use existing CSS variables; no charts currently needed."
     }
   },
   "gsc": {
@@ -126,27 +124,21 @@
     "openseo": true,
     "answer_engine_data": false,
     "brand_tracking": false,
-    "crawl_audit": false,
+    "crawl_audit": true,
     "python3": true,
     "ga4": false,
     "psi": false,
     "logs": false,
     "community_search": false,
     "social_posting": false,
-    "browser": false,
-    "git": false,
-    "rowset": false,
+    "browser": true,
+    "git": true,
+    "rowset": true,
     "posthog": true,
     "citeguild": false,
     "reddit": false
   },
-  "tools_declined": [
-    {
-      "capability": "",
-      "declined": "YYYY-MM-DD",
-      "note": "do not raise again"
-    }
-  ],
+  "tools_declined": [],
   "cache": {
     "_comment": "Read dates for metered slices. Nothing under 30 days old gets re-queried unless the user asks to re-research. The live SERP read is never cached.",
     "domain_rating": {
@@ -228,12 +220,10 @@
     "_comment": "Product-change panel (measure.md 4b). scripts/repo_changes.py lists commits since the last run that touch these globs; a shipped feature, a price change or a removed route is the freshest demand signal the site has. Fill with this repo's real paths.",
     "watch_paths": [
       "CHANGELOG.md",
-      "docs/changelog/**",
-      "config/routes.rb",
-      "app/views/**/pricing*",
-      "config/features*",
-      "db/migrate/**",
-      "src/app/**/pricing*"
+      "src/**",
+      "assets/**",
+      "migrations/**",
+      "seed/**"
     ]
   },
   "serp": {
