@@ -93,6 +93,33 @@ async fn public_pages_render() {
 }
 
 #[tokio::test]
+async fn category_discovery_has_headings_unique_metadata_and_crawlable_links() {
+    let (_state, app, _dir) = app().await;
+    let mut project = sample_project("seo-tool");
+    project["category_name"] = json!("Developer Tools");
+    let (status, _, _) = send(&app, admin_json("POST", "/api/admin/projects", project)).await;
+    assert_eq!(status, StatusCode::OK);
+    for path in ["/categories/developer-tools", "/categories/developer-tools?sort=name"] {
+        let (status, _, body) = send(&app, get(path)).await;
+        assert_eq!(status, StatusCode::OK);
+        assert_eq!(body.matches("<h1>").count(), 1);
+        assert!(body.contains("<h1>Developer Tools built with Rust</h1>"));
+        assert!(body.contains("content=\"Explore Developer Tools built with Rust."));
+        assert!(body.contains("rel=\"canonical\" href=\"http://test.local/categories/developer-tools\""));
+    }
+    for _ in 0..2 {
+        let (_, _, home) = send(&app, get("/")).await;
+        assert_eq!(home.matches("<h1>").count(), 1);
+        assert!(home.contains("aria-label=\"Browse projects by category\""));
+        assert!(home.contains("href=\"/categories/developer-tools\""));
+    }
+    let (_, _, search) = send(&app, get("/?q=Sample")).await;
+    assert_eq!(search.matches("<h1>").count(), 1);
+    let (status, _, _) = send(&app, get("/categories/missing")).await;
+    assert_eq!(status, StatusCode::NOT_FOUND);
+}
+
+#[tokio::test]
 async fn admin_requires_token() {
     let (_state, app, _dir) = app().await;
     let (status, _, _) = send(&app, get("/api/admin/stats")).await;

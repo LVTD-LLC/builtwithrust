@@ -3,6 +3,8 @@
 ## 2026-10-08
 
 - Add privacy-filtered Sentry backend/browser errors, sampled request traces and structured logs, application metrics, masked public-page session replay and supported-browser UI profiling. Preserve page caching; document native Rust profiling limitations, verification and rollback. Add a public privacy notice.
+- Repair category/search H1 headings and category-specific descriptions; add crawlable homepage category links while preserving filters, canonical URLs and the page cache.
+- Establish sanitized SEO guidance and private research-history locators.
 
 - Tune hidden-gems discovery to known counts below 10,000 stars after live catalog verification found no projects below 1,000. Preserve the separate under-1,000 star filter.
 

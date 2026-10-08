@@ -86,7 +86,8 @@ p { margin: 0; }
 .section-label a { text-decoration: underline; text-underline-offset: 3px; }
 .listing { padding: 16px 0 64px; }
 .listing-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
-.listing-head h2 { font-size: 20px; font-weight: 600; }
+.listing-head h1, .listing-head h2 { font-size: 20px; font-weight: 600; }
+.category-links { margin-bottom: 16px; }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
 .chip { font-size: 13px; padding: 4px 10px; border: 1px solid var(--border); border-radius: 999px; color: var(--fg-muted); background: var(--card); }
 .chip:hover { text-decoration: none; color: var(--fg); border-color: var(--border-strong); }
