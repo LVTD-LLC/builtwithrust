@@ -31,6 +31,7 @@ pub fn router(state: SharedState) -> Router {
         .route("/", get(pages::home))
         .route("/newsletter", get(newsletter::form).post(newsletter::subscribe))
         .route("/newsletter/thanks", get(newsletter::thanks))
+        .route("/privacy", get(privacy))
         .route("/categories", get(pages::categories))
         .route("/categories/{slug}", get(pages::category))
         .route("/projects/{slug}", get(pages::project))
@@ -55,12 +56,14 @@ pub fn router(state: SharedState) -> Router {
         .layer(TraceLayer::new_for_http())
         .layer(TimeoutLayer::with_status_code(StatusCode::REQUEST_TIMEOUT, Duration::from_secs(20)))
         .layer(RequestBodyLimitLayer::new(1024 * 1024))
+        .layer(middleware::from_fn(crate::monitoring::request))
         .with_state(state)
 }
 
 async fn security_headers(req: Request, next: Next) -> Response {
     let mut resp = next.run(req).await;
     let h = resp.headers_mut();
+    h.insert("document-policy", HeaderValue::from_static("js-profiling"));
     h.insert("x-content-type-options", HeaderValue::from_static("nosniff"));
     h.insert("x-frame-options", HeaderValue::from_static("DENY"));
     h.insert("referrer-policy", HeaderValue::from_static("strict-origin-when-cross-origin"));
@@ -89,6 +92,7 @@ impl IntoResponse for AppError {
     fn into_response(self) -> Response {
         match self {
             AppError::Internal(e) => {
+                sentry::integrations::anyhow::capture_anyhow(&e);
                 tracing::error!(error = ?e, "request failed");
                 (StatusCode::INTERNAL_SERVER_ERROR, "internal error").into_response()
             }
@@ -169,4 +173,20 @@ impl<S: Send + Sync> FromRequestParts<S> for ClientIp {
 pub fn ip_hash(ip: &str) -> String {
     use sha2::{Digest, Sha256};
     hex::encode(&Sha256::digest(format!("bwr:{ip}").as_bytes())[..12])
+}
+
+async fn privacy(
+    axum::extract::State(state): axum::extract::State<SharedState>,
+    headers: HeaderMap,
+) -> Result<Response, AppError> {
+    cached_html(&state, &headers, "privacy".into(), || async {
+        Ok(page(&state, "Privacy", "How Built with Rust uses monitoring and analytics.", "/privacy", maud::html! {
+            h1 { "Privacy" }
+            p { "We use PostHog for site analytics and Sentry to diagnose errors and performance problems. Sentry receives technical error stacks, sampled performance traces, structured operational logs and application metrics." }
+            p { "On public directory pages without a query string or fragment, Sentry may record a masked session replay. Text and inputs are masked, media is blocked, and request bodies are not recorded. Replay is disabled on submission, newsletter and payment pages. Browser profiling is sampled on supported browsers." }
+            p { "We do not intentionally send email addresses, credentials, form contents or search queries to Sentry. Monitoring data is used to operate and improve this site, not for advertising." }
+            p { "Newsletter signup uses double opt-in. You can unsubscribe using the link in each newsletter." }
+            p { "Questions or data requests: " a href="mailto:rasul@builtwithrust.com" { "rasul@builtwithrust.com" } }
+        }))
+    }).await
 }

@@ -12,6 +12,8 @@ pub struct Config {
     pub stripe: Option<StripeConfig>,
     pub feature_days: i64,
     pub newsletter: Option<NewsletterConfig>,
+    pub sentry_dsn: Option<String>,
+    pub sentry_environment: String,
 }
 
 #[derive(Clone, Debug)]
@@ -57,6 +59,8 @@ impl Config {
                 .to_string(),
             database_url: opt("DATABASE_URL").unwrap_or_else(|| "sqlite://data/builtwithrust.db?mode=rwc".into()),
             admin_token: opt("ADMIN_TOKEN"),
+            sentry_dsn: opt("SENTRY_DSN"),
+            sentry_environment: opt("SENTRY_ENVIRONMENT").unwrap_or_else(|| "development".into()),
             newsletter: opt("NEWSLETTER_LISTMONK_URL")
                 .zip(opt("NEWSLETTER_LIST_UUID"))
                 .map(|(url, list_uuid)| NewsletterConfig { url: url.trim_end_matches('/').into(), list_uuid }),

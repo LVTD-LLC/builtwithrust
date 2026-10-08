@@ -21,6 +21,7 @@ maud = { version = "0.27.0", features = ["axum"] }
 mime_guess = "2.0.5"
 reqwest = { version = "0.13.5", default-features = false, features = ["rustls", "json", "http2", "form"] }
 rust-embed = "8.12.0"
+sentry = { version = "=0.49.3", default-features = false, features = ["backtrace", "contexts", "panic", "reqwest", "rustls", "logs", "metrics", "anyhow"] }
 serde = { version = "1.0.229", features = ["derive"] }
 serde_json = "1.0.151"
 sha2 = "0.11.0"
@@ -35,6 +36,7 @@ tracing = "0.1.44"
 tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
 
 [dev-dependencies]
+sentry = { version = "=0.49.3", default-features = false, features = ["test"] }
 http-body-util = "0.1.5"
 tempfile = "3.27.0"
 tower = { version = "0.5.3", features = ["util"] }
@@ -44,4 +46,7 @@ lto = "fat"
 codegen-units = 1
 opt-level = 3
 panic = "abort"
-strip = true
+strip = false
+# Retain app line tables so captured backend stacks resolve without an upload token.
+[profile.release.package.builtwithrust]
+debug = 1

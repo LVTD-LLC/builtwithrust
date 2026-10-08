@@ -18,6 +18,8 @@ async fn app(upstream: Option<&str>) -> (Router, tempfile::TempDir) {
         database_url: format!("sqlite://{}?mode=rwc", dir.path().join("db").display()),
         admin_token: None,
         posthog: None,
+        sentry_dsn: None,
+        sentry_environment: "test".into(),
         stripe: None,
         feature_days: 30,
         newsletter: upstream.map(|url| NewsletterConfig { url: url.into(), list_uuid: "fixed-list".into() }),

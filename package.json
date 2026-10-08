@@ -1,0 +1,1 @@
+{"private":true,"scripts":{"build:monitoring":"esbuild frontend/monitoring.js --bundle --format=iife --target=es2020 --outfile=assets/monitoring.js","test":"node --test tests/monitoring.test.cjs"},"dependencies":{"@sentry/browser":"11.5.0"},"devDependencies":{"esbuild":"0.25.12"}}

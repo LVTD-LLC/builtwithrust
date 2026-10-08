@@ -23,6 +23,8 @@ async fn app() -> (SharedState, Router, tempfile::TempDir) {
         database_url: format!("sqlite://{}?mode=rwc", db_path.display()),
         admin_token: Some(TOKEN.into()),
         posthog: None,
+        sentry_dsn: None,
+        sentry_environment: "test".into(),
         stripe: Some(StripeConfig {
             secret_key: "sk_test_x".into(),
             webhook_secret: WEBHOOK_SECRET.into(),

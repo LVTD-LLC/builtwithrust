@@ -38,6 +38,12 @@ pub fn layout(state: &AppState, page: Page<'_>) -> Markup {
                 meta property="og:url" content=(canonical);
                 meta property="og:type" content="website";
                 meta name="twitter:card" content="summary";
+                @if let Some(dsn) = &state.cfg.sentry_dsn {
+                    meta name="sentry-dsn" content=(dsn);
+                    meta name="sentry-environment" content=(&state.cfg.sentry_environment);
+                    meta name="sentry-release" content=(crate::monitoring::RELEASE);
+                    script defer src=(state.asset_url("monitoring.js")) {}
+                }
                 // Apply the saved theme before first paint to avoid a flash.
                 script { (PreEscaped(THEME_BOOT)) }
                 @if let Some(ph) = state.posthog.config() {
@@ -79,6 +85,7 @@ pub fn layout(state: &AppState, page: Page<'_>) -> Markup {
                             a href="/categories" { "Categories" }
                             a href="/submit" { "Submit a site" }
                             a href="/feature" { "Feature your project" }
+                            a href="/privacy" { "Privacy" }
                             a href="https://github.com/LVTD-LLC/builtwithrust" rel="noopener" { "Source" }
                         }
                     }

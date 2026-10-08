@@ -7,3 +7,5 @@
 # Local IndexNow submission state
 .indexnow/
 __pycache__/
+
+node_modules/
