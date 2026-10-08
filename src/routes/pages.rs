@@ -47,7 +47,11 @@ async fn directory_page(
         facets: &facets,
     });
     let title = active.map_or("Explore projects", |c| c.name.as_str());
-    Ok(page(state, title, "Discover websites, apps and tools built with Rust.", path, body))
+    let description = active.map_or_else(
+        || "Discover websites, apps and tools built with Rust.".to_string(),
+        |c| format!("Explore {} built with Rust. Compare projects, GitHub stars, licenses and crates, then visit their websites or source repositories.", c.name),
+    );
+    Ok(page(state, title, &description, path, body))
 }
 
 pub async fn categories(State(state): State<SharedState>, headers: HeaderMap) -> Result<Response, AppError> {
