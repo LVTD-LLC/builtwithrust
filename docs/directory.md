@@ -14,7 +14,7 @@ route category overrides a conflicting query parameter.
   do not qualify; zero is a known count. Stars are catalog snapshots, not live.
 - `sort`: empty = recommended (existing featured-first, stars ordering), `stars`,
   `newest` (directory creation, not repository activity), `name`, or `gems`
-  (only known counts under 1,000, smallest first). Explicit sorts override
+  (only known counts under 10,000, smallest first). Explicit sorts override
   featured placement but preserve the featured styling; ties use name then slug.
 
 Unknown fixed-choice values fall back to defaults. Unknown category/stack/license

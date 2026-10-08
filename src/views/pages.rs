@@ -59,7 +59,7 @@ pub fn home(d: HomeData<'_>) -> Markup {
                     }
                     label { "Sort / discover"
                         select name="sort" {
-                            @for (value, label) in [("", "Recommended"), ("stars", "Most starred"), ("newest", "Recently added"), ("name", "Name A–Z"), ("gems", "Hidden gems · under 1k stars")] {
+                            @for (value, label) in [("", "Recommended"), ("stars", "Most starred"), ("newest", "Recently added"), ("name", "Name A–Z"), ("gems", "Hidden gems · under 10k stars")] {
                                 option value=(value) selected[d.browse.sort == value] { (label) }
                             }
                         }
@@ -98,7 +98,7 @@ pub fn home(d: HomeData<'_>) -> Markup {
             p class="browse-results" role="status" {
                 strong { (d.projects.len()) } " of " (d.total) " projects"
                 @if d.browse.sort == "gems" {
-                    " · Known star counts below 1,000, smallest first."
+                    " · Known star counts below 10,000, smallest first."
                 } @else if d.browse.sort.is_empty() {
                     " · Featured first, then most starred."
                 } @else if d.browse.sort == "newest" {

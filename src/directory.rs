@@ -60,7 +60,7 @@ impl Browse {
                     "10000" => p.stars.is_some_and(|n| n >= 10000),
                     _ => true,
                 }
-                && (self.sort != "gems" || p.stars.is_some_and(|n| (0..1000).contains(&n)))
+                && (self.sort != "gems" || p.stars.is_some_and(|n| (0..10000).contains(&n)))
         });
         if !self.sort.is_empty() {
             projects.sort_by_cached_key(|p| (p.name.to_lowercase(), p.slug.clone()));

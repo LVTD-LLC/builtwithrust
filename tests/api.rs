@@ -386,9 +386,9 @@ async fn directory_sorts_override_featured_and_category_cache_cannot_leak() {
     for (path, expected) in [
         ("/?sort=stars", vec!["alpha", "beta", "delta", "gamma"]),
         ("/?sort=name", vec!["alpha", "beta", "delta", "gamma"]),
-        ("/?sort=gems", vec!["delta", "beta"]),
+        ("/?sort=gems", vec!["delta", "beta", "alpha"]),
         ("/categories/tools", vec!["gamma", "alpha", "beta"]),
-        ("/categories/tools?q=rust&sort=gems&category=apps", vec!["beta"]),
+        ("/categories/tools?q=rust&sort=gems&category=apps", vec!["beta", "alpha"]),
         ("/categories/tools?sort=stars", vec!["alpha", "beta", "gamma"]),
         ("/categories/tools", vec!["gamma", "alpha", "beta"]),
         ("/?sort=invalid&stars=garbage", vec!["gamma", "alpha", "beta", "delta"]),
@@ -397,6 +397,12 @@ async fn directory_sorts_override_featured_and_category_cache_cannot_leak() {
         assert_eq!(status, StatusCode::OK, "{path}");
         assert_eq!(card_slugs(&body), expected, "{path}");
     }
+    let mut boundary = sample_project("boundary");
+    boundary["stars"] = json!(10000);
+    send(&app, admin_json("POST", "/api/admin/projects", boundary)).await;
+    let (_, _, body) = send(&app, get("/?sort=gems")).await;
+    assert_eq!(card_slugs(&body), ["delta", "beta", "alpha"]);
+    send(&app, admin_json("DELETE", "/api/admin/projects/boundary", json!({}))).await;
     let mut projects = db::list_projects(&state.pool, None, None).await.unwrap();
     for p in &mut projects {
         p.created_at = if p.slug == "beta" { "2026-10-08T10:00:00Z" } else { "2026-01-01T00:00:00Z" }.into();
