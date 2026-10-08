@@ -21440,7 +21440,7 @@ Error:`,
     delete event.request;
     delete event.extra;
     delete event.breadcrumbs;
-    if (event.contexts?.trace?.data) event.contexts.trace.data = {};
+    if (event.contexts?.trace?.data) event.contexts.trace.data = cleanSpan({ data: event.contexts.trace.data }).data;
     for (const error3 of event.exception?.values || []) {
       error3.value = "[redacted]";
       for (const frame of error3.stacktrace?.frames || []) {
@@ -21455,7 +21455,7 @@ Error:`,
   }
   function cleanSpan(span) {
     span.description = span.op || "operation";
-    span.data = Object.fromEntries(Object.entries(span.data || {}).filter(([key]) => ["http.response.status_code", "http.request.method", "sentry.origin", "sentry.op"].includes(key)));
+    span.data = Object.fromEntries(Object.entries(span.data || {}).filter(([key]) => ["http.response.status_code", "http.request.method", "sentry.origin", "sentry.op", "sentry.profiler_id", "sentry.profile_id", "thread.id", "thread.name"].includes(key)));
     return span;
   }
 

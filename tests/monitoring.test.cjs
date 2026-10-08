@@ -18,3 +18,14 @@ test('span sanitizer removes query strings and arbitrary attributes', async () =
   assert.equal(JSON.stringify(result).includes('secret'), false);
   assert.equal(result.span_id, 'abc');
 });
+
+test('span privacy filter preserves SDK-only profile linkage', async () => {
+  const { cleanSpan, cleanEvent } = await load();
+  const result = cleanSpan({op:'pageload', data:{'sentry.profiler_id':'0123456789abcdef0123456789abcdef','sentry.profile_id':'abcdef0123456789abcdef0123456789','thread.id':'0','thread.name':'main','http.url':'https://example.com/?token=secret'}});
+  assert.equal(result.data['sentry.profiler_id'], '0123456789abcdef0123456789abcdef');
+  assert.equal(result.data['thread.id'], '0');
+  const event = cleanEvent({contexts:{trace:{data:{...result.data, token:'secret'}}}});
+  assert.equal(event.contexts.trace.data['sentry.profiler_id'], result.data['sentry.profiler_id']);
+  assert.equal(JSON.stringify(event).includes('secret'), false);
+  assert.equal(JSON.stringify(result).includes('secret'), false);
+});
