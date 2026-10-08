@@ -2,6 +2,9 @@
 
 ## 2026-10-08
 
+- Repair category/search H1 headings and category-specific descriptions; add crawlable homepage category links while preserving filters, canonical URLs and the page cache.
+- Establish sanitized SEO guidance and private research-history locators.
+
 - Tune hidden-gems discovery to known counts below 10,000 stars after live catalog verification found no projects below 1,000. Preserve the separate under-1,000 star filter.
 
 - Add combinable search, category, crate/stack, license, repository, verification, and star-count filters with shareable URLs and no JavaScript requirement.

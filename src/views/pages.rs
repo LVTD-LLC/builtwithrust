@@ -36,9 +36,20 @@ pub fn home(d: HomeData<'_>) -> Markup {
         }
         section class="listing" id="projects" {
             div class="listing-head" {
-                h2 { (heading) }
+                @if d.query.is_some() || d.active_category.is_some() {
+                    h1 { (heading) }
+                } @else {
+                    h2 { (heading) }
+                }
                 @if !d.browse.is_default() {
                     a class="muted" href="/#projects" { "Clear filters" }
+                }
+            }
+            @if d.query.is_none() && d.active_category.is_none() && d.browse.is_default() {
+                nav class="pills category-links" aria-label="Browse projects by category" {
+                    @for c in d.categories {
+                        a class="pill" href={ "/categories/" (c.slug) } { (c.name) " (" (c.count) ")" }
+                    }
                 }
             }
             form class="browse" action="/#projects" method="get" role="search" aria-label="Filter projects" {
