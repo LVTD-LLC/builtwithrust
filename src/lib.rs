@@ -12,6 +12,7 @@
 pub mod cache;
 pub mod config;
 pub mod db;
+pub mod directory;
 pub mod newsletter;
 pub mod posthog;
 pub mod routes;

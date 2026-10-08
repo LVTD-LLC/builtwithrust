@@ -10,49 +10,44 @@ use axum::http::{HeaderMap, StatusCode};
 use axum::response::{IntoResponse, Response};
 use serde::Deserialize;
 
-#[derive(Deserialize)]
-pub struct HomeQuery {
-    pub q: Option<String>,
-}
-
 pub async fn home(
     State(state): State<SharedState>,
     headers: HeaderMap,
-    Query(query): Query<HomeQuery>,
+    Query(mut browse): Query<crate::directory::Browse>,
 ) -> Result<Response, AppError> {
-    let q = query.q.as_deref().map(str::trim).filter(|q| !q.is_empty());
-    if let Some(q) = q {
-        // Search results are not cached: the key space is unbounded.
-        let q = q.chars().take(100).collect::<String>();
-        let projects = db::list_projects(&state.pool, None, Some(&q)).await?;
-        let categories = db::categories_with_counts(&state.pool).await?;
-        let total = db::project_count(&state.pool).await?;
-        state.posthog.capture("search", "server", serde_json::json!({ "query": q, "results": projects.len() }));
-        let body = v::home(v::HomeData {
-            projects: &projects,
-            categories: &categories,
-            total,
-            newsletter_enabled: state.cfg.newsletter.is_some(),
-            query: Some(&q),
-            active_category: None,
-        });
-        return Ok(html_now(page(&state, "Search", "Search projects built with Rust", "/", body)));
+    browse.normalize();
+    if !browse.is_default() {
+        return Ok(html_now(directory_page(&state, &browse, "/").await?));
     }
-    cached_html(&state, &headers, "/".into(), || async {
-        let projects = db::list_projects(&state.pool, None, None).await?;
-        let categories = db::categories_with_counts(&state.pool).await?;
-        let total = db::project_count(&state.pool).await?;
-        let body = v::home(v::HomeData {
-            projects: &projects,
-            categories: &categories,
-            total,
-            newsletter_enabled: state.cfg.newsletter.is_some(),
-            query: None,
-            active_category: None,
-        });
-        Ok(page(&state, "Home", "A curated directory of websites, apps and tools built with Rust.", "/", body))
-    })
-    .await
+    cached_html(&state, &headers, "/".into(), || directory_page(&state, &browse, "/")).await
+}
+
+async fn directory_page(
+    state: &SharedState,
+    browse: &crate::directory::Browse,
+    path: &str,
+) -> Result<maud::Markup, AppError> {
+    let mut projects = db::list_projects(&state.pool, None, None).await?;
+    let total = projects.len() as i64;
+    let facets = crate::directory::Facets::from_projects(&projects);
+    let categories = db::categories_with_counts(&state.pool).await?;
+    browse.apply(&mut projects);
+    if !browse.q.is_empty() {
+        state.posthog.capture("search", "server", serde_json::json!({ "query": browse.q, "results": projects.len() }));
+    }
+    let active = categories.iter().find(|c| c.slug == browse.category);
+    let body = v::home(v::HomeData {
+        projects: &projects,
+        categories: &categories,
+        total,
+        newsletter_enabled: state.cfg.newsletter.is_some(),
+        query: (!browse.q.is_empty()).then_some(browse.q.as_str()),
+        active_category: active,
+        browse,
+        facets: &facets,
+    });
+    let title = active.map_or("Explore projects", |c| c.name.as_str());
+    Ok(page(state, title, "Discover websites, apps and tools built with Rust.", path, body))
 }
 
 pub async fn categories(State(state): State<SharedState>, headers: HeaderMap) -> Result<Response, AppError> {
@@ -67,32 +62,24 @@ pub async fn category(
     State(state): State<SharedState>,
     headers: HeaderMap,
     Path(slug): Path<String>,
+    Query(mut browse): Query<crate::directory::Browse>,
 ) -> Result<Response, AppError> {
+    browse.normalize();
+    // The route owns the category; a conflicting query parameter cannot escape it.
+    browse.category.clear();
+    let filtered = !browse.is_default();
     let path = format!("/categories/{slug}");
-    // Cache first: a hit must not touch the database.
-    if let Some(hit) = state.cache.get(&path) {
+    if !filtered && let Some(hit) = state.cache.get(&path) {
         return Ok(hit.respond(&headers));
     }
-    let Some(cat) = db::category_by_slug(&state.pool, &slug).await? else {
+    if db::category_by_slug(&state.pool, &slug).await?.is_none() {
         return Ok(not_found(State(state)).await);
-    };
-    cached_html(&state, &headers, path.clone(), || async {
-        let projects = db::list_projects(&state.pool, Some(cat.id), None).await?;
-        let categories = db::categories_with_counts(&state.pool).await?;
-        let total = db::project_count(&state.pool).await?;
-        let active = categories.iter().find(|c| c.id == cat.id);
-        let desc = format!("{} built with Rust: {} projects.", cat.name, projects.len());
-        let body = v::home(v::HomeData {
-            projects: &projects,
-            categories: &categories,
-            total,
-            newsletter_enabled: state.cfg.newsletter.is_some(),
-            query: None,
-            active_category: active,
-        });
-        Ok(page(&state, &cat.name, &desc, &path, body))
-    })
-    .await
+    }
+    browse.category = slug;
+    if filtered {
+        return Ok(html_now(directory_page(&state, &browse, &path).await?));
+    }
+    cached_html(&state, &headers, path.clone(), || directory_page(&state, &browse, &path)).await
 }
 
 pub async fn project(

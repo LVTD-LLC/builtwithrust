@@ -3,6 +3,8 @@ use crate::db::{CategoryCount, Project};
 use maud::{Markup, html};
 
 pub struct HomeData<'a> {
+    pub browse: &'a crate::directory::Browse,
+    pub facets: &'a crate::directory::Facets,
     pub projects: &'a [Project],
     pub categories: &'a [CategoryCount],
     pub total: i64,
@@ -26,32 +28,106 @@ pub fn home(d: HomeData<'_>) -> Markup {
                     "A curated directory of " strong { (d.total) } " real products shipping Rust in production. "
                     "Find who uses it, what they built, and which crates they built it with."
                 }
-                form class="search" action="/" method="get" role="search" {
-                    input type="search" name="q" placeholder="Search by name, stack or description…" aria-label="Search projects" autocomplete="off";
-                    button class="btn btn-primary" type="submit" { "Search" }
-                }
+
             }
         }
         @if d.newsletter_enabled && d.query.is_none() && d.active_category.is_none() {
             (newsletter_form(None, ""))
         }
-        section class="listing" {
+        section class="listing" id="projects" {
             div class="listing-head" {
                 h2 { (heading) }
-                @if d.query.is_some() || d.active_category.is_some() {
-                    a class="muted" href="/" { "Clear filters" }
+                @if !d.browse.is_default() {
+                    a class="muted" href="/#projects" { "Clear filters" }
                 }
             }
-            @if !d.categories.is_empty() {
-                nav class="chips" aria-label="Categories" {
-                    a class={ "chip" @if d.active_category.is_none() { " active" } } href="/" { "All" }
-                    @for c in d.categories {
-                        a class={ "chip" @if d.active_category.is_some_and(|a| a.id == c.id) { " active" } }
-                          href={ "/categories/" (c.slug) } { (c.name) span class="count" { (c.count) } }
+            form class="browse" action="/#projects" method="get" role="search" aria-label="Filter projects" {
+                div class="browse-primary" {
+                    label class="browse-search" { "Search projects"
+                        input type="search" name="q" value=(d.browse.q) maxlength="100" placeholder="Name, stack or description…";
+                    }
+                    label { "Category"
+                        select name="category" {
+                            option value="" { "All categories" }
+                            @for c in d.categories {
+                                option value=(c.slug) selected[d.browse.category == c.slug] { (c.name) " (" (c.count) ")" }
+                            }
+                            @if !d.browse.category.is_empty() && d.active_category.is_none() {
+                                option value=(d.browse.category) selected { (d.browse.category) " (unavailable)" }
+                            }
+                        }
+                    }
+                    label { "Sort / discover"
+                        select name="sort" {
+                            @for (value, label) in [("", "Recommended"), ("stars", "Most starred"), ("newest", "Recently added"), ("name", "Name A–Z"), ("gems", "Hidden gems · under 1k stars")] {
+                                option value=(value) selected[d.browse.sort == value] { (label) }
+                            }
+                        }
                     }
                 }
+                details class="browse-more" open[!d.browse.stack.is_empty() || !d.browse.license.is_empty() || !d.browse.source.is_empty() || !d.browse.stars.is_empty() || !d.browse.verified.is_empty()] {
+                    summary { "Refine by stack, license and more" }
+                    div class="browse-secondary" {
+                        (facet_select("stack", "Crate / stack", "Any stack", &d.facets.stacks, &d.browse.stack))
+                        (facet_select("license", "License", "Any license", &d.facets.licenses, &d.browse.license))
+                        label { "Repository"
+                            select name="source" {
+                                @for (value, label) in [("", "Any project"), ("available", "Repository linked"), ("unlisted", "No repository listed")] {
+                                    option value=(value) selected[d.browse.source == value] { (label) }
+                                }
+                            }
+                        }
+                        label { "GitHub stars"
+                            select name="stars" {
+                                @for (value, label) in [("", "Any star count"), ("under-1000", "Under 1,000"), ("1000", "1,000 or more"), ("10000", "10,000 or more")] {
+                                    option value=(value) selected[d.browse.stars == value] { (label) }
+                                }
+                            }
+                        }
+                    }
+                    label class="browse-check" {
+                        input type="checkbox" name="verified" value="1" checked[d.browse.verified == "1"];
+                        "Verified Rust projects only"
+                    }
+                }
+                div class="browse-actions" {
+                    button class="btn btn-primary" type="submit" { "Apply filters" }
+                    span class="small muted" { "Bookmark or share the URL to save this view." }
+                }
+            }
+            p class="browse-results" role="status" {
+                strong { (d.projects.len()) } " of " (d.total) " projects"
+                @if d.browse.sort == "gems" {
+                    " · Known star counts below 1,000, smallest first."
+                } @else if d.browse.sort.is_empty() {
+                    " · Featured first, then most starred."
+                } @else if d.browse.sort == "newest" {
+                    " · Newest directory additions first."
+                }
+            }
+            @if !d.projects.is_empty() && (!d.browse.stars.is_empty() || d.browse.sort == "stars" || d.browse.sort == "gems") {
+                p class="small muted browse-note" { "Stars are catalog snapshots, not live counts. Unknown counts are excluded from star filters." }
+            }
+            @if d.projects.is_empty() && !d.browse.is_default() {
+                p class="browse-empty" { "No projects match this combination. Try removing a filter or " a href="/#projects" { "reset all filters" } "." }
             }
             (project_grid(d.projects))
+        }
+    }
+}
+
+fn facet_select(name: &str, label: &str, all: &str, values: &[String], selected: &str) -> Markup {
+    html! {
+        label { (label)
+            select name=(name) {
+                option value="" { (all) }
+                @for value in values {
+                    option value=(value) selected[value.eq_ignore_ascii_case(selected)] { (value) }
+                }
+                @if !selected.is_empty() && !values.iter().any(|v| v.eq_ignore_ascii_case(selected)) {
+                    option value=(selected) selected { (selected) " (unavailable)" }
+                }
+            }
         }
     }
 }

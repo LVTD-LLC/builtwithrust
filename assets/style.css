@@ -187,3 +187,33 @@ p { margin: 0; }
 .newsletter-fields input:focus { outline: 2px solid var(--accent); outline-offset: 2px; }
 @media (max-width: 720px) { .newsletter { grid-template-columns: 1fr; gap: 20px; padding: 20px; } }
 @media (max-width: 380px) { .newsletter-fields { flex-direction: column; } .newsletter-fields .btn { justify-content: center; } }
+
+/* Server-rendered directory controls: usable with keyboard and without JS. */
+#projects { scroll-margin-top: 76px; }
+.browse { padding: 20px; margin-bottom: 20px; border: 1px solid var(--border-strong); border-radius: var(--radius); background: var(--bg-soft); }
+.browse-primary, .browse-secondary { display: grid; grid-template-columns: 2fr 1fr 1.3fr; gap: 14px; }
+.browse-secondary { grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 14px 0; }
+.browse label { display: flex; flex-direction: column; gap: 6px; min-width: 0; font-size: 13px; font-weight: 600; }
+.browse input[type="search"], .browse select { width: 100%; min-width: 0; height: 42px; padding: 0 10px; border: 1px solid var(--border-strong); border-radius: 8px; background: var(--card); color: var(--fg); font: inherit; font-size: 14px; }
+.browse :is(input, select, button, summary):focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.browse-more { margin-top: 16px; }
+.browse-more summary { cursor: pointer; font-size: 14px; font-weight: 500; padding: 4px 0; }
+.browse .browse-check { flex-direction: row; align-items: center; gap: 8px; }
+.browse-check input { accent-color: var(--accent); width: 18px; height: 18px; }
+.browse-actions { display: flex; align-items: center; gap: 14px; margin-top: 18px; }
+.browse-actions .btn { height: 42px; }
+.browse-results { font-size: 14px; margin-bottom: 14px; color: var(--fg-muted); }
+.browse-results strong { color: var(--fg); }
+.browse-note { margin: -6px 0 18px; }
+.browse-empty { padding: 24px; text-align: center; background: var(--bg-soft); border-radius: var(--radius); }
+.browse-empty a { text-decoration: underline; }
+@media (max-width: 800px) {
+  .browse-primary, .browse-secondary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .browse-search { grid-column: 1 / -1; }
+}
+@media (max-width: 480px) {
+  .browse { padding: 14px; }
+  .browse-primary, .browse-secondary { grid-template-columns: minmax(0, 1fr); }
+  .browse-actions { align-items: flex-start; flex-direction: column; }
+  .listing-head { flex-wrap: wrap; }
+}

@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-08
+
+- Add combinable search, category, crate/stack, license, repository, verification, and star-count filters with shareable URLs and no JavaScript requirement.
+- Add most-starred, recently-added, alphabetical, and hidden-gems views; retain featured-first recommended ordering and existing featured-card contrast.
+- Add responsive controls, selected-state persistence, result counts and reset guidance; preserve cached default pages and bypass cache for arbitrary filter combinations.
+
 ## 2026-10-07
 
 - Add IndexNow ownership verification and automated hourly/post-deploy URL submissions, including updated and removed listings, with retry-safe snapshots. Preserve full sitemap modification timestamps for same-day edits.

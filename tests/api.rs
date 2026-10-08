@@ -324,3 +324,99 @@ async fn sitemap_preserves_full_modification_timestamp() {
     assert_eq!(status, StatusCode::OK);
     assert!(body.contains(&format!("<lastmod>{updated}</lastmod>")));
 }
+
+// Distinct fixtures make combined filters, unknown metadata, and explicit sorting observable.
+async fn browse_catalog(app: &Router) {
+    for (slug, name, stars, category, stack, license, repo, verified, published) in [
+        ("alpha", "Alpha", Some(9000), "tools", "tokio", "MIT", Some("https://github.com/x/a"), true, true),
+        ("beta", "beta", Some(20), "tools", "tokio", "MIT", Some("https://github.com/x/b"), true, true),
+        ("gamma", "Gamma", None, "tools", "axum", "Apache-2.0", None, false, true),
+        ("delta", "Delta", Some(0), "apps", "tokio", "MIT", Some("https://github.com/x/d"), true, true),
+        ("secret", "Secret", Some(1), "private", "private-stack", "private-license", None, true, false),
+    ] {
+        let payload = json!({ "slug": slug, "name": name, "tagline": "Rust catalog fixture", "website_url": "https://example.com", "stars": stars, "category": category, "stack": [stack], "license": license, "repo_url": repo, "verified": verified, "published": published });
+        let (status, _, _) = send(app, admin_json("POST", "/api/admin/projects", payload)).await;
+        assert_eq!(status, StatusCode::OK);
+    }
+    let (status, _, _) = send(app, admin_json("POST", "/api/admin/projects/gamma/feature", json!({"days":30}))).await;
+    assert_eq!(status, StatusCode::OK);
+}
+
+fn card_slugs(body: &str) -> Vec<&str> {
+    body.split("href=\"/projects/").skip(1).map(|s| s.split('"').next().unwrap()).collect()
+}
+
+#[tokio::test]
+async fn directory_filters_combine_and_preserve_selected_values() {
+    let (state, app, _dir) = app().await;
+    browse_catalog(&app).await;
+    let (_, _, default) = send(&app, get("/")).await;
+    assert_eq!(card_slugs(&default), ["gamma", "alpha", "beta", "delta"]);
+    assert!(!default.contains("private-stack"));
+    assert!(!default.contains("private-license"));
+    let cache_size = state.cache.len();
+    let path = "/?q=rust&category=tools&stack=tokio&license=MIT&source=available&verified=1&stars=under-1000&sort=name";
+    let (status, headers, body) = send(&app, get(path)).await;
+    assert_eq!(status, StatusCode::OK);
+    assert_eq!(card_slugs(&body), ["beta"]);
+    assert!(body.contains("value=\"tokio\" selected"));
+    assert!(body.contains("value=\"MIT\" selected"));
+    assert!(body.contains("value=\"1\" checked"));
+    assert!(body.contains("<strong>1</strong> of 4 projects"));
+    assert_eq!(headers[header::CACHE_CONTROL], "no-store");
+    assert_eq!(state.cache.len(), cache_size, "arbitrary combinations must not grow the cache");
+    let (_, _, body) = send(&app, get("/?source=unlisted")).await;
+    assert_eq!(card_slugs(&body), ["gamma"]);
+    let (_, _, body) = send(&app, get("/?stars=1000")).await;
+    assert_eq!(card_slugs(&body), ["alpha"]);
+    let (_, _, body) = send(&app, get("/?stars=10000")).await;
+    assert!(card_slugs(&body).is_empty());
+    assert!(body.contains("reset all filters"));
+    let (_, _, body) = send(&app, get("/?stack=to")).await;
+    assert!(card_slugs(&body).is_empty(), "stack filtering uses exact values, not substrings");
+    let (_, _, body) = send(&app, get("/?category=unknown")).await;
+    assert!(card_slugs(&body).is_empty());
+    assert!(body.contains("unknown (unavailable)"));
+}
+
+#[tokio::test]
+async fn directory_sorts_override_featured_and_category_cache_cannot_leak() {
+    let (state, app, _dir) = app().await;
+    browse_catalog(&app).await;
+    for (path, expected) in [
+        ("/?sort=stars", vec!["alpha", "beta", "delta", "gamma"]),
+        ("/?sort=name", vec!["alpha", "beta", "delta", "gamma"]),
+        ("/?sort=gems", vec!["delta", "beta"]),
+        ("/categories/tools", vec!["gamma", "alpha", "beta"]),
+        ("/categories/tools?q=rust&sort=gems&category=apps", vec!["beta"]),
+        ("/categories/tools?sort=stars", vec!["alpha", "beta", "gamma"]),
+        ("/categories/tools", vec!["gamma", "alpha", "beta"]),
+        ("/?sort=invalid&stars=garbage", vec!["gamma", "alpha", "beta", "delta"]),
+    ] {
+        let (status, _, body) = send(&app, get(path)).await;
+        assert_eq!(status, StatusCode::OK, "{path}");
+        assert_eq!(card_slugs(&body), expected, "{path}");
+    }
+    let mut projects = db::list_projects(&state.pool, None, None).await.unwrap();
+    for p in &mut projects {
+        p.created_at = if p.slug == "beta" { "2026-10-08T10:00:00Z" } else { "2026-01-01T00:00:00Z" }.into();
+    }
+    let browse = builtwithrust::directory::Browse { sort: "newest".into(), ..Default::default() };
+    browse.apply(&mut projects);
+    assert_eq!(projects.iter().map(|p| p.slug.as_str()).collect::<Vec<_>>(), ["beta", "alpha", "delta", "gamma"]);
+    let (status, _, _) = send(&app, get("/categories/missing?sort=stars")).await;
+    assert_eq!(status, StatusCode::NOT_FOUND);
+}
+
+#[tokio::test]
+async fn directory_search_is_literal_and_escaped() {
+    let (_state, app, _dir) = app().await;
+    browse_catalog(&app).await;
+    for path in ["/?q=%25", "/?q=%3Cscript%3E", "/?license=%22%3E%3Cscript%3E"] {
+        let (status, _, body) = send(&app, get(path)).await;
+        assert_eq!(status, StatusCode::OK);
+        assert!(card_slugs(&body).is_empty());
+        assert!(!body.contains("value=\"\"><script>"));
+        assert!(!body.contains("Results for “<script>”"));
+    }
+}
