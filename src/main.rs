@@ -4,8 +4,7 @@ use std::net::SocketAddr;
 use tokio::net::TcpListener;
 use tracing_subscriber::EnvFilter;
 
-#[tokio::main]
-async fn main() -> anyhow::Result<()> {
+fn main() -> anyhow::Result<()> {
     let _ = dotenvy::dotenv();
     tracing_subscriber::fmt()
         .with_env_filter(EnvFilter::try_from_default_env().unwrap_or_else(|_| "builtwithrust=info".into()))
@@ -14,8 +13,22 @@ async fn main() -> anyhow::Result<()> {
         .init();
 
     let cfg = Config::from_env();
+    let _sentry = builtwithrust::monitoring::init(&cfg);
+    let result = tokio::runtime::Builder::new_multi_thread().enable_all().build()?.block_on(run(cfg));
+    if let Err(ref error) = result {
+        sentry::integrations::anyhow::capture_anyhow(error);
+    }
+    result
+}
+
+async fn run(cfg: Config) -> anyhow::Result<()> {
     let mut args = std::env::args().skip(1);
     match args.next().as_deref() {
+        Some("sentry-smoke") => {
+            anyhow::ensure!(cfg.sentry_dsn.is_some(), "SENTRY_DSN is required");
+            builtwithrust::monitoring::smoke();
+            return Ok(());
+        }
         Some("seed") => {
             let path = args.next().unwrap_or_else(|| "seed/projects.json".into());
             let pool = db::connect(&cfg.database_url).await?;

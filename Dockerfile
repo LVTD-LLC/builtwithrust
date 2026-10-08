@@ -19,7 +19,8 @@ RUN apt-get update \
 WORKDIR /app
 COPY --from=builder /app/target/release/builtwithrust /usr/local/bin/builtwithrust
 COPY seed/projects.json seed/projects.json
-ENV BIND_ADDR=0.0.0.0:3000 \
+ENV RUST_LIB_BACKTRACE=1 \
+    BIND_ADDR=0.0.0.0:3000 \
     DATABASE_URL=sqlite:///data/builtwithrust.db?mode=rwc
 USER app
 EXPOSE 3000
