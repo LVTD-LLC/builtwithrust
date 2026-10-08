@@ -13,7 +13,8 @@ npm run build:monitoring`. Commit the generated asset; CI checks it matches sour
 - Errors: Rust handler failures and startup errors, plus unhandled browser errors.
   Rust's panic hook is installed, but release builds abort on panic: delivery on
   fatal process termination is best-effort, not guaranteed. No crash-dump collection. The release retains symbols and app line tables for
-  locally resolved error frames; no source upload or management token in CI.
+  locally resolved error frames; the image enables `RUST_LIB_BACKTRACE=1`
+  for origin stacks and the SDK attaches a fallback capture stack when needed; no source upload or management token in CI.
 - Tracing: 20% of server requests and browser page loads/operations. Server routes
   use matched templates (never raw paths); health/static/robots/sitemap are excluded.
   Incoming `sentry-trace` is supported; untrusted baggage is not collected. Browser

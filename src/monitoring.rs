@@ -39,6 +39,7 @@ pub fn init(cfg: &Config) -> Option<sentry::ClientInitGuard> {
             .environment(cfg.sentry_environment.clone())
             .release(RELEASE)
             .send_default_pii(false)
+            .attach_stacktrace(true)
             .traces_sample_rate(0.2)
             .before_send(scrub_event),
     ))
