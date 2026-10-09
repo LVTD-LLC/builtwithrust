@@ -3,6 +3,7 @@ use crate::db::{CategoryCount, Project};
 use maud::{Markup, html};
 
 pub struct HomeData<'a> {
+    pub developer_guide_site_url: Option<&'a str>,
     pub browse: &'a crate::directory::Browse,
     pub facets: &'a crate::directory::Facets,
     pub projects: &'a [Project],
@@ -44,6 +45,9 @@ pub fn home(d: HomeData<'_>) -> Markup {
                 @if !d.browse.is_default() {
                     a class="muted" href="/#projects" { "Clear filters" }
                 }
+            }
+            @if d.developer_guide_site_url.is_some() {
+                (super::developer_guide::intro())
             }
             @if d.query.is_none() && d.active_category.is_none() && d.browse.is_default() {
                 nav class="pills category-links" aria-label="Browse projects by category" {
@@ -123,6 +127,9 @@ pub fn home(d: HomeData<'_>) -> Markup {
                 p class="browse-empty" { "No projects match this combination. Try removing a filter or " a href="/#projects" { "reset all filters" } "." }
             }
             (project_grid(d.projects))
+        }
+        @if let Some(site_url) = d.developer_guide_site_url {
+            (super::developer_guide::body(site_url))
         }
     }
 }

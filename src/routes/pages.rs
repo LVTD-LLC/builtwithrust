@@ -36,7 +36,10 @@ async fn directory_page(
         state.posthog.capture("search", "server", serde_json::json!({ "query": browse.q, "results": projects.len() }));
     }
     let active = categories.iter().find(|c| c.slug == browse.category);
+    let show_guide = path == "/categories/developer-tools"
+        && *browse == crate::directory::Browse { category: "developer-tools".into(), ..Default::default() };
     let body = v::home(v::HomeData {
+        developer_guide_site_url: show_guide.then_some(state.cfg.site_url.as_str()),
         projects: &projects,
         categories: &categories,
         total,
