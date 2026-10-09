@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-09
+
+- Add an evidence-linked, task-based guide to the Developer Tools category, connecting Python tooling, editors, terminals and shells to catalog listings. Preserve existing titles, filters and cached rendering; include dated collection markup and responsive task comparison.
+
 ## 2026-10-08
 
 - Scrub the actual Sentry v11 streamed-span payload and verify serialized envelopes with the real SDK; retain safe release/environment metadata and remove raw URLs.

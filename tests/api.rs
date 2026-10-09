@@ -455,3 +455,38 @@ async fn directory_search_is_literal_and_escaped() {
         assert!(!body.contains("Results for “<script>”"));
     }
 }
+
+#[tokio::test]
+async fn developer_guide_is_cached_and_does_not_leak_into_filtered_views() {
+    let (_state, app, _dir) = app().await;
+    let (status, _, _) = send(&app, admin_json("POST", "/api/admin/projects", sample_project("guide-test"))).await;
+    assert_eq!(status, StatusCode::OK);
+    let path = "/categories/developer-tools";
+    let (_, headers, body) = send(&app, get(path)).await;
+    assert!(body.contains("id=\"choose-by-task\""));
+    assert!(body.contains("uv manages Python projects"));
+    assert_eq!(body.matches("<h1>").count(), 1);
+    let start =
+        body.find("<script type=\"application/ld+json\">").unwrap() + "<script type=\"application/ld+json\">".len();
+    let end = body[start..].find("</script>").unwrap() + start;
+    let schema: Value = serde_json::from_str(&body[start..end]).unwrap();
+    assert_eq!(schema["@type"], "CollectionPage");
+    assert_eq!(schema["url"], "http://test.local/categories/developer-tools");
+    assert_eq!(schema["hasPart"]["dateModified"], "2026-10-09");
+    let etag = headers.get(header::ETAG).unwrap();
+    let conditional = Request::get(path).header(header::IF_NONE_MATCH, etag).body(Body::empty()).unwrap();
+    assert_eq!(send(&app, conditional).await.0, StatusCode::NOT_MODIFIED);
+    for filtered in [
+        "/",
+        "/?category=developer-tools",
+        "/categories/developer-tools?q=missing",
+        "/categories/developer-tools?sort=name",
+    ] {
+        let (status, _, body) = send(&app, get(filtered)).await;
+        assert_eq!(status, StatusCode::OK);
+        assert!(!body.contains("id=\"choose-by-task\""), "{filtered}");
+    }
+    let (status, _, body) = send(&app, get(path)).await;
+    assert_eq!(status, StatusCode::OK);
+    assert!(body.contains("id=\"choose-by-task\""));
+}

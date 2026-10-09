@@ -1,5 +1,6 @@
 //! HTML templates (maud, compile-time checked). `layout` wraps every page.
 
+pub mod developer_guide;
 pub mod pages;
 pub mod project;
 
