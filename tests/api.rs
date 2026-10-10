@@ -490,3 +490,41 @@ async fn developer_guide_is_cached_and_does_not_leak_into_filtered_views() {
     assert_eq!(status, StatusCode::OK);
     assert!(body.contains("id=\"choose-by-task\""));
 }
+
+#[tokio::test]
+async fn python_guide_is_discoverable_canonical_and_cached() {
+    let (state, app, _dir) = app().await;
+    for slug in ["uv", "ruff", "polars", "unrelated-tool"] {
+        let (status, _, _) = send(&app, admin_json("POST", "/api/admin/projects", sample_project(slug))).await;
+        assert_eq!(status, StatusCode::OK);
+    }
+    let path = "/guides/rust-python-tools";
+    let (status, headers, body) = send(&app, get(path)).await;
+    assert_eq!(status, StatusCode::OK);
+    assert_eq!(body.matches("<h1>").count(), 1);
+    assert!(body.contains("<h1>Rust-powered Python tools: uv, Ruff and Polars</h1>"));
+    // SVG shapes must close explicitly or later labels become invisible children.
+    assert_eq!(body.matches("</rect>").count(), 3);
+    assert!(body.contains("rel=\"canonical\" href=\"http://test.local/guides/rust-python-tools\""));
+    assert!(state.cache.get(path).is_some());
+    let etag = headers.get(header::ETAG).unwrap();
+    let conditional = Request::get(path).header(header::IF_NONE_MATCH, etag).body(Body::empty()).unwrap();
+    let (status, _, body) = send(&app, conditional).await;
+    assert_eq!(status, StatusCode::NOT_MODIFIED);
+    assert!(body.is_empty());
+    let (_, _, sitemap) = send(&app, get("/sitemap.xml")).await;
+    assert!(
+        sitemap
+            .contains("<url><loc>http://test.local/guides/rust-python-tools</loc><lastmod>2026-10-10</lastmod></url>")
+    );
+    for inbound in ["/", "/projects/uv", "/projects/ruff", "/projects/polars"] {
+        let (status, _, body) = send(&app, get(inbound)).await;
+        assert_eq!(status, StatusCode::OK);
+        assert!(body.contains("href=\"/guides/rust-python-tools\""), "{inbound}");
+    }
+    for unrelated in ["/?q=uv", "/categories/developer-tools", "/projects/unrelated-tool"] {
+        let (status, _, body) = send(&app, get(unrelated)).await;
+        assert_eq!(status, StatusCode::OK);
+        assert!(!body.contains("href=\"/guides/rust-python-tools\""), "{unrelated}");
+    }
+}

@@ -65,6 +65,19 @@ pub async fn categories(State(state): State<SharedState>, headers: HeaderMap) ->
     .await
 }
 
+pub async fn python_guide(State(state): State<SharedState>, headers: HeaderMap) -> Result<Response, AppError> {
+    cached_html(&state, &headers, "/guides/rust-python-tools".into(), || async {
+        Ok(page(
+            &state,
+            "Rust Python tools: uv, Ruff and Polars",
+            "Choose Rust-powered Python tools by task: uv for projects and dependencies, Ruff for linting and formatting, and Polars for DataFrame workloads.",
+            "/guides/rust-python-tools",
+            crate::views::python_guide::body(&state.cfg.site_url),
+        ))
+    })
+    .await
+}
+
 pub async fn category(
     State(state): State<SharedState>,
     headers: HeaderMap,

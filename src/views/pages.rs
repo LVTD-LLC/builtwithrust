@@ -131,6 +131,13 @@ pub fn home(d: HomeData<'_>) -> Markup {
         @if let Some(site_url) = d.developer_guide_site_url {
             (super::developer_guide::body(site_url))
         }
+        @if d.browse.is_default() && d.active_category.is_none() {
+            section class="task-guide" aria-labelledby="python-guide-title" {
+                h2 id="python-guide-title" { "Rust-powered tools for Python workflows" }
+                p { "Find the right tool for project management, linting or DataFrame work." }
+                a href="/guides/rust-python-tools" { "Compare uv, Ruff and Polars by task →" }
+            }
+        }
     }
 }
 

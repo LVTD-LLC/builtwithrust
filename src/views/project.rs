@@ -53,6 +53,12 @@ pub fn show(p: &Project, related: &[Project]) -> Markup {
                     }
                 }
             }
+            @if matches!(p.slug.as_str(), "uv" | "ruff" | "polars") {
+                section class="task-guide" aria-labelledby="python-guide-title" {
+                    h2 id="python-guide-title" { "Where this fits in a Python workflow" }
+                    a href="/guides/rust-python-tools" { "Read the guide to Rust-powered Python tools: uv, Ruff and Polars →" }
+                }
+            }
             @if !related.is_empty() {
                 section class="related" {
                     h2 { "More like this" }

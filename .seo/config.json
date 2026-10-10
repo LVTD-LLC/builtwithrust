@@ -245,7 +245,8 @@
     "project_key": "46c1cce4-af16-4607-b425-e3d3ff413135",
     "dataset_key": "947eec4f-d1b9-4c33-8999-a5ba0f6b1973",
     "schema_version": 1,
-    "section_key": "35bcbfa1-d895-4d07-a64a-461da4df144d"
+    "section_key": "35bcbfa1-d895-4d07-a64a-461da4df144d",
+    "datasets": {}
   },
   "community": {
     "reddit_enabled": true,
