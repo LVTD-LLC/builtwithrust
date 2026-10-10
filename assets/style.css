@@ -238,3 +238,26 @@ p { margin: 0; }
   .task-table th:first-child { width: 25%; }
   .task-table td:nth-child(2) { width: 18%; }
 }
+
+/* Readable, server-rendered guides; no client-side content or layout dependency. */
+.python-guide { max-width: 820px; margin: 36px auto 64px; }
+.python-guide h1 { max-width: 760px; font-size: clamp(28px, 5vw, 42px); }
+.python-guide > * + * { margin-top: 20px; }
+.python-guide .guide-lead { font-size: 19px; line-height: 1.65; }
+.python-guide section { margin-top: 38px; scroll-margin-top: 90px; }
+.python-guide section > * + * { margin-top: 18px; }
+.python-guide h2 { font-size: 25px; }
+.python-guide h3 { font-size: 18px; margin-top: 26px; }
+.python-guide p, .python-guide li { line-height: 1.75; }
+.python-guide li + li { margin-top: 12px; }
+.python-guide p a, .python-guide td a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+.python-guide .task-table { min-width: 640px; }
+.python-guide .task-table th:first-child { width: auto; }
+.python-guide .task-table caption { text-align: left; padding: 0 0 12px; font-weight: 600; }
+.python-layers { max-width: 420px; margin-left: auto; margin-right: auto; }
+.python-layers svg { display: block; height: auto; }
+.python-layers figcaption { margin-top: 12px; text-align: center; }
+.python-guide .task-table-wrap:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+
+.python-table-hint { display: none; }
+@media (max-width: 600px) { .python-table-hint { display: block; } }

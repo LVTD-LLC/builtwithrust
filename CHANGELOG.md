@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-10
+
+- Add a cached, source-linked Rust-powered Python tools guide with uv/Ruff/Polars decision checks, an accessible layer diagram, structured data, and homepage/project discovery links. Preserve existing catalog filters and rendering performance.
+
 ## 2026-10-09
 
 - Add an evidence-linked, task-based guide to the Developer Tools category, connecting Python tooling, editors, terminals and shells to catalog listings. Preserve existing titles, filters and cached rendering; include dated collection markup and responsive task comparison.

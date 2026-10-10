@@ -206,10 +206,17 @@ pub async fn sitemap(State(state): State<SharedState>, headers: HeaderMap) -> Re
     for p in ["/", "/categories", "/submit", "/feature"] {
         xml.push_str(&format!("<url><loc>{base}{p}</loc></url>"));
     }
+    xml.push_str(&format!("<url><loc>{base}/guides/rust-python-tools</loc><lastmod>2026-10-10</lastmod></url>"));
     for c in db::categories_with_counts(&state.pool).await? {
         xml.push_str(&format!("<url><loc>{base}/categories/{}</loc></url>", c.slug));
     }
     for (slug, updated) in db::published_slugs(&state.pool).await? {
+        // These listings gained editorial guide links; preserve newer catalog edits.
+        let updated = if matches!(slug.as_str(), "uv" | "ruff" | "polars") {
+            updated.max("2026-10-10T00:00:00Z".to_string())
+        } else {
+            updated
+        };
         xml.push_str(&format!("<url><loc>{base}/projects/{slug}</loc><lastmod>{}</lastmod></url>", updated));
     }
     xml.push_str("</urlset>");

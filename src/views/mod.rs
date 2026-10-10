@@ -3,6 +3,7 @@
 pub mod developer_guide;
 pub mod pages;
 pub mod project;
+pub mod python_guide;
 
 use crate::AppState;
 use crate::db::Project;
@@ -37,7 +38,11 @@ pub fn layout(state: &AppState, page: Page<'_>) -> Markup {
                 meta property="og:title" content=(full_title);
                 meta property="og:description" content=(page.description);
                 meta property="og:url" content=(canonical);
-                meta property="og:type" content="website";
+                meta property="og:type" content=(if page.path == "/guides/rust-python-tools" { "article" } else { "website" });
+                @if page.path == "/guides/rust-python-tools" {
+                    meta property="og:image" content=(format!("{}{}", state.cfg.site_url, state.asset_url("python-tools.png")));
+                    meta property="og:image:alt" content="uv manages environments, Ruff checks source, Polars processes data. Choose one layer to change.";
+                }
                 meta name="twitter:card" content="summary";
                 @if let Some(dsn) = &state.cfg.sentry_dsn {
                     meta name="sentry-dsn" content=(dsn);
