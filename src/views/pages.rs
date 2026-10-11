@@ -137,6 +137,11 @@ pub fn home(d: HomeData<'_>) -> Markup {
                 p { "Find the right tool for project management, linting or DataFrame work." }
                 a href="/guides/rust-python-tools" { "Compare uv, Ruff and Polars by task →" }
             }
+            section class="task-guide" aria-labelledby="terminal-guide-title" {
+                h2 id="terminal-guide-title" { "Choose your next terminal improvement" }
+                p { "Compare a terminal emulator, shell, history tool and file manager by the job you want to improve." }
+                a href="/guides/rust-terminal-tools" { "Compare Alacritty, Nushell, Atuin and Yazi by task →" }
+            }
         }
     }
 }

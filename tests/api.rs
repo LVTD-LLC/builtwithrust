@@ -528,3 +528,48 @@ async fn python_guide_is_discoverable_canonical_and_cached() {
         assert!(!body.contains("href=\"/guides/rust-python-tools\""), "{unrelated}");
     }
 }
+
+#[tokio::test]
+async fn terminal_guide_is_discoverable_canonical_and_cached() {
+    let (state, app, _dir) = app().await;
+    for slug in ["alacritty", "nushell", "atuin", "yazi", "unrelated-tool"] {
+        let (status, _, _) = send(&app, admin_json("POST", "/api/admin/projects", sample_project(slug))).await;
+        assert_eq!(status, StatusCode::OK);
+    }
+    let path = "/guides/rust-terminal-tools";
+    let (status, headers, body) = send(&app, get(path)).await;
+    assert_eq!(status, StatusCode::OK);
+    assert_eq!(body.matches("<h1>").count(), 1);
+    assert!(body.contains("<article class=\"terminal-guide python-guide page\">"));
+    assert!(body.contains("rel=\"canonical\" href=\"http://test.local/guides/rust-terminal-tools\""));
+    assert!(body.contains("property=\"og:type\" content=\"article\""));
+    assert!(state.cache.get(path).is_some());
+    let etag = headers.get(header::ETAG).unwrap();
+    let conditional = Request::get(path).header(header::IF_NONE_MATCH, etag).body(Body::empty()).unwrap();
+    let (status, _, body) = send(&app, conditional).await;
+    assert_eq!(status, StatusCode::NOT_MODIFIED);
+    assert!(body.is_empty());
+    let (_, _, sitemap) = send(&app, get("/sitemap.xml")).await;
+    assert!(
+        sitemap.contains(
+            "<url><loc>http://test.local/guides/rust-terminal-tools</loc><lastmod>2026-10-11</lastmod></url>"
+        )
+    );
+    for inbound in ["/", "/projects/alacritty", "/projects/nushell", "/projects/atuin", "/projects/yazi"] {
+        let (status, _, body) = send(&app, get(inbound)).await;
+        assert_eq!(status, StatusCode::OK);
+        assert!(body.contains("href=\"/guides/rust-terminal-tools\""), "{inbound}");
+    }
+    for unrelated in [
+        "/?q=alacritty",
+        "/?sort=name",
+        "/?verified=1",
+        "/?category=developer-tools",
+        "/categories/developer-tools",
+        "/projects/unrelated-tool",
+    ] {
+        let (status, _, body) = send(&app, get(unrelated)).await;
+        assert_eq!(status, StatusCode::OK);
+        assert!(!body.contains("href=\"/guides/rust-terminal-tools\""), "{unrelated}");
+    }
+}

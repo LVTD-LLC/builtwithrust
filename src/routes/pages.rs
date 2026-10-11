@@ -78,6 +78,19 @@ pub async fn python_guide(State(state): State<SharedState>, headers: HeaderMap) 
     .await
 }
 
+pub async fn terminal_guide(State(state): State<SharedState>, headers: HeaderMap) -> Result<Response, AppError> {
+    cached_html(&state, &headers, "/guides/rust-terminal-tools".into(), || async {
+        Ok(page(
+            &state,
+            "Rust terminal tools: choose your next step",
+            "Compare Alacritty, Nushell, Atuin and Yazi by task: terminal emulator, shell, history and file manager. Choose one change and test it in your workflow.",
+            "/guides/rust-terminal-tools",
+            crate::views::terminal_guide::body(&state.cfg.site_url),
+        ))
+    })
+    .await
+}
+
 pub async fn category(
     State(state): State<SharedState>,
     headers: HeaderMap,

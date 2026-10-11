@@ -59,6 +59,12 @@ pub fn show(p: &Project, related: &[Project]) -> Markup {
                     a href="/guides/rust-python-tools" { "Read the guide to Rust-powered Python tools: uv, Ruff and Polars →" }
                 }
             }
+            @if matches!(p.slug.as_str(), "alacritty" | "nushell" | "atuin" | "yazi") {
+                section class="task-guide" aria-labelledby="terminal-guide-title" {
+                    h2 id="terminal-guide-title" { "Where this fits in a terminal workflow" }
+                    a href="/guides/rust-terminal-tools" { "Read the guide to Rust terminal tools: Alacritty, Nushell, Atuin and Yazi →" }
+                }
+            }
             @if !related.is_empty() {
                 section class="related" {
                     h2 { "More like this" }

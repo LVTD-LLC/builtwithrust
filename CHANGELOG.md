@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-11
+
+- Add a source-backed Rust terminal-tools guide with task selection, compatibility boundaries and reversible trials for Alacritty, Nushell, Atuin and Yazi; link it from the homepage and relevant listings.
+
 ## 2026-10-10
 
 - Add a cached, source-linked Rust-powered Python tools guide with uv/Ruff/Polars decision checks, an accessible layer diagram, structured data, and homepage/project discovery links. Preserve existing catalog filters and rendering performance.
