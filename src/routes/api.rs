@@ -207,6 +207,7 @@ pub async fn sitemap(State(state): State<SharedState>, headers: HeaderMap) -> Re
         xml.push_str(&format!("<url><loc>{base}{p}</loc></url>"));
     }
     xml.push_str(&format!("<url><loc>{base}/guides/rust-python-tools</loc><lastmod>2026-10-10</lastmod></url>"));
+    xml.push_str(&format!("<url><loc>{base}/guides/rust-terminal-tools</loc><lastmod>2026-10-11</lastmod></url>"));
     for c in db::categories_with_counts(&state.pool).await? {
         xml.push_str(&format!("<url><loc>{base}/categories/{}</loc></url>", c.slug));
     }
@@ -214,6 +215,8 @@ pub async fn sitemap(State(state): State<SharedState>, headers: HeaderMap) -> Re
         // These listings gained editorial guide links; preserve newer catalog edits.
         let updated = if matches!(slug.as_str(), "uv" | "ruff" | "polars") {
             updated.max("2026-10-10T00:00:00Z".to_string())
+        } else if matches!(slug.as_str(), "alacritty" | "nushell" | "atuin" | "yazi") {
+            updated.max("2026-10-11T00:00:00Z".to_string())
         } else {
             updated
         };
