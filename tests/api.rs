@@ -472,7 +472,12 @@ async fn developer_guide_is_cached_and_does_not_leak_into_filtered_views() {
     let schema: Value = serde_json::from_str(&body[start..end]).unwrap();
     assert_eq!(schema["@type"], "CollectionPage");
     assert_eq!(schema["url"], "http://test.local/categories/developer-tools");
-    assert_eq!(schema["hasPart"]["dateModified"], "2026-10-09");
+    assert_eq!(schema["hasPart"]["dateModified"], "2026-10-12");
+    assert!(body.contains("aria-label=\"Developer workflow guides\""));
+    for guide in ["/guides/rust-python-tools", "/guides/rust-terminal-tools"] {
+        assert!(body.contains(&format!("href=\"{guide}\"")));
+        assert_eq!(send(&app, get(guide)).await.0, StatusCode::OK);
+    }
     let etag = headers.get(header::ETAG).unwrap();
     let conditional = Request::get(path).header(header::IF_NONE_MATCH, etag).body(Body::empty()).unwrap();
     assert_eq!(send(&app, conditional).await.0, StatusCode::NOT_MODIFIED);
@@ -485,6 +490,7 @@ async fn developer_guide_is_cached_and_does_not_leak_into_filtered_views() {
         let (status, _, body) = send(&app, get(filtered)).await;
         assert_eq!(status, StatusCode::OK);
         assert!(!body.contains("id=\"choose-by-task\""), "{filtered}");
+        assert!(!body.contains("aria-label=\"Developer workflow guides\""), "{filtered}");
     }
     let (status, _, body) = send(&app, get(path)).await;
     assert_eq!(status, StatusCode::OK);

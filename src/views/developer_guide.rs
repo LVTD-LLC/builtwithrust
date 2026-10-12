@@ -1,7 +1,7 @@
 //! Editorial guidance rendered with the canonical category, never fetched at request time.
 use maud::{Markup, PreEscaped, html};
 
-pub const UPDATED: &str = "2026-10-09";
+pub const UPDATED: &str = "2026-10-12";
 
 pub fn intro() -> Markup {
     html! {
@@ -12,6 +12,16 @@ pub fn intro() -> Markup {
             "they are not all alternatives to each other."
         }
         p class="guide-jump" { a href="#choose-by-task" { "Find a tool for your task ↓" } }
+        nav class="workflow-guides" aria-label="Developer workflow guides" {
+            a href="/guides/rust-python-tools" {
+                strong { "Choose a Python workflow tool →" }
+                span { "uv, Ruff or Polars? Compare project management, code checks and DataFrame work." }
+            }
+            a href="/guides/rust-terminal-tools" {
+                strong { "Choose a terminal workflow tool →" }
+                span { "Alacritty, Nushell, Atuin or Yazi? Find one useful change, with a trial and an undo path." }
+            }
+        }
     }
 }
 
@@ -31,7 +41,7 @@ pub fn body(site_url: &str) -> Markup {
     html! {
         section class="task-guide" id="choose-by-task" aria-labelledby="task-guide-title" {
             h2 id="task-guide-title" { "Choose a Rust developer tool by task" }
-            p class="small muted" { "Built with Rust editorial guide · Updated " time datetime=(UPDATED) { "October 9, 2026" } }
+            p class="small muted" { "Built with Rust editorial guide · Updated " time datetime=(UPDATED) { "October 12, 2026" } }
             div class="task-table-wrap" {
                 table class="task-table" {
                     caption class="muted" { "Start with the task, then check the project's requirements before switching." }

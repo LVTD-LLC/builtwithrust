@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-12
+
+- Connect the canonical Developer Tools category to the Python and terminal selection guides with responsive, task-specific navigation. Keep filtered catalog views unchanged and preserve cached server rendering without new JavaScript or network calls.
+
 ## 2026-10-11
 
 - Add a source-backed Rust terminal-tools guide with task selection, compatibility boundaries and reversible trials for Alacritty, Nushell, Atuin and Yazi; link it from the homepage and relevant listings.
