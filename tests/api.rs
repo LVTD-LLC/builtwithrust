@@ -523,12 +523,12 @@ async fn python_guide_is_discoverable_canonical_and_cached() {
         sitemap
             .contains("<url><loc>http://test.local/guides/rust-python-tools</loc><lastmod>2026-10-10</lastmod></url>")
     );
-    for inbound in ["/", "/projects/uv", "/projects/ruff", "/projects/polars"] {
+    for inbound in ["/", "/categories/developer-tools", "/projects/uv", "/projects/ruff", "/projects/polars"] {
         let (status, _, body) = send(&app, get(inbound)).await;
         assert_eq!(status, StatusCode::OK);
         assert!(body.contains("href=\"/guides/rust-python-tools\""), "{inbound}");
     }
-    for unrelated in ["/?q=uv", "/categories/developer-tools", "/projects/unrelated-tool"] {
+    for unrelated in ["/?q=uv", "/categories/developer-tools?sort=name", "/projects/unrelated-tool"] {
         let (status, _, body) = send(&app, get(unrelated)).await;
         assert_eq!(status, StatusCode::OK);
         assert!(!body.contains("href=\"/guides/rust-python-tools\""), "{unrelated}");
@@ -561,7 +561,14 @@ async fn terminal_guide_is_discoverable_canonical_and_cached() {
             "<url><loc>http://test.local/guides/rust-terminal-tools</loc><lastmod>2026-10-11</lastmod></url>"
         )
     );
-    for inbound in ["/", "/projects/alacritty", "/projects/nushell", "/projects/atuin", "/projects/yazi"] {
+    for inbound in [
+        "/",
+        "/categories/developer-tools",
+        "/projects/alacritty",
+        "/projects/nushell",
+        "/projects/atuin",
+        "/projects/yazi",
+    ] {
         let (status, _, body) = send(&app, get(inbound)).await;
         assert_eq!(status, StatusCode::OK);
         assert!(body.contains("href=\"/guides/rust-terminal-tools\""), "{inbound}");
@@ -571,7 +578,7 @@ async fn terminal_guide_is_discoverable_canonical_and_cached() {
         "/?sort=name",
         "/?verified=1",
         "/?category=developer-tools",
-        "/categories/developer-tools",
+        "/categories/developer-tools?sort=name",
         "/projects/unrelated-tool",
     ] {
         let (status, _, body) = send(&app, get(unrelated)).await;
