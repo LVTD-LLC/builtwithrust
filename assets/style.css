@@ -222,6 +222,13 @@ p { margin: 0; }
 /* Task guidance belongs to the canonical category, not filtered result sets. */
 .guide-intro { max-width: 76ch; color: var(--fg-muted); margin: 0 0 10px; }
 .guide-jump { margin: 0 0 24px; }
+.workflow-guides { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 0 0 24px; }
+.workflow-guides a { display: block; padding: 16px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg-soft); }
+.workflow-guides strong { display: block; text-decoration: underline; text-underline-offset: 3px; }
+.workflow-guides span { display: block; color: var(--fg-muted); margin-top: 6px; font-size: 14px; }
+@media (max-width: 600px) {
+  .workflow-guides { grid-template-columns: minmax(0, 1fr); }
+}
 .task-guide { padding: 32px 0 48px; border-top: 1px solid var(--border); scroll-margin-top: 90px; }
 .task-guide h2 { margin: 0 0 8px; }
 .task-table-wrap { overflow-x: auto; margin: 20px 0; }

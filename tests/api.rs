@@ -472,7 +472,12 @@ async fn developer_guide_is_cached_and_does_not_leak_into_filtered_views() {
     let schema: Value = serde_json::from_str(&body[start..end]).unwrap();
     assert_eq!(schema["@type"], "CollectionPage");
     assert_eq!(schema["url"], "http://test.local/categories/developer-tools");
-    assert_eq!(schema["hasPart"]["dateModified"], "2026-10-09");
+    assert_eq!(schema["hasPart"]["dateModified"], "2026-10-12");
+    assert!(body.contains("aria-label=\"Developer workflow guides\""));
+    for guide in ["/guides/rust-python-tools", "/guides/rust-terminal-tools"] {
+        assert!(body.contains(&format!("href=\"{guide}\"")));
+        assert_eq!(send(&app, get(guide)).await.0, StatusCode::OK);
+    }
     let etag = headers.get(header::ETAG).unwrap();
     let conditional = Request::get(path).header(header::IF_NONE_MATCH, etag).body(Body::empty()).unwrap();
     assert_eq!(send(&app, conditional).await.0, StatusCode::NOT_MODIFIED);
@@ -485,6 +490,7 @@ async fn developer_guide_is_cached_and_does_not_leak_into_filtered_views() {
         let (status, _, body) = send(&app, get(filtered)).await;
         assert_eq!(status, StatusCode::OK);
         assert!(!body.contains("id=\"choose-by-task\""), "{filtered}");
+        assert!(!body.contains("aria-label=\"Developer workflow guides\""), "{filtered}");
     }
     let (status, _, body) = send(&app, get(path)).await;
     assert_eq!(status, StatusCode::OK);
@@ -517,12 +523,12 @@ async fn python_guide_is_discoverable_canonical_and_cached() {
         sitemap
             .contains("<url><loc>http://test.local/guides/rust-python-tools</loc><lastmod>2026-10-10</lastmod></url>")
     );
-    for inbound in ["/", "/projects/uv", "/projects/ruff", "/projects/polars"] {
+    for inbound in ["/", "/categories/developer-tools", "/projects/uv", "/projects/ruff", "/projects/polars"] {
         let (status, _, body) = send(&app, get(inbound)).await;
         assert_eq!(status, StatusCode::OK);
         assert!(body.contains("href=\"/guides/rust-python-tools\""), "{inbound}");
     }
-    for unrelated in ["/?q=uv", "/categories/developer-tools", "/projects/unrelated-tool"] {
+    for unrelated in ["/?q=uv", "/categories/developer-tools?sort=name", "/projects/unrelated-tool"] {
         let (status, _, body) = send(&app, get(unrelated)).await;
         assert_eq!(status, StatusCode::OK);
         assert!(!body.contains("href=\"/guides/rust-python-tools\""), "{unrelated}");
@@ -555,7 +561,14 @@ async fn terminal_guide_is_discoverable_canonical_and_cached() {
             "<url><loc>http://test.local/guides/rust-terminal-tools</loc><lastmod>2026-10-11</lastmod></url>"
         )
     );
-    for inbound in ["/", "/projects/alacritty", "/projects/nushell", "/projects/atuin", "/projects/yazi"] {
+    for inbound in [
+        "/",
+        "/categories/developer-tools",
+        "/projects/alacritty",
+        "/projects/nushell",
+        "/projects/atuin",
+        "/projects/yazi",
+    ] {
         let (status, _, body) = send(&app, get(inbound)).await;
         assert_eq!(status, StatusCode::OK);
         assert!(body.contains("href=\"/guides/rust-terminal-tools\""), "{inbound}");
@@ -565,7 +578,7 @@ async fn terminal_guide_is_discoverable_canonical_and_cached() {
         "/?sort=name",
         "/?verified=1",
         "/?category=developer-tools",
-        "/categories/developer-tools",
+        "/categories/developer-tools?sort=name",
         "/projects/unrelated-tool",
     ] {
         let (status, _, body) = send(&app, get(unrelated)).await;
