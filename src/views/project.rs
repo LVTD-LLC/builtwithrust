@@ -65,6 +65,12 @@ pub fn show(p: &Project, related: &[Project]) -> Markup {
                     a href="/guides/rust-terminal-tools" { "Read the guide to Rust terminal tools: Alacritty, Nushell, Atuin and Yazi →" }
                 }
             }
+            @if matches!(p.slug.as_str(), "zed" | "lapce") {
+                section class="task-guide" aria-labelledby="editor-guide-title" {
+                    h2 id="editor-guide-title" { "Is this editor a fit for your workflow?" }
+                    a href="/guides/zed-vs-lapce" { "Compare Zed and Lapce by language support, remote work and collaboration →" }
+                }
+            }
             @if !related.is_empty() {
                 section class="related" {
                     h2 { "More like this" }
