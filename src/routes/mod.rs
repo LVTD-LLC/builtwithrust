@@ -37,6 +37,7 @@ pub fn router(state: SharedState) -> Router {
         .route("/projects/{slug}", get(pages::project))
         .route("/guides/rust-python-tools", get(pages::python_guide))
         .route("/guides/rust-terminal-tools", get(pages::terminal_guide))
+        .route("/guides/zed-vs-lapce", get(pages::editor_guide))
         .route("/submit", get(pages::submit).post(api::submit))
         .route("/submit/thanks", get(api::submit_thanks))
         .route("/feature", get(pages::feature))

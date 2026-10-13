@@ -91,6 +91,19 @@ pub async fn terminal_guide(State(state): State<SharedState>, headers: HeaderMap
     .await
 }
 
+pub async fn editor_guide(State(state): State<SharedState>, headers: HeaderMap) -> Result<Response, AppError> {
+    cached_html(&state, &headers, "/guides/zed-vs-lapce".into(), || async {
+        Ok(page(
+            &state,
+            "Zed vs Lapce: choose by workflow",
+            "Compare Zed and Lapce by language support, remote development and collaboration. Use a reversible trial to choose a Rust-built editor.",
+            "/guides/zed-vs-lapce",
+            crate::views::editor_guide::body(&state.cfg.site_url),
+        ))
+    })
+    .await
+}
+
 pub async fn category(
     State(state): State<SharedState>,
     headers: HeaderMap,

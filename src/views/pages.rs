@@ -142,6 +142,11 @@ pub fn home(d: HomeData<'_>) -> Markup {
                 p { "Compare a terminal emulator, shell, history tool and file manager by the job you want to improve." }
                 a href="/guides/rust-terminal-tools" { "Compare Alacritty, Nushell, Atuin and Yazi by task →" }
             }
+            section class="task-guide" aria-labelledby="editor-guide-title" {
+                h2 id="editor-guide-title" { "Choose a Rust-built editor for your workflow" }
+                p { "Compare language support, remote development and collaboration before changing your everyday editor." }
+                a href="/guides/zed-vs-lapce" { "Compare Zed and Lapce with a reversible trial →" }
+            }
         }
     }
 }

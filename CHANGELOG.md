@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-10-13
+
+- Add a source-backed Zed/Lapce workflow comparison with language, extension and remote-development acceptance checks, a reversible migration worksheet, and catalog discovery links.
+- Serve the guide through the existing compressed page cache; include dated sitemap entries, article metadata, a social preview and discoverability/cache regression coverage.
+
 ## 2026-10-12
 
 - Connect the canonical Developer Tools category to the Python and terminal selection guides with responsive, task-specific navigation. Keep filtered catalog views unchanged and preserve cached server rendering without new JavaScript or network calls.

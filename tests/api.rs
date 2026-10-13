@@ -586,3 +586,67 @@ async fn terminal_guide_is_discoverable_canonical_and_cached() {
         assert!(!body.contains("href=\"/guides/rust-terminal-tools\""), "{unrelated}");
     }
 }
+
+#[tokio::test]
+async fn editor_guide_is_discoverable_canonical_and_cached_without_filter_leaks() {
+    let (state, app, _dir) = app().await;
+    for slug in ["zed", "lapce", "unrelated-tool"] {
+        let (status, _, _) = send(&app, admin_json("POST", "/api/admin/projects", sample_project(slug))).await;
+        assert_eq!(status, StatusCode::OK);
+    }
+    let path = "/guides/zed-vs-lapce";
+    let canonical = "http://test.local/guides/zed-vs-lapce";
+    let (status, headers, body) = send(&app, get(path)).await;
+    assert_eq!(status, StatusCode::OK);
+    assert_eq!(body.matches("<h1>").count(), 1);
+    assert!(body.contains("<h1>Zed vs Lapce: choose by workflow</h1>"));
+    assert!(body.contains(&format!("rel=\"canonical\" href=\"{canonical}\"")));
+    assert!(body.contains("property=\"og:type\" content=\"article\""));
+    let image_path = state.asset_url("editor-choice.png");
+    assert!(body.contains(&format!("property=\"og:image\" content=\"http://test.local{image_path}\"")));
+    let (image_status, image_headers, _) = send(&app, get(&image_path)).await;
+    assert_eq!(image_status, StatusCode::OK);
+    assert_eq!(image_headers.get(header::CONTENT_TYPE).unwrap(), "image/png");
+    let start =
+        body.find("<script type=\"application/ld+json\">").unwrap() + "<script type=\"application/ld+json\">".len();
+    let end = body[start..].find("</script>").unwrap() + start;
+    let schema: Value = serde_json::from_str(&body[start..end]).unwrap();
+    let article = schema["@graph"].as_array().unwrap().iter().find(|node| node["@type"] == "Article").unwrap();
+    assert_eq!(article["url"], canonical);
+    assert_eq!(article["headline"], "Zed vs Lapce: choose by workflow");
+    assert_eq!(article["datePublished"], "2026-10-13");
+    assert_eq!(article["dateModified"], "2026-10-13");
+    for slug in ["zed", "lapce"] {
+        assert!(body.contains(&format!("href=\"/projects/{slug}\"")));
+        assert_eq!(send(&app, get(&format!("/projects/{slug}"))).await.0, StatusCode::OK);
+    }
+    assert!(state.cache.get(path).is_some());
+    let etag = headers.get(header::ETAG).unwrap();
+    let conditional = Request::get(path).header(header::IF_NONE_MATCH, etag).body(Body::empty()).unwrap();
+    let (status, _, body) = send(&app, conditional).await;
+    assert_eq!(status, StatusCode::NOT_MODIFIED);
+    assert!(body.is_empty());
+    let (_, _, sitemap) = send(&app, get("/sitemap.xml")).await;
+    assert!(sitemap.contains(&format!("<url><loc>{canonical}</loc><lastmod>2026-10-13</lastmod></url>")));
+    assert!(sitemap.contains("<url><loc>http://test.local/</loc></url>"));
+    for inbound in ["/", "/projects/zed", "/projects/lapce"] {
+        let (status, _, body) = send(&app, get(inbound)).await;
+        assert_eq!(status, StatusCode::OK);
+        assert!(body.contains(&format!("href=\"{path}\"")), "{inbound}");
+    }
+    for unrelated in [
+        "/?q=zed",
+        "/?sort=name",
+        "/?verified=1",
+        "/?category=developer-tools",
+        "/categories/developer-tools",
+        "/categories/developer-tools?sort=name",
+        "/projects/unrelated-tool",
+    ] {
+        let (status, _, body) = send(&app, get(unrelated)).await;
+        assert_eq!(status, StatusCode::OK);
+        assert!(!body.contains(&format!("href=\"{path}\"")), "{unrelated}");
+    }
+    // Warm filtered views must not displace the cached default homepage card.
+    assert!(send(&app, get("/")).await.2.contains(&format!("href=\"{path}\"")));
+}
