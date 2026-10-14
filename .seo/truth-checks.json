@@ -1,1 +1,17 @@
-[]
+[
+  {
+    "claim": "Fish implementation port is not an entire-codebase rewrite; fish-lsp is TypeScript",
+    "paths": [
+      "seed/projects.json",
+      "src/views/project.rs"
+    ],
+    "must_not_match": [
+      "entire codebase was ported",
+      "fish-lsp is (?:written|built) in Rust"
+    ],
+    "must_match": [
+      "shell implementation was ported from C\\+\\+ to Rust",
+      "TypeScript language server"
+    ]
+  }
+]

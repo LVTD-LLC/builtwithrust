@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-10-14
+
+- Correct Fish’s Rust-port scope in the catalog with a guarded, reversible data migration and matching seed copy.
+- Add a source-linked Fish / fish-lsp / rust-analyzer chooser and reversible shell-trial guidance to the existing listing; preserve cached rendering without new JavaScript or network calls.
+
 ## 2026-10-13
 
 - Add a source-backed Zed/Lapce workflow comparison with language, extension and remote-development acceptance checks, a reversible migration worksheet, and catalog discovery links.
