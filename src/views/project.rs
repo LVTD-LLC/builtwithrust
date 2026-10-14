@@ -53,6 +53,42 @@ pub fn show(p: &Project, related: &[Project]) -> Markup {
                     }
                 }
             }
+            @if p.slug == "fish" {
+                section class="task-guide prose fish-context" aria-labelledby="fish-tools-title" {
+                    h2 id="fish-tools-title" { "Fish, fish-lsp or rust-analyzer?" }
+                    p {
+                        "The shell and the language server are different projects. Fish 4.0 moved the shell’s C++ implementation to Rust; "
+                        "that does not make its scripts, supporting tools or editor integrations Rust programs. "
+                        a href="https://fishshell.com/blog/rustport/" { "Read the Fish team’s account of the port." }
+                    }
+                    ul {
+                        li {
+                            strong { "Want an interactive shell? " }
+                            "Use Fish for running commands, with built-in autosuggestions and tab completion. "
+                            "After installing it, try a session by running " code { "fish" } "; use " code { "exit" }
+                            " to return to your previous shell. You do not need to change your login shell for this trial. "
+                            a href="https://fishshell.com/docs/current/index.html#starting-and-exiting" { "Fish setup instructions" }
+                        }
+                        li {
+                            strong { "Editing .fish scripts? " }
+                            a href="https://www.fish-lsp.dev/docs/introduction" { "fish-lsp" }
+                            " adds editor features for the Fish language. It is a separate "
+                            a href="https://www.fish-lsp.dev/docs/how-it-works" { "TypeScript language server" }
+                            ", not the Rust rewrite of the shell. Follow its client-specific setup; Fish’s interactive completions are a different feature."
+                        }
+                        li {
+                            strong { "Editing Rust source files? " }
+                            a href="https://rust-analyzer.github.io/" { "rust-analyzer" }
+                            " provides language-server support for Rust code. Choose the server for the language you are editing, not the language your shell was built with."
+                        }
+                    }
+                    p {
+                        "Choosing the rest of your command-line setup? "
+                        a href="/guides/rust-terminal-tools" { "Compare terminal, shell, history and file-manager roles →" }
+                    }
+                    p class="muted" { "Sources checked " time datetime="2026-10-14" { "October 14, 2026" } "." }
+                }
+            }
             @if matches!(p.slug.as_str(), "uv" | "ruff" | "polars") {
                 section class="task-guide" aria-labelledby="python-guide-title" {
                     h2 id="python-guide-title" { "Where this fits in a Python workflow" }

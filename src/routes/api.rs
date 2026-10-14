@@ -219,6 +219,8 @@ pub async fn sitemap(State(state): State<SharedState>, headers: HeaderMap) -> Re
             updated.max("2026-10-10T00:00:00Z".to_string())
         } else if matches!(slug.as_str(), "alacritty" | "nushell" | "atuin" | "yazi") {
             updated.max("2026-10-11T00:00:00Z".to_string())
+        } else if slug == "fish" {
+            updated.max("2026-10-14T00:00:00Z".to_string())
         } else if matches!(slug.as_str(), "zed" | "lapce") {
             updated.max("2026-10-13T00:00:00Z".to_string())
         } else {

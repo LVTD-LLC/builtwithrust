@@ -76,6 +76,35 @@ fn sample_project(slug: &str) -> Value {
 }
 
 #[tokio::test]
+async fn fish_listing_distinguishes_shell_and_language_servers_without_leaking_to_other_projects() {
+    let (_state, app, _dir) = app().await;
+    let seed: Vec<Value> = serde_json::from_str(include_str!("../seed/projects.json")).unwrap();
+    let fish = seed.into_iter().find(|p| p["slug"] == "fish").unwrap();
+    let (status, _, _) = send(&app, admin_json("POST", "/api/admin/projects", fish)).await;
+    assert_eq!(status, StatusCode::OK);
+    let (status, headers, body) = send(&app, get("/projects/fish")).await;
+    assert_eq!(status, StatusCode::OK);
+    assert!(body.contains("shell implementation was ported from C++ to Rust"));
+    assert!(!body.contains("entire codebase was ported"));
+    assert!(body.contains("Fish, fish-lsp or rust-analyzer?"));
+    assert!(body.contains("TypeScript language server"));
+    assert!(body.contains("href=\"/guides/rust-terminal-tools\""));
+    assert!(body.contains("href=\"http://test.local/projects/fish\""));
+    assert_eq!(body.matches("<h1").count(), 1);
+    let conditional = Request::get("/projects/fish")
+        .header(header::IF_NONE_MATCH, &headers[header::ETAG])
+        .body(Body::empty())
+        .unwrap();
+    assert_eq!(send(&app, conditional).await.0, StatusCode::NOT_MODIFIED);
+    send(&app, admin_json("POST", "/api/admin/projects", sample_project("unrelated"))).await;
+    let (_, _, body) = send(&app, get("/projects/unrelated")).await;
+    assert!(!body.contains("fish-tools-title"));
+    let (_, _, sitemap) = send(&app, get("/sitemap.xml")).await;
+    let modified = sitemap.split("/projects/fish</loc><lastmod>").nth(1).unwrap().split('<').next().unwrap();
+    assert!(modified >= "2026-10-14T00:00:00Z");
+}
+
+#[tokio::test]
 async fn public_pages_render() {
     let (_state, app, _dir) = app().await;
     for path in ["/", "/categories", "/submit", "/feature", "/sitemap.xml", "/robots.txt", "/healthz"] {
