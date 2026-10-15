@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-10-15
+
+- Correct Warp’s outdated proprietary-license label with a guarded, reversible catalog migration: AGPL v3 for the client repository outside its MIT-licensed UI crates.
+- Clarify Warp terminal versus the separate Rust web framework, link to upstream licensing and the terminal-tools guide, and preserve cached rendering without new JavaScript or request-time network calls.
+
 ## 2026-10-14
 
 - Correct Fish’s Rust-port scope in the catalog with a guarded, reversible data migration and matching seed copy.

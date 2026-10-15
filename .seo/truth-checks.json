@@ -13,5 +13,20 @@
       "shell implementation was ported from C\\+\\+ to Rust",
       "TypeScript language server"
     ]
+  },
+  {
+    "claim": "Warp client repository license is AGPL v3 with MIT UI crates; separate warp framework",
+    "paths": [
+      "seed/projects.json",
+      "src/views/project.rs"
+    ],
+    "must_not_match": [
+      "\"slug\":\"warp\"[^\\n]*\"license\":\"Proprietary\""
+    ],
+    "must_match": [
+      "AGPL-3.0 \\(client\\); MIT \\(UI crates\\)",
+      "Warp terminal or the warp web framework\\?",
+      "hosted-service terms"
+    ]
   }
 ]

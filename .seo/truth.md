@@ -1,5 +1,9 @@
 # Public claim guidance
 
+## Warp client licensing and identity — verified 2026-10-15
+
+The official warpdotdev/warp README at revision `53f8a71efb46ea02958802c5a25a9b5b57cfdda3` says its `warpui_core` and `warpui` crates use MIT; the remaining repository code uses AGPL v3. Source: https://github.com/warpdotdev/warp/blob/53f8a71efb46ea02958802c5a25a9b5b57cfdda3/README.md#licensing . The catalog license label must describe this split, not imply proprietary client code or a choice of either license for every file. This does not establish hosted-service pricing or licenses. Warp's terminal/development environment is separate from the Rust HTTP framework documented at https://docs.rs/warp/latest/warp/ . Keep the existing listing URL/title and stored star snapshot.
+
 Verified from source on 2026-10-08: Axum/Maud SSR, SQLite catalog, precompressed page cache, optional Listmonk double opt-in, reviewed project submissions. GitHub stars are catalog snapshots, not live counts. A directory listing does not establish that every component uses Rust. Featured placement is not a quality ranking. Do not invent pricing, source licenses or verification evidence. Re-read src/config.rs, src/routes and AGENTS.md when capabilities change.
 
 ## Fish and its editor tooling — verified 2026-10-14
