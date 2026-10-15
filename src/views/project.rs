@@ -53,6 +53,27 @@ pub fn show(p: &Project, related: &[Project]) -> Markup {
                     }
                 }
             }
+            @if p.slug == "warp" {
+                section class="task-guide prose warp-context" aria-labelledby="warp-tools-title" {
+                    h2 id="warp-tools-title" { "Warp terminal or the warp web framework?" }
+                    p {
+                        "This listing is for Warp’s terminal and development environment. "
+                        "If you want to build an HTTP server in Rust, the separate "
+                        a href="https://docs.rs/warp/latest/warp/" { "warp web framework" }
+                        " is the project to look at. Sharing a name does not make them the same tool."
+                    }
+                    p {
+                        "For the terminal client’s licensing boundaries, read the "
+                        a href="https://github.com/warpdotdev/warp#licensing" { "official repository’s licensing section" }
+                        ". Do not treat the client’s open-source licenses as a promise that every hosted feature is free or open source."
+                    }
+                    p {
+                        "Choosing a command-line setup? "
+                        a href="/guides/rust-terminal-tools" { "Compare terminal, shell, history and file-manager roles →" }
+                    }
+                    p class="muted" { "Sources checked " time datetime="2026-10-15" { "October 15, 2026" } "." }
+                }
+            }
             @if p.slug == "fish" {
                 section class="task-guide prose fish-context" aria-labelledby="fish-tools-title" {
                     h2 id="fish-tools-title" { "Fish, fish-lsp or rust-analyzer?" }

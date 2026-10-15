@@ -105,6 +105,33 @@ async fn fish_listing_distinguishes_shell_and_language_servers_without_leaking_t
 }
 
 #[tokio::test]
+async fn warp_listing_scopes_licenses_and_distinguishes_framework_with_cached_rendering() {
+    let (_state, app, _dir) = app().await;
+    let seed: Vec<Value> = serde_json::from_str(include_str!("../seed/projects.json")).unwrap();
+    let warp = seed.into_iter().find(|p| p["slug"] == "warp").unwrap();
+    assert_eq!(send(&app, admin_json("POST", "/api/admin/projects", warp)).await.0, StatusCode::OK);
+    let (status, headers, body) = send(&app, get("/projects/warp")).await;
+    assert_eq!(status, StatusCode::OK);
+    assert!(body.contains("AGPL-3.0 (client); MIT (UI crates)"));
+    assert!(!body.contains("Proprietary"));
+    assert!(body.contains("hosted-service terms"));
+    assert!(body.contains("Warp terminal or the warp web framework?"));
+    assert!(body.contains("href=\"https://docs.rs/warp/latest/warp/\""));
+    assert!(body.contains("href=\"https://github.com/warpdotdev/warp#licensing\""));
+    assert!(body.contains("href=\"/guides/rust-terminal-tools\""));
+    assert!(body.contains("href=\"http://test.local/projects/warp\""));
+    assert_eq!(body.matches("<h1").count(), 1);
+    let conditional = Request::get("/projects/warp")
+        .header(header::IF_NONE_MATCH, &headers[header::ETAG])
+        .body(Body::empty())
+        .unwrap();
+    assert_eq!(send(&app, conditional).await.0, StatusCode::NOT_MODIFIED);
+    send(&app, admin_json("POST", "/api/admin/projects", sample_project("unrelated"))).await;
+    let (_, _, body) = send(&app, get("/projects/unrelated")).await;
+    assert!(!body.contains("warp-tools-title"));
+}
+
+#[tokio::test]
 async fn public_pages_render() {
     let (_state, app, _dir) = app().await;
     for path in ["/", "/categories", "/submit", "/feature", "/sitemap.xml", "/robots.txt", "/healthz"] {

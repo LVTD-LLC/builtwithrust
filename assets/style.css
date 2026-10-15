@@ -231,9 +231,9 @@ p { margin: 0; }
 }
 .task-guide { padding: 32px 0 48px; border-top: 1px solid var(--border); scroll-margin-top: 90px; }
 .task-guide h2 { margin: 0 0 8px; }
-.fish-context > * { max-width: 80ch; }
+.fish-context > *, .warp-context > * { max-width: 80ch; }
 .fish-context li + li { margin-top: 14px; }
-.fish-context a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+.fish-context a, .warp-context a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
 .task-table-wrap { overflow-x: auto; margin: 20px 0; }
 .task-table { width: 100%; border-collapse: collapse; text-align: left; }
 .task-table caption { text-align: left; margin-bottom: 12px; }
