@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-16
+
+- Connect the Data & AI category to qsv, Polars and the Python-tools guide with a source-backed workflow chooser. Preserve filtered views, existing titles and compressed server-rendered caching without adding JavaScript or request-time network calls.
+
 ## 2026-10-15
 
 - Correct Warp’s outdated proprietary-license label with a guarded, reversible catalog migration: AGPL v3 for the client repository outside its MIT-licensed UI crates.

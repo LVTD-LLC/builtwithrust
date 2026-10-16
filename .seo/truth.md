@@ -1,5 +1,9 @@
 # Public claim guidance
 
+## Data workflow discovery — verified 2026-10-16
+
+qsv is a command-line toolkit for tabular data; available commands depend on its build/features (https://github.com/dathere/qsv#installation). Its optional `sqlp` command uses Polars, so do not frame qsv and Polars as entirely separate competing engines (https://github.com/dathere/qsv/blob/master/docs/help/sqlp.md). Polars provides DataFrame expressions and lazy queries in Python and Rust (https://docs.pola.rs/user-guide/getting-started/ and https://docs.pola.rs/user-guide/lazy/using/). The Data & AI category owns a short workflow chooser; the existing Python-tools guide owns Polars's place alongside uv and Ruff. No benchmark advantage, universal build support or hands-on results are claimed.
+
 ## Warp client licensing and identity — verified 2026-10-15
 
 The official warpdotdev/warp README at revision `53f8a71efb46ea02958802c5a25a9b5b57cfdda3` says its `warpui_core` and `warpui` crates use MIT; the remaining repository code uses AGPL v3. Source: https://github.com/warpdotdev/warp/blob/53f8a71efb46ea02958802c5a25a9b5b57cfdda3/README.md#licensing . The catalog license label must describe this split, not imply proprietary client code or a choice of either license for every file. This does not establish hosted-service pricing or licenses. Warp's terminal/development environment is separate from the Rust HTTP framework documented at https://docs.rs/warp/latest/warp/ . Keep the existing listing URL/title and stored star snapshot.

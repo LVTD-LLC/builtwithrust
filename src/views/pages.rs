@@ -4,6 +4,7 @@ use maud::{Markup, html};
 
 pub struct HomeData<'a> {
     pub developer_guide_site_url: Option<&'a str>,
+    pub data_guide_site_url: Option<&'a str>,
     pub browse: &'a crate::directory::Browse,
     pub facets: &'a crate::directory::Facets,
     pub projects: &'a [Project],
@@ -48,6 +49,9 @@ pub fn home(d: HomeData<'_>) -> Markup {
             }
             @if d.developer_guide_site_url.is_some() {
                 (super::developer_guide::intro())
+            }
+            @if let Some(site_url) = d.data_guide_site_url {
+                (data_workflow_links(site_url))
             }
             @if d.query.is_none() && d.active_category.is_none() && d.browse.is_default() {
                 nav class="pills category-links" aria-label="Browse projects by category" {
@@ -148,6 +152,51 @@ pub fn home(d: HomeData<'_>) -> Markup {
                 a href="/guides/zed-vs-lapce" { "Compare Zed and Lapce with a reversible trial →" }
             }
         }
+    }
+}
+
+fn data_workflow_links(site_url: &str) -> Markup {
+    let schema = serde_json::json!({
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": "Data & AI built with Rust",
+        "url": format!("{site_url}/categories/data-and-ai"),
+        "hasPart": {
+            "@type": "WebPageElement",
+            "name": "Choose a data workflow",
+            "dateModified": "2026-10-16",
+            "url": format!("{site_url}/categories/data-and-ai#data-workflows")
+        }
+    });
+    html! {
+        section id="data-workflows" aria-labelledby="data-workflows-title" {
+            h2 id="data-workflows-title" { "Choose a data workflow" }
+            p class="guide-intro" {
+                "Start with where you want to work: a shell pipeline or a DataFrame program. "
+                "qsv and Polars overlap—qsv’s optional SQL commands use Polars—so this is a workflow choice, not a ranking of competing engines."
+            }
+            nav class="workflow-guides" aria-label="Data workflow projects" {
+                a href="/projects/qsv" {
+                    strong { "Clean tabular files in the terminal →" }
+                    span { "Explore qsv for selecting columns, filtering rows, joining files and checking data in command-line pipelines." }
+                }
+                a href="/projects/polars" {
+                    strong { "Build a DataFrame workflow →" }
+                    span { "Explore Polars for expressions, transformations and lazy queries in Python or Rust code." }
+                }
+            }
+            p class="guide-note" {
+                "Check the " a href="https://github.com/dathere/qsv#installation" { "qsv build’s available commands" }
+                " before choosing it: features vary by build. For Polars, start with the "
+                a href="https://docs.pola.rs/user-guide/getting-started/" { "official DataFrame guide" }
+                ". Try a copy of one representative file and check types, missing values and output rows before changing a working pipeline."
+            }
+            p class="guide-jump" {
+                a href="/guides/rust-python-tools" { "Working in Python? See where Polars fits alongside uv and Ruff →" }
+            }
+            p class="small muted" { "Sources checked " time datetime="2026-10-16" { "October 16, 2026" } "." }
+        }
+        script type="application/ld+json" { (maud::PreEscaped(schema.to_string().replace('<', "\\u003c"))) }
     }
 }
 

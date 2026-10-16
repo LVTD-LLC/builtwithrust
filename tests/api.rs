@@ -513,6 +513,49 @@ async fn directory_search_is_literal_and_escaped() {
 }
 
 #[tokio::test]
+async fn data_workflow_discovery_is_cached_and_isolated_from_filters() {
+    let (_state, app, _dir) = app().await;
+    for slug in ["polars", "qsv"] {
+        let mut project = sample_project(slug);
+        project["category"] = json!("data-and-ai");
+        project["category_name"] = json!("Data & AI");
+        assert_eq!(send(&app, admin_json("POST", "/api/admin/projects", project)).await.0, StatusCode::OK);
+    }
+    let path = "/categories/data-and-ai";
+    let (status, headers, body) = send(&app, get(path)).await;
+    assert_eq!(status, StatusCode::OK);
+    assert!(body.contains("id=\"data-workflows\""));
+    assert!(body.contains("qsv’s optional SQL commands use Polars"));
+    assert_eq!(body.matches("<h1>").count(), 1);
+    assert!(body.contains("rel=\"canonical\" href=\"http://test.local/categories/data-and-ai\""));
+    for target in ["/projects/qsv", "/projects/polars", "/guides/rust-python-tools"] {
+        assert!(body.contains(&format!("href=\"{target}\"")));
+        assert_eq!(send(&app, get(target)).await.0, StatusCode::OK);
+    }
+    let start =
+        body.find("<script type=\"application/ld+json\">").unwrap() + "<script type=\"application/ld+json\">".len();
+    let end = body[start..].find("</script>").unwrap() + start;
+    let schema: Value = serde_json::from_str(&body[start..end]).unwrap();
+    assert_eq!(schema["@type"], "CollectionPage");
+    assert_eq!(schema["hasPart"]["dateModified"], "2026-10-16");
+    let conditional =
+        Request::get(path).header(header::IF_NONE_MATCH, &headers[header::ETAG]).body(Body::empty()).unwrap();
+    assert_eq!(send(&app, conditional).await.0, StatusCode::NOT_MODIFIED);
+    for filtered in [
+        "/",
+        "/?category=data-and-ai",
+        "/categories/data-and-ai?q=missing",
+        "/categories/data-and-ai?sort=name",
+        "/categories/data-and-ai?license=MIT",
+    ] {
+        let (status, _, body) = send(&app, get(filtered)).await;
+        assert_eq!(status, StatusCode::OK);
+        assert!(!body.contains("id=\"data-workflows\""), "{filtered}");
+    }
+    assert!(send(&app, get(path)).await.2.contains("id=\"data-workflows\""));
+}
+
+#[tokio::test]
 async fn developer_guide_is_cached_and_does_not_leak_into_filtered_views() {
     let (_state, app, _dir) = app().await;
     let (status, _, _) = send(&app, admin_json("POST", "/api/admin/projects", sample_project("guide-test"))).await;
