@@ -28,5 +28,22 @@
       "Warp terminal or the warp web framework\\?",
       "hosted-service terms"
     ]
+  },
+  {
+    "claim": "Database/search edition and deployment boundaries",
+    "paths": [
+      "seed/projects.json",
+      "src/views/project.rs",
+      "src/views/pages.rs"
+    ],
+    "must_not_match": [
+      "distributed on TiKV or FoundationDB",
+      "\"slug\":\"meilisearch\"[^\\n]*\"license\":\"MIT\""
+    ],
+    "must_match": [
+      "MIT \\(Community\\); BUSL-1.1 \\(Enterprise\\)",
+      "FoundationDB support was removed in SurrealDB 3\\.0\\.0",
+      "Both support full-text search"
+    ]
   }
 ]

@@ -5,6 +5,7 @@ use maud::{Markup, html};
 pub struct HomeData<'a> {
     pub developer_guide_site_url: Option<&'a str>,
     pub data_guide_site_url: Option<&'a str>,
+    pub database_guide_site_url: Option<&'a str>,
     pub browse: &'a crate::directory::Browse,
     pub facets: &'a crate::directory::Facets,
     pub projects: &'a [Project],
@@ -52,6 +53,9 @@ pub fn home(d: HomeData<'_>) -> Markup {
             }
             @if let Some(site_url) = d.data_guide_site_url {
                 (data_workflow_links(site_url))
+            }
+            @if let Some(site_url) = d.database_guide_site_url {
+                (database_workflow_links(site_url))
             }
             @if d.query.is_none() && d.active_category.is_none() && d.browse.is_default() {
                 nav class="pills category-links" aria-label="Browse projects by category" {
@@ -152,6 +156,52 @@ pub fn home(d: HomeData<'_>) -> Markup {
                 a href="/guides/zed-vs-lapce" { "Compare Zed and Lapce with a reversible trial →" }
             }
         }
+    }
+}
+
+fn database_workflow_links(site_url: &str) -> Markup {
+    let schema = serde_json::json!({
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": "Databases & Search built with Rust",
+        "url": format!("{site_url}/categories/databases-search"),
+        "hasPart": {
+            "@type": "WebPageElement",
+            "name": "Search existing content or model application data?",
+            "dateModified": "2026-10-17",
+            "url": format!("{site_url}/categories/databases-search#database-workflows")
+        }
+    });
+    html! {
+        section id="database-workflows" aria-labelledby="database-workflows-title" {
+            h2 id="database-workflows-title" { "Search existing content or model application data?" }
+            p class="guide-intro" {
+                "Start with the job, not the implementation language. Meilisearch indexes content for search interfaces; "
+                "SurrealDB stores and queries application data across several models. Both support full-text search, so the distinction is not search versus no search."
+            }
+            nav class="workflow-guides" aria-label="Database and search projects" {
+                a href="/projects/meilisearch" {
+                    strong { "Add search to content you already have →" }
+                    span { "Explore Meilisearch for typo-tolerant search, filtering and faceted navigation over indexed documents." }
+                }
+                a href="/projects/surrealdb" {
+                    strong { "Store records and query their relationships →" }
+                    span { "Explore SurrealDB for document and graph data, with integrated full-text search in the same database." }
+                }
+            }
+            p class="guide-note" {
+                "Before adopting a tool, try a disposable copy of representative data: check missing and updated records, "
+                "access restrictions and the queries your app needs. For a separate search index, also plan how source changes and deletions reach it. "
+                "These are evaluation checks, not benchmark results."
+            }
+            p class="guide-note" {
+                "Read the " a href="https://www.meilisearch.com/docs/getting_started/overview" { "Meilisearch search overview" }
+                " and " a href="https://surrealdb.com/docs/learn/data-models/full-text-search/overview" { "SurrealDB full-text search model" }
+                ". Check edition-specific licenses and supported deployment options before committing to either."
+            }
+            p class="small muted" { "Sources checked " time datetime="2026-10-17" { "October 17, 2026" } "." }
+        }
+        script type="application/ld+json" { (maud::PreEscaped(schema.to_string().replace('<', "\\u003c"))) }
     }
 }
 

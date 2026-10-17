@@ -13,3 +13,9 @@ Verified from source on 2026-10-08: Axum/Maud SSR, SQLite catalog, precompressed
 ## Fish and its editor tooling — verified 2026-10-14
 
 Fish 4.0 ported the shell implementation from C++ to Rust, not every repository asset: its own retrospective describes Fish scripts, Python tools and remaining C. Source: https://fishshell.com/blog/rustport/ . fish-lsp is a separate TypeScript language server for Fish scripts (https://www.fish-lsp.dev/docs/how-it-works); rust-analyzer serves Rust source code (https://rust-analyzer.github.io/). Implementation language does not determine which language server edits a file. The Fish listing owns this short distinction; do not create a duplicate Fish LSP article or label fish-lsp as Rust-built.
+
+## Database and search scope — verified 2026-10-17
+
+Meilisearch's repository LICENSE at revision `541dd6e94c5d6101684610b1af1b50c5aa4e2915` assigns Enterprise Edition code to Business Source License 1.1 and other code to MIT (https://github.com/meilisearch/meilisearch/blob/541dd6e94c5d6101684610b1af1b50c5aa4e2915/LICENSE). Do not imply MIT applies to the entire current repository or to hosted-service plans. SurrealDB's current CLI documentation says FoundationDB support was removed in 3.0.0, while 2.x accepted it (https://surrealdb.com/docs/reference/cli/db/commands/start); deployment options depend on version and edition (https://surrealdb.com/docs/manage/self-hosted/deployment-models). Do not label the old unqualified TiKV/FoundationDB sentence current guidance.
+
+The category owns a short task chooser, not a benchmark comparison: Meilisearch indexes documents for search interfaces (https://www.meilisearch.com/docs/getting_started/overview); SurrealDB combines document/graph storage with integrated full-text search (https://surrealdb.com/docs/learn/data-models/full-text-search/overview). Both support search. Keep existing URLs, titles, catalog star snapshots and unaffected fields.

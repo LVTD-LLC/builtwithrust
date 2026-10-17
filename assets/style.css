@@ -221,8 +221,9 @@ p { margin: 0; }
 
 /* Task guidance belongs to the canonical category, not filtered result sets. */
 .guide-intro { max-width: 76ch; color: var(--fg-muted); margin: 0 0 10px; }
-#data-workflows { margin-bottom: 24px; }
-#data-workflows .guide-note a { text-decoration: underline; text-underline-offset: 3px; }
+#data-workflows, #database-workflows { margin-bottom: 24px; }
+#database-workflows { scroll-margin-top: 90px; }
+#data-workflows .guide-note a, #database-workflows .guide-note a { text-decoration: underline; text-underline-offset: 3px; }
 .guide-jump { margin: 0 0 24px; }
 .workflow-guides { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 0 0 24px; }
 .workflow-guides a { display: block; padding: 16px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg-soft); }
@@ -233,9 +234,9 @@ p { margin: 0; }
 }
 .task-guide { padding: 32px 0 48px; border-top: 1px solid var(--border); scroll-margin-top: 90px; }
 .task-guide h2 { margin: 0 0 8px; }
-.fish-context > *, .warp-context > * { max-width: 80ch; }
+.fish-context > *, .warp-context > *, .database-context > * { max-width: 80ch; }
 .fish-context li + li { margin-top: 14px; }
-.fish-context a, .warp-context a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+.fish-context a, .warp-context a, .database-context a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
 .task-table-wrap { overflow-x: auto; margin: 20px 0; }
 .task-table { width: 100%; border-collapse: collapse; text-align: left; }
 .task-table caption { text-align: left; margin-bottom: 12px; }

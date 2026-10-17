@@ -53,6 +53,29 @@ pub fn show(p: &Project, related: &[Project]) -> Markup {
                     }
                 }
             }
+            @if p.slug == "meilisearch" || p.slug == "surrealdb" {
+                section class="task-guide prose database-context" aria-labelledby="source-scope-title" {
+                    h2 id="source-scope-title" { "Source and deployment scope" }
+                    @if p.slug == "meilisearch" {
+                        p {
+                            "Community and Enterprise code have different license terms. Read the "
+                            a href="https://github.com/meilisearch/meilisearch/blob/541dd6e94c5d6101684610b1af1b50c5aa4e2915/LICENSE" { "repository license summary" }
+                            " and the license files for your chosen version; the catalog label is not a hosted-service plan."
+                        }
+                    } @else {
+                        p {
+                            "FoundationDB support ended in 3.0.0; older deployment advice may describe 2.x. Check the "
+                            a href="https://surrealdb.com/docs/reference/cli/db/commands/start" { "current storage-backend documentation" }
+                            " and " a href="https://surrealdb.com/docs/manage/self-hosted/deployment-models" { "edition-specific deployment models" }
+                            " before planning a deployment."
+                        }
+                    }
+                    p {
+                        a href="/categories/databases-search#database-workflows" { "Choose by task: application search or document and graph storage →" }
+                    }
+                    p class="muted" { "Sources checked " time datetime="2026-10-17" { "October 17, 2026" } "." }
+                }
+            }
             @if p.slug == "warp" {
                 section class="task-guide prose warp-context" aria-labelledby="warp-tools-title" {
                     h2 id="warp-tools-title" { "Warp terminal or the warp web framework?" }
