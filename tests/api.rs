@@ -105,6 +105,29 @@ async fn fish_listing_distinguishes_shell_and_language_servers_without_leaking_t
 }
 
 #[tokio::test]
+async fn database_catalog_sources_are_scoped_to_their_listings() {
+    let (_state, app, _dir) = app().await;
+    for (slug, expected) in [
+        ("meilisearch", "Community and Enterprise code"),
+        ("surrealdb", "FoundationDB support ended in 3.0.0"),
+        ("other", ""),
+    ] {
+        send(&app, admin_json("POST", "/api/admin/projects", sample_project(slug))).await;
+        let path = format!("/projects/{slug}");
+        let (status, headers, body) = send(&app, get(&path)).await;
+        assert_eq!(status, StatusCode::OK);
+        assert_eq!(body.contains("id=\"source-scope-title\""), !expected.is_empty());
+        assert!(body.contains(expected));
+        if !expected.is_empty() {
+            assert!(body.contains("href=\"/categories/databases-search#database-workflows\""));
+        }
+        let conditional =
+            Request::get(&path).header(header::IF_NONE_MATCH, &headers[header::ETAG]).body(Body::empty()).unwrap();
+        assert_eq!(send(&app, conditional).await.0, StatusCode::NOT_MODIFIED);
+    }
+}
+
+#[tokio::test]
 async fn warp_listing_scopes_licenses_and_distinguishes_framework_with_cached_rendering() {
     let (_state, app, _dir) = app().await;
     let seed: Vec<Value> = serde_json::from_str(include_str!("../seed/projects.json")).unwrap();
@@ -512,47 +535,70 @@ async fn directory_search_is_literal_and_escaped() {
     }
 }
 
+// A canonical-only chooser must not contaminate filtered HTML or its cached response.
 #[tokio::test]
-async fn data_workflow_discovery_is_cached_and_isolated_from_filters() {
+async fn category_workflow_discovery_is_cached_and_isolated_from_filters() {
     let (_state, app, _dir) = app().await;
-    for slug in ["polars", "qsv"] {
-        let mut project = sample_project(slug);
-        project["category"] = json!("data-and-ai");
-        project["category_name"] = json!("Data & AI");
-        assert_eq!(send(&app, admin_json("POST", "/api/admin/projects", project)).await.0, StatusCode::OK);
-    }
-    let path = "/categories/data-and-ai";
-    let (status, headers, body) = send(&app, get(path)).await;
-    assert_eq!(status, StatusCode::OK);
-    assert!(body.contains("id=\"data-workflows\""));
-    assert!(body.contains("qsv’s optional SQL commands use Polars"));
-    assert_eq!(body.matches("<h1>").count(), 1);
-    assert!(body.contains("rel=\"canonical\" href=\"http://test.local/categories/data-and-ai\""));
-    for target in ["/projects/qsv", "/projects/polars", "/guides/rust-python-tools"] {
-        assert!(body.contains(&format!("href=\"{target}\"")));
-        assert_eq!(send(&app, get(target)).await.0, StatusCode::OK);
-    }
-    let start =
-        body.find("<script type=\"application/ld+json\">").unwrap() + "<script type=\"application/ld+json\">".len();
-    let end = body[start..].find("</script>").unwrap() + start;
-    let schema: Value = serde_json::from_str(&body[start..end]).unwrap();
-    assert_eq!(schema["@type"], "CollectionPage");
-    assert_eq!(schema["hasPart"]["dateModified"], "2026-10-16");
-    let conditional =
-        Request::get(path).header(header::IF_NONE_MATCH, &headers[header::ETAG]).body(Body::empty()).unwrap();
-    assert_eq!(send(&app, conditional).await.0, StatusCode::NOT_MODIFIED);
-    for filtered in [
-        "/",
-        "/?category=data-and-ai",
-        "/categories/data-and-ai?q=missing",
-        "/categories/data-and-ai?sort=name",
-        "/categories/data-and-ai?license=MIT",
+    for (category, name, slugs, marker, date, distinctive, targets) in [
+        (
+            "data-and-ai",
+            "Data & AI",
+            ["polars", "qsv"],
+            "data-workflows",
+            "2026-10-16",
+            "qsv’s optional SQL commands use Polars",
+            vec!["/projects/qsv", "/projects/polars", "/guides/rust-python-tools"],
+        ),
+        (
+            "databases-search",
+            "Databases & Search",
+            ["meilisearch", "surrealdb"],
+            "database-workflows",
+            "2026-10-17",
+            "Both support full-text search",
+            vec!["/projects/meilisearch", "/projects/surrealdb"],
+        ),
     ] {
-        let (status, _, body) = send(&app, get(filtered)).await;
+        for slug in slugs {
+            let mut project = sample_project(slug);
+            project["category"] = json!(category);
+            project["category_name"] = json!(name);
+            assert_eq!(send(&app, admin_json("POST", "/api/admin/projects", project)).await.0, StatusCode::OK);
+        }
+        let path = format!("/categories/{category}");
+        let (status, headers, body) = send(&app, get(&path)).await;
         assert_eq!(status, StatusCode::OK);
-        assert!(!body.contains("id=\"data-workflows\""), "{filtered}");
+        let marker = format!("id=\"{marker}\"");
+        assert!(body.contains(&marker));
+        assert!(body.contains(distinctive));
+        assert_eq!(body.matches("<h1>").count(), 1);
+        assert!(body.contains(&format!("rel=\"canonical\" href=\"http://test.local{path}\"")));
+        for target in targets {
+            assert!(body.contains(&format!("href=\"{target}\"")));
+            assert_eq!(send(&app, get(target)).await.0, StatusCode::OK);
+        }
+        let start =
+            body.find("<script type=\"application/ld+json\">").unwrap() + "<script type=\"application/ld+json\">".len();
+        let end = body[start..].find("</script>").unwrap() + start;
+        let schema: Value = serde_json::from_str(&body[start..end]).unwrap();
+        assert_eq!(schema["@type"], "CollectionPage");
+        assert_eq!(schema["hasPart"]["dateModified"], date);
+        let conditional =
+            Request::get(&path).header(header::IF_NONE_MATCH, &headers[header::ETAG]).body(Body::empty()).unwrap();
+        assert_eq!(send(&app, conditional).await.0, StatusCode::NOT_MODIFIED);
+        for filtered in [
+            "/".to_owned(),
+            format!("/?category={category}"),
+            format!("{path}?q=missing"),
+            format!("{path}?sort=name"),
+            format!("{path}?license=MIT"),
+        ] {
+            let (status, _, body) = send(&app, get(&filtered)).await;
+            assert_eq!(status, StatusCode::OK);
+            assert!(!body.contains(&marker), "{filtered}");
+        }
+        assert!(send(&app, get(&path)).await.2.contains(&marker));
     }
-    assert!(send(&app, get(path)).await.2.contains("id=\"data-workflows\""));
 }
 
 #[tokio::test]

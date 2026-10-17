@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-10-17
+
+- Clarify Meilisearch Community/Enterprise license scope and SurrealDB 3.x storage compatibility with guarded, reversible catalog corrections.
+- Add a cached Databases & Search task chooser and source-linked deployment guidance without new JavaScript or request-time network calls.
+
 ## 2026-10-16
 
 - Connect the Data & AI category to qsv, Polars and the Python-tools guide with a source-backed workflow chooser. Preserve filtered views, existing titles and compressed server-rendered caching without adding JavaScript or request-time network calls.

@@ -43,6 +43,9 @@ async fn directory_page(
         data_guide_site_url: (path == "/categories/data-and-ai"
             && *browse == crate::directory::Browse { category: "data-and-ai".into(), ..Default::default() })
         .then_some(state.cfg.site_url.as_str()),
+        database_guide_site_url: (path == "/categories/databases-search"
+            && *browse == crate::directory::Browse { category: "databases-search".into(), ..Default::default() })
+        .then_some(state.cfg.site_url.as_str()),
         projects: &projects,
         categories: &categories,
         total,
