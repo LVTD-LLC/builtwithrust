@@ -550,6 +550,15 @@ async fn category_workflow_discovery_is_cached_and_isolated_from_filters() {
             vec!["/projects/qsv", "/projects/polars", "/guides/rust-python-tools"],
         ),
         (
+            "infrastructure",
+            "Infrastructure",
+            ["gping", "trippy"],
+            "network-workflows",
+            "2026-10-18",
+            "not interchangeable tests of application health",
+            vec!["/projects/gping", "/projects/trippy"],
+        ),
+        (
             "databases-search",
             "Databases & Search",
             ["meilisearch", "surrealdb"],
@@ -568,6 +577,10 @@ async fn category_workflow_discovery_is_cached_and_isolated_from_filters() {
         let path = format!("/categories/{category}");
         let (status, headers, body) = send(&app, get(&path)).await;
         assert_eq!(status, StatusCode::OK);
+        if category == "infrastructure" {
+            assert!(!body.contains("href=\"/projects/sniffnet\""));
+            assert!(!body.contains("href=\"/projects/pingora\""));
+        }
         let marker = format!("id=\"{marker}\"");
         assert!(body.contains(&marker));
         assert!(body.contains(distinctive));
@@ -598,6 +611,16 @@ async fn category_workflow_discovery_is_cached_and_isolated_from_filters() {
             assert!(!body.contains(&marker), "{filtered}");
         }
         assert!(send(&app, get(&path)).await.2.contains(&marker));
+        if category == "infrastructure" {
+            // A catalog unpublish must purge both the card grid and cached task recommendations.
+            let mut project = sample_project("gping");
+            project["category"] = json!(category);
+            project["published"] = json!(false);
+            assert_eq!(send(&app, admin_json("POST", "/api/admin/projects", project)).await.0, StatusCode::OK);
+            let (_, _, body) = send(&app, get(&path)).await;
+            assert!(!body.contains("href=\"/projects/gping\""));
+            assert!(body.contains("href=\"/projects/trippy\""));
+        }
     }
 }
 
