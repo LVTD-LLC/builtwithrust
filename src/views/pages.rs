@@ -6,6 +6,7 @@ pub struct HomeData<'a> {
     pub developer_guide_site_url: Option<&'a str>,
     pub data_guide_site_url: Option<&'a str>,
     pub database_guide_site_url: Option<&'a str>,
+    pub infrastructure_guide_site_url: Option<&'a str>,
     pub browse: &'a crate::directory::Browse,
     pub facets: &'a crate::directory::Facets,
     pub projects: &'a [Project],
@@ -56,6 +57,9 @@ pub fn home(d: HomeData<'_>) -> Markup {
             }
             @if let Some(site_url) = d.database_guide_site_url {
                 (database_workflow_links(site_url))
+            }
+            @if let Some(site_url) = d.infrastructure_guide_site_url {
+                (network_workflow_links(site_url, d.projects))
             }
             @if d.query.is_none() && d.active_category.is_none() && d.browse.is_default() {
                 nav class="pills category-links" aria-label="Browse projects by category" {
@@ -156,6 +160,81 @@ pub fn home(d: HomeData<'_>) -> Markup {
                 a href="/guides/zed-vs-lapce" { "Compare Zed and Lapce with a reversible trial →" }
             }
         }
+    }
+}
+
+fn network_workflow_links(site_url: &str, projects: &[Project]) -> Markup {
+    let choices = [
+        (
+            "gping",
+            "Compare host latency →",
+            "gping graphs ping times for multiple hosts in the terminal. Start here to compare how latency changes over time.",
+        ),
+        (
+            "trippy",
+            "Inspect the route to a destination →",
+            "Trippy combines traceroute and ping to inspect individual network hops. Check its platform-specific privilege requirements before running it.",
+        ),
+        (
+            "sniffnet",
+            "See what traffic your computer exchanges →",
+            "Sniffnet is a graphical traffic monitor with connection inspection and PCAP import/export. Check capture dependencies and permissions for your operating system.",
+        ),
+        (
+            "pingora",
+            "Build a custom proxy service →",
+            "Pingora is a Rust framework for programmable network services and HTTP proxies. It is a development building block, not a ready-to-run latency diagnostic.",
+        ),
+    ];
+    // Catalog writes can unpublish a project. Never keep a dead recommendation in the cached hub.
+    let available: Vec<_> =
+        choices.into_iter().filter(|(slug, _, _)| projects.iter().any(|p| p.slug == *slug)).collect();
+    if available.is_empty() {
+        return html! {};
+    }
+    let schema = serde_json::json!({
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": "Infrastructure built with Rust",
+        "url": format!("{site_url}/categories/infrastructure"),
+        "hasPart": {
+            "@type": "WebPageElement",
+            "name": "Choose a network tool by the question you need to answer",
+            "dateModified": "2026-10-18",
+            "url": format!("{site_url}/categories/infrastructure#network-workflows")
+        }
+    });
+    html! {
+        section id="network-workflows" aria-labelledby="network-workflows-title" {
+            h2 id="network-workflows-title" { "Choose a network tool by the question you need to answer" }
+            p class="guide-intro" {
+                "Rust network tools serve different jobs: gping graphs host latency, Trippy inspects network routes, "
+                "Sniffnet shows traffic on your computer, and Pingora helps developers build proxy services. "
+                "Choose the question first; a ping graph, a packet capture and a proxy framework are not interchangeable tests of application health."
+            }
+            nav class="workflow-guides" aria-label="Network tools by task" {
+                @for (slug, title, detail) in available {
+                    a href={ "/projects/" (slug) } {
+                        strong { (title) }
+                        span { (detail) }
+                    }
+                }
+            }
+            p class="guide-note" {
+                "For a diagnostic trial, pick a destination or interface you own or are authorized to inspect, "
+                "write down the symptom and collect a short baseline before changing anything. "
+                "Keep captures private and review them before sharing. A diagnostic observation is a starting point, not proof of the cause. "
+                "For Pingora, start with the official development guide instead."
+            }
+            p class="guide-note" {
+                "Check the official " a href="https://github.com/orf/gping" { "gping usage" } ", "
+                a href="https://trippy.rs/" { "Trippy documentation" } ", "
+                a href="https://github.com/GyulyVGC/sniffnet" { "Sniffnet setup" } " and "
+                a href="https://github.com/cloudflare/pingora" { "Pingora framework guide" } " before choosing a tool."
+            }
+            p class="small muted" { "Sources checked " time datetime="2026-10-18" { "October 18, 2026" } "." }
+        }
+        script type="application/ld+json" { (maud::PreEscaped(schema.to_string().replace('<', "\\u003c"))) }
     }
 }
 

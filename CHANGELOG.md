@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-10-18
+
+- Add a cached Infrastructure networking chooser for host latency, route inspection, traffic capture and custom proxy development, with official sources and catalog-aware project links.
+- Keep task guidance out of filtered views; preserve existing URLs, titles, catalog data and request-path performance.
+
 ## 2026-10-17
 
 - Clarify Meilisearch Community/Enterprise license scope and SurrealDB 3.x storage compatibility with guarded, reversible catalog corrections.
