@@ -559,6 +559,15 @@ async fn category_workflow_discovery_is_cached_and_isolated_from_filters() {
             vec!["/projects/gping", "/projects/trippy"],
         ),
         (
+            "infrastructure",
+            "Infrastructure",
+            ["dufs", "miniserve"],
+            "file-sharing-workflows",
+            "2026-10-19",
+            "miniserve’s WebDAV support is read-only",
+            vec!["/projects/dufs", "/projects/miniserve"],
+        ),
+        (
             "databases-search",
             "Databases & Search",
             ["meilisearch", "surrealdb"],
@@ -590,12 +599,19 @@ async fn category_workflow_discovery_is_cached_and_isolated_from_filters() {
             assert!(body.contains(&format!("href=\"{target}\"")));
             assert_eq!(send(&app, get(target)).await.0, StatusCode::OK);
         }
-        let start =
-            body.find("<script type=\"application/ld+json\">").unwrap() + "<script type=\"application/ld+json\">".len();
-        let end = body[start..].find("</script>").unwrap() + start;
-        let schema: Value = serde_json::from_str(&body[start..end]).unwrap();
-        assert_eq!(schema["@type"], "CollectionPage");
-        assert_eq!(schema["hasPart"]["dateModified"], date);
+        let schemas: Vec<Value> = body
+            .split("<script type=\"application/ld+json\">")
+            .skip(1)
+            .map(|part| serde_json::from_str(part.split("</script>").next().unwrap()).unwrap())
+            .collect();
+        if marker.contains("file-sharing") {
+            let schema = schemas.iter().find(|s| s["@type"] == "WebPageElement").unwrap();
+            assert_eq!(schema["dateModified"], date);
+            assert_eq!(schema["isPartOf"]["@id"], format!("http://test.local{path}"));
+        } else {
+            let schema = schemas.iter().find(|s| s["@type"] == "CollectionPage").unwrap();
+            assert_eq!(schema["hasPart"]["dateModified"], date);
+        }
         let conditional =
             Request::get(&path).header(header::IF_NONE_MATCH, &headers[header::ETAG]).body(Body::empty()).unwrap();
         assert_eq!(send(&app, conditional).await.0, StatusCode::NOT_MODIFIED);
@@ -611,7 +627,16 @@ async fn category_workflow_discovery_is_cached_and_isolated_from_filters() {
             assert!(!body.contains(&marker), "{filtered}");
         }
         assert!(send(&app, get(&path)).await.2.contains(&marker));
-        if category == "infrastructure" {
+        if marker.contains("file-sharing") {
+            let mut project = sample_project("dufs");
+            project["category"] = json!(category);
+            project["published"] = json!(false);
+            assert_eq!(send(&app, admin_json("POST", "/api/admin/projects", project)).await.0, StatusCode::OK);
+            let (_, _, body) = send(&app, get(&path)).await;
+            assert!(!body.contains("href=\"/projects/dufs\""));
+            assert!(body.contains("href=\"/projects/miniserve\""));
+        }
+        if category == "infrastructure" && marker.contains("network") {
             // A catalog unpublish must purge both the card grid and cached task recommendations.
             let mut project = sample_project("gping");
             project["category"] = json!(category);

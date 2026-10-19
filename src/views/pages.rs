@@ -60,6 +60,7 @@ pub fn home(d: HomeData<'_>) -> Markup {
             }
             @if let Some(site_url) = d.infrastructure_guide_site_url {
                 (network_workflow_links(site_url, d.projects))
+                (file_sharing_workflow_links(site_url, d.projects))
             }
             @if d.query.is_none() && d.active_category.is_none() && d.browse.is_default() {
                 nav class="pills category-links" aria-label="Browse projects by category" {
@@ -160,6 +161,69 @@ pub fn home(d: HomeData<'_>) -> Markup {
                 a href="/guides/zed-vs-lapce" { "Compare Zed and Lapce with a reversible trial →" }
             }
         }
+    }
+}
+
+fn file_sharing_workflow_links(site_url: &str, projects: &[Project]) -> Markup {
+    let choices = [
+        (
+            "miniserve",
+            "Share a folder through the browser →",
+            "Start with miniserve for an ad-hoc HTTP share. It also supports authentication and optional browser uploads. Its WebDAV option is read-only: browsing a mounted share does not mean the client can write to it.",
+        ),
+        (
+            "dufs",
+            "Evaluate writable WebDAV and account scopes →",
+            "Start with Dufs when a WebDAV client needs to write files or accounts need different path permissions. An account’s read-write rule still cannot enable uploads unless the server’s global upload permission allows them.",
+        ),
+    ];
+    let available: Vec<_> =
+        choices.into_iter().filter(|(slug, _, _)| projects.iter().any(|p| p.slug == *slug)).collect();
+    if available.is_empty() {
+        return html! {};
+    }
+    let schema = serde_json::json!({
+        "@context": "https://schema.org",
+        "@type": "WebPageElement",
+        "@id": format!("{site_url}/categories/infrastructure#file-sharing-workflows"),
+        "name": "Choose a Rust file server by how people will use the share",
+        "dateModified": "2026-10-19",
+        "isPartOf": { "@type": "CollectionPage", "@id": format!("{site_url}/categories/infrastructure") }
+    });
+    html! {
+        section id="file-sharing-workflows" aria-labelledby="file-sharing-workflows-title" {
+            h2 id="file-sharing-workflows-title" { "Choose a Rust file server by how people will use the share" }
+            p class="guide-intro" {
+                "For a temporary browser-based file share, evaluate miniserve. For writable WebDAV or account rules scoped to different paths, evaluate Dufs. "
+                "Both support authentication and optional browser uploads. Check the access method before choosing: miniserve’s WebDAV support is read-only, "
+                "while Dufs write access also depends on enabled server operations."
+            }
+            nav class="workflow-guides" aria-label="File servers by sharing task" {
+                @for (slug, title, detail) in available {
+                    a href={ "/projects/" (slug) } {
+                        strong { (title) }
+                        span { (detail) }
+                    }
+                }
+            }
+            details {
+                summary { "Try the access policy with a disposable folder" }
+                ol {
+                    li { "Use non-sensitive sample files in a dedicated folder. Bind the first trial to loopback; a local test does not verify remote access or TLS." }
+                    li { "Choose browser downloads, browser uploads or a WebDAV client. Test that exact path; a browser upload does not prove WebDAV writes work." }
+                    li { "If authentication is required, confirm an unauthenticated request is denied and the intended account can download the sample." }
+                    li { "Attempt an upload with each intended read-only and write-enabled account. Confirm denied writes leave the folder unchanged; enable only the operations you need." }
+                    li { "Stop the server, confirm the share is unreachable, and review uploaded files before keeping them. Check TLS, network exposure and client compatibility separately before sharing remotely." }
+                }
+            }
+            p class="guide-note" {
+                "These are file-serving tools, not a tested replacement for your backup or synchronization workflow. "
+                "Check the official " a href="https://github.com/svenstaro/miniserve#usage" { "miniserve usage and options" }
+                " and " a href="https://github.com/sigoden/dufs#access-control" { "Dufs access-control rules" } " for your installed version."
+            }
+            p class="small muted" { "Sources checked " time datetime="2026-10-19" { "October 19, 2026" } "." }
+        }
+        script type="application/ld+json" { (maud::PreEscaped(schema.to_string().replace('<', "\\u003c"))) }
     }
 }
 

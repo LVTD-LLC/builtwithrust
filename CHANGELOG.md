@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-19
+
+- Add catalog-aware Dufs/miniserve discovery to Infrastructure, distinguishing browser uploads from writable WebDAV and providing a disposable-folder access-policy checklist. Preserve the network chooser, cached rendering and filtered views.
+
 ## 2026-10-18
 
 - Add a cached Infrastructure networking chooser for host latency, route inspection, traffic capture and custom proxy development, with official sources and catalog-aware project links.
