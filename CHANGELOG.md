@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-20
+
+- Label catalog-card selections and project website/repository clicks for existing PostHog autocapture using only public catalog slugs and fixed action/surface/schema values. Keep ordinary links, cached rendering and JavaScript unchanged; clicks measure intent, not product adoption.
+
 ## 2026-10-19
 
 - Add catalog-aware Dufs/miniserve discovery to Infrastructure, distinguishing browser uploads from writable WebDAV and providing a disposable-folder access-policy checklist. Preserve the network chooser, cached rendering and filtered views.

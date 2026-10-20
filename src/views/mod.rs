@@ -131,7 +131,11 @@ posthog.init('{key}',{{api_host:'{host}',defaults:'2025-05-24',person_profiles:'
 
 pub fn project_card(p: &Project) -> Markup {
     html! {
-        a class={ "card" @if p.is_featured() { " card-featured" } } href={ "/projects/" (p.slug) } {
+        a class={ "card" @if p.is_featured() { " card-featured" } } href={ "/projects/" (p.slug) }
+            data-ph-capture-attribute-bwr-action="project_open"
+            data-ph-capture-attribute-bwr-project=(p.slug)
+            data-ph-capture-attribute-bwr-surface="project_card"
+            data-ph-capture-attribute-bwr-schema="1" {
             div class="card-head" {
                 img class="logo" src=(p.logo()) alt="" width="32" height="32" loading="lazy" decoding="async";
                 h3 { (p.name) }

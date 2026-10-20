@@ -17,9 +17,17 @@ pub fn show(p: &Project, related: &[Project]) -> Markup {
                     p class="tagline-lg" { (p.tagline) }
                 }
                 div class="project-actions" {
-                    a class="btn btn-primary" href=(p.outbound_url()) rel="noopener nofollow" target="_blank" { "Visit " (p.domain()) (external_icon()) }
+                    a class="btn btn-primary" href=(p.outbound_url()) rel="noopener nofollow" target="_blank"
+                        data-ph-capture-attribute-bwr-action="website_visit"
+                        data-ph-capture-attribute-bwr-project=(p.slug)
+                        data-ph-capture-attribute-bwr-surface="project_detail"
+                        data-ph-capture-attribute-bwr-schema="1" { "Visit " (p.domain()) (external_icon()) }
                     @if let Some(repo) = &p.repo_url {
-                        a class="btn" href=(repo) rel="noopener nofollow" target="_blank" { "Repository" (external_icon()) }
+                        a class="btn" href=(repo) rel="noopener nofollow" target="_blank"
+                            data-ph-capture-attribute-bwr-action="repository_visit"
+                            data-ph-capture-attribute-bwr-project=(p.slug)
+                            data-ph-capture-attribute-bwr-surface="project_detail"
+                            data-ph-capture-attribute-bwr-schema="1" { "Repository" (external_icon()) }
                     }
                 }
             }
