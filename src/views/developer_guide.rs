@@ -3,6 +3,75 @@ use maud::{Markup, PreEscaped, html};
 
 pub const UPDATED: &str = "2026-10-12";
 
+pub fn javascript_workflows(site_url: &str, projects: &[crate::db::Project]) -> Markup {
+    let choices = [
+        (
+            "biome",
+            "Biome: lint and format JavaScript →",
+            "Biome checks and formats source. Trial it without changing your bundler; compare required lint rules and formatting diffs before retiring an existing configuration.",
+        ),
+        (
+            "rspack",
+            "Rspack: trial a webpack-style build →",
+            "Rspack bundles applications with webpack-oriented configuration. Check the loaders and plugins your project uses; its SWC loader transforms TypeScript but does not type-check it.",
+        ),
+        (
+            "turbopack",
+            "Turbopack: check Next.js bundling →",
+            "Turbopack is a Rust-based bundler integrated into Next.js. Evaluate it against your installed Next.js version and custom build configuration, not as a generic linter or a drop-in webpack configuration swap.",
+        ),
+    ];
+    let available: Vec<_> =
+        choices.into_iter().filter(|(slug, _, _)| projects.iter().any(|p| p.slug == *slug)).collect();
+    if available.is_empty() {
+        return html! {};
+    }
+    let schema = serde_json::json!({
+        "@context": "https://schema.org",
+        "@type": "WebPageElement",
+        "@id": format!("{site_url}/categories/developer-tools#javascript-workflows"),
+        "name": "Choose Rust-powered JavaScript tools by task",
+        "dateModified": "2026-10-21",
+        "isPartOf": { "@type": "CollectionPage", "@id": format!("{site_url}/categories/developer-tools") }
+    });
+    html! {
+        section id="javascript-workflows" aria-labelledby="javascript-workflows-title" {
+            h2 id="javascript-workflows-title" { "Choose Rust-powered JavaScript tools by task" }
+            p class="guide-intro" {
+                "Start with the layer you want to change: linting and formatting, an application build, or Next.js bundling. "
+                "A source-checking tool and a bundler can work together. Adopting one does not require replacing the rest of your toolchain."
+            }
+            nav class="workflow-guides" aria-label="JavaScript tools by workflow" {
+                @for (slug, title, detail) in available {
+                    a href={ "/projects/" (slug) } {
+                        strong { (title) }
+                        span { (detail) }
+                    }
+                }
+            }
+            details {
+                summary { "Try one change without losing a check" }
+                ol {
+                    li { "Create a trial branch and record the current tool versions, lint command, type-check command and production build command. Keep the original configuration available." }
+                    li { "For linting and formatting, compare the reports and proposed diffs on representative files. Check essential rules and ignored files; automatic migration does not guarantee identical coverage." }
+                    li { "For bundling, exercise one real application route and a source edit, then build and run the production output. Check assets, imports and required loaders or plugins in both modes, not just whether the development server starts." }
+                    li { "Keep TypeScript type checking explicit. Rspack’s SWC loader and Turbopack do not perform it themselves; verify that your framework or CI still rejects a deliberate type error on the trial branch, then undo the error." }
+                    li { "Keep the change only if required checks and the built application still behave as intended. Otherwise return to the original configuration; evaluate speed separately on your own workload." }
+                }
+            }
+            p class="guide-note" {
+                "Read the official " a href="https://biomejs.dev/introduction/comparison-with-other-tools/" { "Biome compatibility notes" }
+                ", " a href="https://www.rspack.dev/guide/migration/webpack" { "Rspack migration guide" }
+                ", " a href="https://www.rspack.dev/guide/languages/typescript" { "Rspack TypeScript guidance" }
+                " and " a href="https://nextjs.org/docs/app/api-reference/turbopack" { "Turbopack reference" }
+                " for your versions. These are task-based starting points, not a performance ranking or a hands-on migration report."
+            }
+            p class="small muted" { "Sources checked " time datetime="2026-10-21" { "October 21, 2026" } "." }
+        }
+        script type="application/ld+json" { (PreEscaped(schema.to_string().replace('<', "\\u003c"))) }
+    }
+}
+
 pub fn intro() -> Markup {
     html! {
         p class="guide-intro" {

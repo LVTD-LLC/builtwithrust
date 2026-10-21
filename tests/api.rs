@@ -541,6 +541,15 @@ async fn category_workflow_discovery_is_cached_and_isolated_from_filters() {
     let (_state, app, _dir) = app().await;
     for (category, name, slugs, marker, date, distinctive, targets) in [
         (
+            "developer-tools",
+            "Developer Tools",
+            ["biome", "rspack"],
+            "javascript-workflows",
+            "2026-10-21",
+            "Keep TypeScript type checking explicit",
+            vec!["/projects/biome", "/projects/rspack"],
+        ),
+        (
             "data-and-ai",
             "Data & AI",
             ["polars", "qsv"],
@@ -604,7 +613,7 @@ async fn category_workflow_discovery_is_cached_and_isolated_from_filters() {
             .skip(1)
             .map(|part| serde_json::from_str(part.split("</script>").next().unwrap()).unwrap())
             .collect();
-        if marker.contains("file-sharing") {
+        if marker.contains("file-sharing") || marker.contains("javascript") {
             let schema = schemas.iter().find(|s| s["@type"] == "WebPageElement").unwrap();
             assert_eq!(schema["dateModified"], date);
             assert_eq!(schema["isPartOf"]["@id"], format!("http://test.local{path}"));
@@ -627,6 +636,16 @@ async fn category_workflow_discovery_is_cached_and_isolated_from_filters() {
             assert!(!body.contains(&marker), "{filtered}");
         }
         assert!(send(&app, get(&path)).await.2.contains(&marker));
+        if marker.contains("javascript") {
+            assert!(!body.contains("href=\"/projects/turbopack\""), "never recommend an absent listing");
+            let mut project = sample_project("biome");
+            project["category"] = json!(category);
+            project["published"] = json!(false);
+            assert_eq!(send(&app, admin_json("POST", "/api/admin/projects", project)).await.0, StatusCode::OK);
+            let (_, _, body) = send(&app, get(&path)).await;
+            assert!(!body.contains("href=\"/projects/biome\""), "unpublishing purges cached recommendations");
+            assert!(body.contains("href=\"/projects/rspack\""));
+        }
         if marker.contains("file-sharing") {
             let mut project = sample_project("dufs");
             project["category"] = json!(category);

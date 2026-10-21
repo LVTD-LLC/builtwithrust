@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-21
+
+- Add catalog-aware JavaScript workflow discovery to Developer Tools: distinguish Biome source checks, Rspack builds and Next.js-integrated Turbopack, with a reversible trial checklist that preserves TypeScript checking. Keep existing URLs, titles, guide dates, filtered views and cached rendering unchanged.
+
 ## 2026-10-20
 
 - Label catalog-card selections and project website/repository clicks for existing PostHog autocapture using only public catalog slugs and fixed action/surface/schema values. Keep ordinary links, cached rendering and JavaScript unchanged; clicks measure intent, not product adoption.
