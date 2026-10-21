@@ -1,5 +1,9 @@
 # Public claim guidance
 
+## JavaScript workflow discovery — verified 2026-10-21
+
+[Biome](https://biomejs.dev/introduction/comparison-with-other-tools/) provides source linting and formatting; rule coverage and formatting can differ from an existing setup. [Rspack](https://www.rspack.dev/guide/migration/webpack) targets webpack-oriented application builds; compatibility must be checked per loader/plugin and version. Its [SWC loader](https://www.rspack.dev/guide/languages/typescript) transforms TypeScript without type checking. [Turbopack](https://nextjs.org/docs/app/api-reference/turbopack) is a Rust bundler integrated into Next.js, not a linter; it does not itself type-check and webpack configuration is not a drop-in equivalent. Preserve the framework/CI type-check path and test it explicitly. The category owns a short chooser/checklist, not a tested migration or benchmark; recommend only currently published listings in the category. Existing titles, URLs, star snapshots and older guide dates remain unchanged.
+
 ## Data workflow discovery — verified 2026-10-16
 
 qsv is a command-line toolkit for tabular data; available commands depend on its build/features (https://github.com/dathere/qsv#installation). Its optional `sqlp` command uses Polars, so do not frame qsv and Polars as entirely separate competing engines (https://github.com/dathere/qsv/blob/master/docs/help/sqlp.md). Polars provides DataFrame expressions and lazy queries in Python and Rust (https://docs.pola.rs/user-guide/getting-started/ and https://docs.pola.rs/user-guide/lazy/using/). The Data & AI category owns a short workflow chooser; the existing Python-tools guide owns Polars's place alongside uv and Ruff. No benchmark advantage, universal build support or hands-on results are claimed.
