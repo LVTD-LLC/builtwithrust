@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-22
+
+- Add catalog-aware document discovery to Productivity: distinguish Inlyne Markdown viewing from Typst typesetting, with a reversible rendering-fidelity checklist. Preserve existing URLs, titles, catalog data, filtered views and cached rendering; no new JavaScript or request-time network calls.
+
 ## 2026-10-21
 
 - Add catalog-aware JavaScript workflow discovery to Developer Tools: distinguish Biome source checks, Rspack builds and Next.js-integrated Turbopack, with a reversible trial checklist that preserves TypeScript checking. Keep existing URLs, titles, guide dates, filtered views and cached rendering unchanged.
