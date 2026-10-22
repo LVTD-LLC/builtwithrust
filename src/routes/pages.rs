@@ -49,6 +49,9 @@ async fn directory_page(
         infrastructure_guide_site_url: (path == "/categories/infrastructure"
             && *browse == crate::directory::Browse { category: "infrastructure".into(), ..Default::default() })
         .then_some(state.cfg.site_url.as_str()),
+        document_guide_site_url: (path == "/categories/productivity"
+            && *browse == crate::directory::Browse { category: "productivity".into(), ..Default::default() })
+        .then_some(state.cfg.site_url.as_str()),
         projects: &projects,
         categories: &categories,
         total,
