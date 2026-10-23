@@ -4,6 +4,7 @@ pub mod developer_guide;
 pub mod document_guide;
 pub mod editor_guide;
 pub mod pages;
+pub mod presentation_guide;
 pub mod project;
 pub mod python_guide;
 pub mod terminal_guide;
