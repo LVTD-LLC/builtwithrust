@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-23
+
+- Add catalog-aware presenterm discovery to Productivity, with source-linked display, export and code-settings rehearsal checks. Preserve the existing document chooser, titles, catalog snapshots and cached rendering; no new JavaScript, SQL or request-path network calls.
+
 ## 2026-10-22
 
 - Add catalog-aware document discovery to Productivity: distinguish Inlyne Markdown viewing from Typst typesetting, with a reversible rendering-fidelity checklist. Preserve existing URLs, titles, catalog data, filtered views and cached rendering; no new JavaScript or request-time network calls.

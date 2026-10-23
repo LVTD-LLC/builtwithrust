@@ -550,6 +550,15 @@ async fn category_workflow_discovery_is_cached_and_isolated_from_filters() {
             vec!["/projects/typst", "/projects/inlyne"],
         ),
         (
+            "productivity",
+            "Productivity",
+            ["presenterm", "other-productivity"],
+            "presentation-workflows",
+            "2026-10-23",
+            "Snippet validation can also run code",
+            vec!["/projects/presenterm"],
+        ),
+        (
             "developer-tools",
             "Developer Tools",
             ["biome", "rspack"],
@@ -622,8 +631,21 @@ async fn category_workflow_discovery_is_cached_and_isolated_from_filters() {
             .skip(1)
             .map(|part| serde_json::from_str(part.split("</script>").next().unwrap()).unwrap())
             .collect();
-        if marker.contains("file-sharing") || marker.contains("javascript") || marker.contains("document") {
-            let schema = schemas.iter().find(|s| s["@type"] == "WebPageElement").unwrap();
+        if marker.contains("file-sharing")
+            || marker.contains("javascript")
+            || marker.contains("document")
+            || marker.contains("presentation")
+        {
+            let schema = schemas
+                .iter()
+                .find(|s| {
+                    s["@id"]
+                        == format!(
+                            "http://test.local{path}#{}",
+                            marker.trim_start_matches("id=\"").trim_end_matches('"')
+                        )
+                })
+                .unwrap();
             assert_eq!(schema["dateModified"], date);
             assert_eq!(schema["isPartOf"]["@id"], format!("http://test.local{path}"));
         } else {
@@ -645,6 +667,23 @@ async fn category_workflow_discovery_is_cached_and_isolated_from_filters() {
             assert!(!body.contains(&marker), "{filtered}");
         }
         assert!(send(&app, get(&path)).await.2.contains(&marker));
+        if marker.contains("presentation") {
+            let mut project = sample_project("presenterm");
+            project["category"] = json!(category);
+            project["published"] = json!(false);
+            assert_eq!(send(&app, admin_json("POST", "/api/admin/projects", project.clone())).await.0, StatusCode::OK);
+            assert!(
+                !send(&app, get(&path)).await.2.contains(&marker),
+                "unpublishing purges presentation recommendations"
+            );
+            project["published"] = json!(true);
+            project["category"] = json!("other-category");
+            assert_eq!(send(&app, admin_json("POST", "/api/admin/projects", project)).await.0, StatusCode::OK);
+            assert!(
+                !send(&app, get(&path)).await.2.contains(&marker),
+                "a moved project must not remain recommended here"
+            );
+        }
         if marker.contains("document") {
             for slug in ["typst", "inlyne"] {
                 let mut project = sample_project(slug);
