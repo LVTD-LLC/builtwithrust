@@ -1,5 +1,9 @@
 # Public claim guidance
 
+## Git workflow discovery — verified 2026-10-24
+
+[GitUI's README](https://github.com/gitui-org/gitui/blob/d7214eccb3cac52ce3f8d9ca18f218671821eeee/README.md) documents Rust terminal Git interaction, staging files/hunks/lines, commits, branches and stashes. It lists no Git LFS or sparse-repository support, interactive rebase on its roadmap, an explicitly configured HTTPS credential helper, and GPG signing shortcomings. Do not imply a complete Git-shell replacement, benchmark win, or that a proposed trial has been performed on the reader's repository. The existing Developer Tools category owns this narrow workflow discovery; show it only for a published GitUI listing in that category. Preserve earlier category sections, titles, dates and catalog snapshots.
+
 ## Document workflow discovery — verified 2026-10-22
 
 [Inlyne](https://github.com/Inlyne-Project/inlyne#features) views Markdown with limited HTML support and refreshes on file writes; it is not a general browser and does not aim to support forms or every CSS style. [Typst's compiler repository](https://github.com/typst/typst#readme) contains the Rust compiler and CLI for local typesetting; the collaborative online editor is a separate product surface. The [Typst tutorial](https://typst.app/docs/tutorial/) covers document authoring and PDF output. Do not imply these are interchangeable editors, that Markdown/LaTeX source transfers unchanged, or that we performed a rendering benchmark. The existing Productivity category owns the output-first chooser and reversible acceptance checklist; recommend only currently published category listings. Its dated WebPageElement does not change earlier guides' dates or invent a combined catalog lastmod.

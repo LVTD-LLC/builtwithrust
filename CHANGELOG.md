@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-24
+
+- Add catalog-aware GitUI discovery to Developer Tools, connecting selective staging to source-linked repository, authentication and signing limits. Preserve existing titles, guide dates, JavaScript guidance, catalog snapshots and cached rendering; no new JavaScript, SQL or request-time network calls.
+
 ## 2026-10-23
 
 - Add catalog-aware presenterm discovery to Productivity, with source-linked display, export and code-settings rehearsal checks. Preserve the existing document chooser, titles, catalog snapshots and cached rendering; no new JavaScript, SQL or request-path network calls.

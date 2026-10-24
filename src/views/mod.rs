@@ -3,6 +3,7 @@
 pub mod developer_guide;
 pub mod document_guide;
 pub mod editor_guide;
+pub mod git_guide;
 pub mod pages;
 pub mod presentation_guide;
 pub mod project;

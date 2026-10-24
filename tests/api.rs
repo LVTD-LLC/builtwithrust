@@ -736,14 +736,23 @@ async fn developer_guide_is_cached_and_does_not_leak_into_filtered_views() {
     let (status, _, _) = send(&app, admin_json("POST", "/api/admin/projects", sample_project("guide-test"))).await;
     assert_eq!(status, StatusCode::OK);
     let path = "/categories/developer-tools";
-    let (_, headers, body) = send(&app, get(path)).await;
+    let (_, _, body) = send(&app, get(path)).await;
     assert!(body.contains("id=\"choose-by-task\""));
+    assert!(!body.contains("id=\"git-workflows\""));
+    // Catalog changes must invalidate the cached hub and expose only eligible listings.
+    let (status, _, _) = send(&app, admin_json("POST", "/api/admin/projects", sample_project("gitui"))).await;
+    assert_eq!(status, StatusCode::OK);
+    let (_, headers, body) = send(&app, get(path)).await;
+    assert!(body.contains("id=\"git-workflows\""));
+    assert!(body.contains("href=\"/projects/gitui\""));
     assert!(body.contains("uv manages Python projects"));
     assert_eq!(body.matches("<h1>").count(), 1);
-    let start =
-        body.find("<script type=\"application/ld+json\">").unwrap() + "<script type=\"application/ld+json\">".len();
-    let end = body[start..].find("</script>").unwrap() + start;
-    let schema: Value = serde_json::from_str(&body[start..end]).unwrap();
+    let schema: Value = body
+        .split("<script type=\"application/ld+json\">")
+        .skip(1)
+        .map(|part| serde_json::from_str::<Value>(part.split("</script>").next().unwrap()).unwrap())
+        .find(|value| value["@type"] == "CollectionPage")
+        .unwrap();
     assert_eq!(schema["@type"], "CollectionPage");
     assert_eq!(schema["url"], "http://test.local/categories/developer-tools");
     assert_eq!(schema["hasPart"]["dateModified"], "2026-10-12");
@@ -764,11 +773,17 @@ async fn developer_guide_is_cached_and_does_not_leak_into_filtered_views() {
         let (status, _, body) = send(&app, get(filtered)).await;
         assert_eq!(status, StatusCode::OK);
         assert!(!body.contains("id=\"choose-by-task\""), "{filtered}");
+        assert!(!body.contains("id=\"git-workflows\""), "{filtered}");
         assert!(!body.contains("aria-label=\"Developer workflow guides\""), "{filtered}");
     }
     let (status, _, body) = send(&app, get(path)).await;
     assert_eq!(status, StatusCode::OK);
     assert!(body.contains("id=\"choose-by-task\""));
+    let unpublished = serde_json::json!({"published": false});
+    let mut project = sample_project("gitui");
+    project.as_object_mut().unwrap().extend(unpublished.as_object().unwrap().clone());
+    assert_eq!(send(&app, admin_json("POST", "/api/admin/projects", project)).await.0, StatusCode::OK);
+    assert!(!send(&app, get(path)).await.2.contains("id=\"git-workflows\""));
 }
 
 #[tokio::test]
