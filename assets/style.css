@@ -277,3 +277,17 @@ p { margin: 0; }
 
 .python-table-hint { display: none; }
 @media (max-width: 600px) { .python-table-hint { display: block; } }
+
+/* The HTTP exercise uses local files and static server-rendered examples. */
+.hurl-guide pre { max-width: 100%; overflow-x: auto; padding: 18px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); font-size: 13px; line-height: 1.7; }
+.hurl-guide pre code { white-space: pre; }
+.hurl-outline, .hurl-downloads { padding-left: 24px; }
+.hurl-guide li a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+.hurl-flow { margin: 28px 0; }
+.hurl-flow svg { display: block; width: 100%; height: auto; }
+.hurl-flow rect { fill: var(--bg); stroke: var(--border); }
+.hurl-flow text { fill: var(--fg); font-size: 15px; font-weight: 600; }
+.hurl-flow .flow-detail { fill: var(--fg-muted); font-size: 13px; font-weight: 400; }
+.hurl-flow path { fill: none; stroke: var(--fg-muted); stroke-width: 2; }
+@media (max-width: 600px) { .hurl-flow svg { min-width: 580px; } .hurl-flow { overflow-x: auto; } }
+.hurl-guide pre:focus-visible, .hurl-flow:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }

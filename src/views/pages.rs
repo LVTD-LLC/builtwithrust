@@ -167,6 +167,11 @@ pub fn home(d: HomeData<'_>) -> Markup {
                 p { "Compare language support, remote development and collaboration before changing your everyday editor." }
                 a href="/guides/zed-vs-lapce" { "Compare Zed and Lapce with a reversible trial →" }
             }
+            section class="task-guide" aria-labelledby="hurl-guide-title" {
+                h2 id="hurl-guide-title" { "Make an HTTP test prove it can fail" }
+                p { "Use Hurl with a local fixture to check status, headers and JSON, then catch a deliberately broken response." }
+                a href="/guides/hurl-http-tests" { "Try the Hurl HTTP testing walkthrough →" }
+            }
         }
     }
 }
