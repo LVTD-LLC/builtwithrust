@@ -159,6 +159,12 @@ pub fn show(p: &Project, related: &[Project]) -> Markup {
                     a href="/guides/zed-vs-lapce" { "Compare Zed and Lapce by language support, remote work and collaboration →" }
                 }
             }
+            @if p.slug == "hurl" {
+                section class="task-guide" aria-labelledby="hurl-guide-title" {
+                    h2 id="hurl-guide-title" { "Try Hurl against a local HTTP fixture" }
+                    a href="/guides/hurl-http-tests" { "Check status, headers and JSON, then prove the test catches a broken response →" }
+                }
+            }
             @if !related.is_empty() {
                 section class="related" {
                     h2 { "More like this" }

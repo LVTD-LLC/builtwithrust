@@ -116,6 +116,19 @@ pub async fn editor_guide(State(state): State<SharedState>, headers: HeaderMap) 
     .await
 }
 
+pub async fn hurl_guide(State(state): State<SharedState>, headers: HeaderMap) -> Result<Response, AppError> {
+    cached_html(&state, &headers, "/guides/hurl-http-tests".into(), || async {
+        Ok(page(
+            &state,
+            "Hurl HTTP tests: catch a false green",
+            "Try Hurl with a local HTTP fixture. Check status, headers and JSON, then deliberately break the response to verify your test catches it.",
+            "/guides/hurl-http-tests",
+            crate::views::hurl_guide::body(&state.cfg.site_url),
+        ))
+    })
+    .await
+}
+
 pub async fn category(
     State(state): State<SharedState>,
     headers: HeaderMap,

@@ -98,3 +98,7 @@
 
 - Show featured projects once in the normal directory, preserving featured-first ordering.
 - Improve featured card contrast in light and dark themes with a tinted surface, rust border, clearer secondary text, and solid badge.
+
+## 2026-10-25
+
+- Added a cached Hurl HTTP-testing tutorial with downloadable loopback examples and deliberate status, header, JSON and connection failures. Linked it from the homepage and Hurl listing; added dated sitemap/schema and preserved earlier guide dates and category content.
