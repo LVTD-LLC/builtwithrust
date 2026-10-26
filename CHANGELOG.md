@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-26
+
+- Connect Developer Tools HTTP-testing discovery to the existing Hurl walkthrough and project listing with catalog-aware cached markup. Preserve older guide/category content, titles and dates; add no JavaScript, SQL or request-time network calls.
+
 ## 2026-10-24
 
 - Add catalog-aware GitUI discovery to Developer Tools, connecting selective staging to source-linked repository, authentication and signing limits. Preserve existing titles, guide dates, JavaScript guidance, catalog snapshots and cached rendering; no new JavaScript, SQL or request-time network calls.

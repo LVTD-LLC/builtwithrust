@@ -154,3 +154,45 @@ pub fn body(site_url: &str) -> Markup {
         script type="application/ld+json" { (PreEscaped(schema.to_string().replace('<', "\\u003c"))) }
     }
 }
+
+/// A discovery path into the existing exercise, not another HTTP tutorial.
+pub fn http_workflows(site_url: &str, projects: &[crate::db::Project]) -> Markup {
+    if !projects.iter().any(|p| p.slug == "hurl") {
+        return html! {};
+    }
+    let schema = serde_json::json!({
+        "@context": "https://schema.org",
+        "@type": "WebPageElement",
+        "@id": format!("{site_url}/categories/developer-tools#http-workflows"),
+        "name": "Test HTTP responses, not just status codes",
+        "dateModified": "2026-10-26",
+        "isPartOf": { "@type": "CollectionPage", "@id": format!("{site_url}/categories/developer-tools") }
+    });
+    html! {
+        section id="http-workflows" class="task-guide" aria-labelledby="http-workflows-title" {
+            h2 id="http-workflows-title" { "Test HTTP responses, not just status codes" }
+            p class="guide-intro" {
+                "Start with Hurl when you want HTTP requests and repeatable response assertions in plain-text files. "
+                "An HTTP 200 check can still pass when the JSON body is wrong. Choose the headers and fields your caller needs, "
+                "then deliberately break one to check that your test rejects the response."
+            }
+            nav class="workflow-guides" aria-label="HTTP testing starting points" {
+                a href="/guides/hurl-http-tests" {
+                    strong { "Try the local Hurl HTTP testing exercise →" }
+                    span { "Download a loopback fixture and compare a status-only check with header and JSON assertions. Follow the failure matrix to distinguish a wrong response from a server you cannot reach." }
+                }
+                a href="/projects/hurl" {
+                    strong { "Check Hurl's project and source links →" }
+                    span { "Open the catalog listing for the official website and source repository. Hurl is a Rust CLI powered by libcurl, not an entirely Rust networking stack." }
+                }
+            }
+            p class="guide-note" {
+                "Read Hurl's " a href="https://hurl.dev/docs/asserting-response.html" { "response-assertion reference" }
+                " for the checks it supports. This exercise stays at the HTTP layer: it does not run browser JavaScript "
+                "or certify a service's load capacity or security. Sources checked "
+                time datetime="2026-10-26" { "October 26, 2026" } "."
+            }
+        }
+        script type="application/ld+json" { (PreEscaped(schema.to_string().replace('<', "\\u003c"))) }
+    }
+}
