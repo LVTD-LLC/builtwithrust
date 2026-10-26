@@ -81,7 +81,7 @@ pub fn layout(state: &AppState, page: Page<'_>) -> Markup {
                             (crab_icon())
                             span { "Built with Rust" }
                         }
-                        nav class="nav" {
+                        nav class="nav" aria-label="Main navigation" {
                             a href="/" { "Projects" }
                             a href="/guides" { "Guides" }
                             a class="nav-feature" href="/feature" { "Feature your project" }

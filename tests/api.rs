@@ -1002,7 +1002,7 @@ async fn directory_pagination_keeps_filters_and_never_loses_or_repeats_projects(
         seen.extend(slugs.into_iter().map(str::to_owned));
         if page < 3 {
             assert!(
-                body.contains(&format!("{filters}&amp;page={}#projects", page + 1)),
+                body.contains(&format!("{}&amp;page={}#projects", filters.replace('&', "&amp;"), page + 1)),
                 "filter state must survive Next"
             );
         }

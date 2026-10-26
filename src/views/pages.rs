@@ -52,7 +52,9 @@ pub fn home(d: HomeData<'_>) -> Markup {
                     h2 { (heading) }
                 }
                 @if !d.browse.is_default() {
-                    a class="muted" href="/#projects" { "Clear filters" }
+                    a class="muted" href="/#projects" {
+                        @if d.browse.page_url(1) == "/#projects" { "Back to first page" } @else { "Clear filters" }
+                    }
                 }
             }
             @if let Some(site_url) = d.developer_guide_site_url {
