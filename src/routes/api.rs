@@ -207,6 +207,10 @@ pub async fn sitemap(State(state): State<SharedState>, headers: HeaderMap) -> Re
     for p in ["/", "/categories", "/submit", "/feature"] {
         xml.push_str(&format!("<url><loc>{base}{p}</loc></url>"));
     }
+    xml.push_str(&format!("<url><loc>{base}/guides</loc><lastmod>2026-10-26T21:38:00Z</lastmod></url>"));
+    xml.push_str(&format!(
+        "<url><loc>{base}/guides/difftastic-vs-git-diff</loc><lastmod>2026-10-26T21:38:00Z</lastmod></url>"
+    ));
     xml.push_str(&format!("<url><loc>{base}/guides/rust-python-tools</loc><lastmod>2026-10-10</lastmod></url>"));
     xml.push_str(&format!("<url><loc>{base}/guides/rust-terminal-tools</loc><lastmod>2026-10-11</lastmod></url>"));
     xml.push_str(&format!("<url><loc>{base}/guides/zed-vs-lapce</loc><lastmod>2026-10-13</lastmod></url>"));
@@ -222,6 +226,8 @@ pub async fn sitemap(State(state): State<SharedState>, headers: HeaderMap) -> Re
             updated.max("2026-10-11T00:00:00Z".to_string())
         } else if slug == "hurl" {
             updated.max("2026-10-25T00:00:00Z".to_string())
+        } else if matches!(slug.as_str(), "difftastic" | "gitui") {
+            updated.max("2026-10-26T21:38:00Z".to_string())
         } else if slug == "fish" {
             updated.max("2026-10-14T00:00:00Z".to_string())
         } else if matches!(slug.as_str(), "zed" | "lapce") {

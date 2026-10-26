@@ -153,6 +153,12 @@ pub fn home(d: HomeData<'_>) -> Markup {
             (super::developer_guide::body(site_url))
         }
         @if d.browse.is_default() && d.active_category.is_none() {
+            section class="task-guide" aria-labelledby="difftastic-guide-title" {
+                h2 id="difftastic-guide-title" { "Read code changes without losing the patch" }
+                p { "Compare Difftastic and native Git with four disposable examples and a verified patch round-trip." }
+                a href="/guides/difftastic-vs-git-diff" { "Compare Difftastic vs git diff →" }
+                " · " a href="/guides" { "All Rust tool guides →" }
+            }
             section class="task-guide" aria-labelledby="python-guide-title" {
                 h2 id="python-guide-title" { "Rust-powered tools for Python workflows" }
                 p { "Find the right tool for project management, linting or DataFrame work." }

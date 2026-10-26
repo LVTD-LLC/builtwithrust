@@ -159,6 +159,13 @@ pub fn show(p: &Project, related: &[Project]) -> Markup {
                     a href="/guides/zed-vs-lapce" { "Compare Zed and Lapce by language support, remote work and collaboration →" }
                 }
             }
+            @if matches!(p.slug.as_str(), "difftastic" | "gitui") {
+                section class="task-guide" aria-labelledby="difftastic-guide-title" {
+                    h2 id="difftastic-guide-title" { "Choose a view for code review" }
+                    p { "Structural reading and patch export are different jobs. Try Difftastic on a disposable change while keeping native Git output." }
+                    a href="/guides/difftastic-vs-git-diff" { "Compare Difftastic vs git diff with a reproducible exercise →" }
+                }
+            }
             @if p.slug == "hurl" {
                 section class="task-guide" aria-labelledby="hurl-guide-title" {
                     h2 id="hurl-guide-title" { "Try Hurl against a local HTTP fixture" }
