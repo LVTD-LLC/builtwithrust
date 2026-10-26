@@ -81,10 +81,10 @@ pub fn layout(state: &AppState, page: Page<'_>) -> Markup {
                             (crab_icon())
                             span { "Built with Rust" }
                         }
-                        nav class="nav" {
+                        nav class="nav" aria-label="Main navigation" {
                             a href="/" { "Projects" }
-                            a href="/categories" { "Categories" }
-                            a href="/feature" { "Feature your project" }
+                            a href="/guides" { "Guides" }
+                            a class="nav-feature" href="/feature" { "Feature your project" }
                         }
                         div class="header-actions" {
                             form class="search-mini" action="/" method="get" role="search" {
@@ -104,15 +104,22 @@ pub fn layout(state: &AppState, page: Page<'_>) -> Markup {
                             a class="brand" href="/" { (crab_icon()) span { "Built with Rust" } }
                             p class="muted" { "A curated directory of websites, apps and tools built with Rust. Itself built with Rust." }
                         }
-                        div class="footer-links" {
+                        nav class="footer-links" aria-label="Explore" {
+                            h2 { "Explore" }
                             a href="/" { "Projects" }
                             a href="/guides" { "Guides" }
                             a href="/categories" { "Categories" }
-                            a href="/submit" { "Submit a site" }
-                            a href="/feature" { "Feature your project" }
-                            a href="/privacy" { "Privacy" }
-                            a href="https://github.com/LVTD-LLC/builtwithrust" rel="noopener" { "Source" }
                         }
+                        nav class="footer-links" aria-label="Contribute" {
+                            h2 { "Contribute" }
+                            a href="/submit" { "Submit a project" }
+                            a href="https://github.com/LVTD-LLC/builtwithrust" rel="noopener" { "View source ↗" }
+                        }
+                    }
+                    div class="container footer-bottom" {
+                        span { "Discover what Rust can do." }
+                        a href="/privacy" { "Privacy" }
+
                     }
                 }
                 script { (PreEscaped(THEME_TOGGLE)) }
