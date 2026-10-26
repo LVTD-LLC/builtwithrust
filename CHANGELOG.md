@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-27
+
+- Publish a source-linked Difftastic vs git diff comparison with four executed disposable cases, a native patch round-trip and a review acceptance worksheet. Add a cached native `/guides` article list, sitemap entries and homepage/catalog discovery without changing old guide URLs, dates, catalog storage or request-path work. Keep research private; add no parser, dependencies or client-side JavaScript.
+
 ## 2026-10-26
 
 - Connect Developer Tools HTTP-testing discovery to the existing Hurl walkthrough and project listing with catalog-aware cached markup. Preserve older guide/category content, titles and dates; add no JavaScript, SQL or request-time network calls.

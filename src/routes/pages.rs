@@ -77,6 +77,32 @@ pub async fn categories(State(state): State<SharedState>, headers: HeaderMap) ->
     .await
 }
 
+pub async fn guides(State(state): State<SharedState>, headers: HeaderMap) -> Result<Response, AppError> {
+    cached_html(&state, &headers, "/guides".into(), || async {
+        Ok(page(
+            &state,
+            "Rust tool guides",
+            "Research-backed guides to Rust-powered tools. Compare workflows, run practical checks and choose an application by the job you need to do.",
+            "/guides",
+            crate::views::guides::body(&state.cfg.site_url),
+        ))
+    })
+    .await
+}
+
+pub async fn difftastic_guide(State(state): State<SharedState>, headers: HeaderMap) -> Result<Response, AppError> {
+    cached_html(&state, &headers, "/guides/difftastic-vs-git-diff".into(), || async {
+        Ok(page(
+            &state,
+            "Difftastic vs git diff: keep both views",
+            "Compare Difftastic vs git diff with four reproducible cases. Try syntax-aware review without global config, and keep a verified native patch workflow.",
+            "/guides/difftastic-vs-git-diff",
+            crate::views::difftastic_guide::body(&state.cfg.site_url),
+        ))
+    })
+    .await
+}
+
 pub async fn python_guide(State(state): State<SharedState>, headers: HeaderMap) -> Result<Response, AppError> {
     cached_html(&state, &headers, "/guides/rust-python-tools".into(), || async {
         Ok(page(

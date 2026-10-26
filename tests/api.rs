@@ -879,13 +879,19 @@ async fn terminal_guide_is_discoverable_canonical_and_cached() {
 #[tokio::test]
 async fn standalone_guides_are_discoverable_canonical_and_cached_without_filter_leaks() {
     let (state, app, _dir) = app().await;
-    for slug in ["zed", "lapce", "hurl", "unrelated-tool"] {
+    for slug in ["zed", "lapce", "hurl", "difftastic", "gitui", "unrelated-tool"] {
         let (status, _, _) = send(&app, admin_json("POST", "/api/admin/projects", sample_project(slug))).await;
         assert_eq!(status, StatusCode::OK);
     }
     for (path, headline, published, projects) in [
         ("/guides/zed-vs-lapce", "Zed vs Lapce: choose by workflow", "2026-10-13", vec!["zed", "lapce"]),
         ("/guides/hurl-http-tests", "Hurl HTTP tests: catch a false green", "2026-10-25", vec!["hurl"]),
+        (
+            "/guides/difftastic-vs-git-diff",
+            "Difftastic vs git diff: keep both views",
+            "2026-10-26T21:38:00Z",
+            vec!["difftastic", "gitui"],
+        ),
     ] {
         let canonical = format!("http://test.local{path}");
         let (status, headers, body) = send(&app, get(path)).await;
@@ -925,7 +931,7 @@ async fn standalone_guides_are_discoverable_canonical_and_cached_without_filter_
         let (_, _, sitemap) = send(&app, get("/sitemap.xml")).await;
         assert!(sitemap.contains(&format!("<url><loc>{canonical}</loc><lastmod>{published}</lastmod></url>")));
         assert!(sitemap.contains("<url><loc>http://test.local/</loc></url>"));
-        let mut inbound = vec!["/".to_string()];
+        let mut inbound = vec!["/".to_string(), "/guides".to_string()];
         inbound.extend(projects.iter().map(|slug| format!("/projects/{slug}")));
         for inbound in inbound {
             let (status, _, body) = send(&app, get(&inbound)).await;
@@ -951,4 +957,14 @@ async fn standalone_guides_are_discoverable_canonical_and_cached_without_filter_
         // Warm filtered views must not displace the cached default homepage card.
         assert!(send(&app, get("/")).await.2.contains(&format!("href=\"{path}\"")));
     }
+    // The editorial list must be a real, independently cached route, not a catalog filter.
+    let (status, headers, body) = send(&app, get("/guides")).await;
+    assert_eq!(status, StatusCode::OK);
+    assert!(body.contains("rel=\"canonical\" href=\"http://test.local/guides\""));
+    assert!(body.contains("\"@type\":\"CollectionPage\""));
+    assert_eq!(body.matches("<h1>").count(), 1);
+    assert!(state.cache.get("/guides").is_some());
+    let conditional =
+        Request::get("/guides").header(header::IF_NONE_MATCH, &headers[header::ETAG]).body(Body::empty()).unwrap();
+    assert_eq!(send(&app, conditional).await.0, StatusCode::NOT_MODIFIED);
 }
