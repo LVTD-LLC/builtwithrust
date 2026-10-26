@@ -24,6 +24,11 @@ pub fn home(d: HomeData<'_>) -> Markup {
         (None, Some(c)) => format!("{} built with Rust", c.name),
         (None, None) => "Everything built with Rust".to_string(),
     };
+    let count = d.projects.len();
+    let current_page = d.browse.page_number(count);
+    let pages = count.div_ceil(crate::directory::PAGE_SIZE).max(1);
+    let start = (current_page - 1) * crate::directory::PAGE_SIZE;
+    let end = (start + crate::directory::PAGE_SIZE).min(count);
     html! {
         @if d.query.is_none() && d.active_category.is_none() {
             section class="hero" {
@@ -132,7 +137,12 @@ pub fn home(d: HomeData<'_>) -> Markup {
                 }
             }
             p class="browse-results" role="status" {
-                strong { (d.projects.len()) } " of " (d.total) " projects"
+                @if count > 0 {
+                    "Showing " strong { (start + 1) "–" (end) } " of " strong { (count) } " projects"
+                } @else {
+                    strong { "0" } " matching projects"
+                }
+                @if count as i64 != d.total { " · " (d.total) " in the directory" }
                 @if d.browse.sort == "gems" {
                     " · Known star counts below 10,000, smallest first."
                 } @else if d.browse.sort.is_empty() {
@@ -147,39 +157,36 @@ pub fn home(d: HomeData<'_>) -> Markup {
             @if d.projects.is_empty() && !d.browse.is_default() {
                 p class="browse-empty" { "No projects match this combination. Try removing a filter or " a href="/#projects" { "reset all filters" } "." }
             }
-            (project_grid(d.projects))
+            (project_grid(&d.projects[start..end]))
+            @if pages > 1 {
+                nav class="pagination" aria-label="Project pages" {
+                    p class="small muted" { "Page " (current_page) " of " (pages) }
+                    div class="pagination-controls" {
+                        @if current_page > 1 {
+                            a class="btn pagination-step" rel="prev" href=(d.browse.page_url(current_page - 1)) { "← Previous" }
+                        } @else { span class="btn pagination-step" aria-disabled="true" { "← Previous" } }
+                        @for number in 1..=pages {
+                            @if number == 1 || number == pages || number.abs_diff(current_page) <= 1 {
+                                @if number == current_page {
+                                    span class="btn pagination-number current" aria-current="page" { (number) }
+                                } @else {
+                                    a class="btn pagination-number" href=(d.browse.page_url(number)) aria-label=(format!("Page {number}")) { (number) }
+                                }
+                            } @else if number == 2 || number == pages - 1 {
+                                span class="pagination-gap" aria-hidden="true" { "…" }
+                            }
+                        }
+                        @if current_page < pages {
+                            a class="btn pagination-step" rel="next" href=(d.browse.page_url(current_page + 1)) { "Next →" }
+                        } @else { span class="btn pagination-step" aria-disabled="true" { "Next →" } }
+                    }
+                }
+            }
         }
         @if let Some(site_url) = d.developer_guide_site_url {
             (super::developer_guide::body(site_url))
         }
-        @if d.browse.is_default() && d.active_category.is_none() {
-            section class="task-guide" aria-labelledby="difftastic-guide-title" {
-                h2 id="difftastic-guide-title" { "Read code changes without losing the patch" }
-                p { "Compare Difftastic and native Git with four disposable examples and a verified patch round-trip." }
-                a href="/guides/difftastic-vs-git-diff" { "Compare Difftastic vs git diff →" }
-                " · " a href="/guides" { "All Rust tool guides →" }
-            }
-            section class="task-guide" aria-labelledby="python-guide-title" {
-                h2 id="python-guide-title" { "Rust-powered tools for Python workflows" }
-                p { "Find the right tool for project management, linting or DataFrame work." }
-                a href="/guides/rust-python-tools" { "Compare uv, Ruff and Polars by task →" }
-            }
-            section class="task-guide" aria-labelledby="terminal-guide-title" {
-                h2 id="terminal-guide-title" { "Choose your next terminal improvement" }
-                p { "Compare a terminal emulator, shell, history tool and file manager by the job you want to improve." }
-                a href="/guides/rust-terminal-tools" { "Compare Alacritty, Nushell, Atuin and Yazi by task →" }
-            }
-            section class="task-guide" aria-labelledby="editor-guide-title" {
-                h2 id="editor-guide-title" { "Choose a Rust-built editor for your workflow" }
-                p { "Compare language support, remote development and collaboration before changing your everyday editor." }
-                a href="/guides/zed-vs-lapce" { "Compare Zed and Lapce with a reversible trial →" }
-            }
-            section class="task-guide" aria-labelledby="hurl-guide-title" {
-                h2 id="hurl-guide-title" { "Make an HTTP test prove it can fail" }
-                p { "Use Hurl with a local fixture to check status, headers and JSON, then catch a deliberately broken response." }
-                a href="/guides/hurl-http-tests" { "Try the Hurl HTTP testing walkthrough →" }
-            }
-        }
+
     }
 }
 

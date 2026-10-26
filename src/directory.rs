@@ -14,10 +14,15 @@ pub struct Browse {
     pub verified: String,
     pub stars: String,
     pub sort: String,
+    pub page: String,
 }
 
 impl Browse {
     pub fn normalize(&mut self) {
+        self.page = match self.page.parse::<usize>() {
+            Ok(n) if n > 1 => n.to_string(),
+            _ => String::new(),
+        };
         for value in [&mut self.q, &mut self.category, &mut self.stack, &mut self.license] {
             *value = value.trim().chars().take(100).collect();
         }
@@ -35,6 +40,39 @@ impl Browse {
 
     pub fn is_default(&self) -> bool {
         self == &Self::default()
+    }
+
+    pub fn page_number(&self, total: usize) -> usize {
+        self.page.parse::<usize>().unwrap_or(1).clamp(1, total.div_ceil(PAGE_SIZE).max(1))
+    }
+
+    /// Preserve every active filter, with percent-encoding supplied by the URL library.
+    pub fn page_url(&self, page: usize) -> String {
+        let mut url = reqwest::Url::parse("https://directory.invalid/").expect("static URL");
+        {
+            let mut query = url.query_pairs_mut();
+            for (key, value) in [
+                ("q", &self.q),
+                ("category", &self.category),
+                ("stack", &self.stack),
+                ("license", &self.license),
+                ("source", &self.source),
+                ("verified", &self.verified),
+                ("stars", &self.stars),
+                ("sort", &self.sort),
+            ] {
+                if !value.is_empty() {
+                    query.append_pair(key, value);
+                }
+            }
+            if page > 1 {
+                query.append_pair("page", &page.to_string());
+            }
+        }
+        match url.query().filter(|q| !q.is_empty()) {
+            Some(query) => format!("/?{query}#projects"),
+            None => "/#projects".into(),
+        }
     }
 
     /// Input is already in featured-first order; explicit sorts deliberately override it.
@@ -74,6 +112,8 @@ impl Browse {
         }
     }
 }
+
+pub const PAGE_SIZE: usize = 15;
 
 pub struct Facets {
     pub stacks: Vec<String>,

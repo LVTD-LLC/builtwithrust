@@ -6,6 +6,8 @@
 
 ## 2026-10-26
 
+- Paginate the directory at 15 projects per page with filter-preserving links, page counts and accessible controls. Replace Categories with Guides in desktop/mobile navigation, remove homepage article promos, group footer links and give Guides a responsive editorial list. Preserve article URLs and the cached default homepage.
+
 - Connect Developer Tools HTTP-testing discovery to the existing Hurl walkthrough and project listing with catalog-aware cached markup. Preserve older guide/category content, titles and dates; add no JavaScript, SQL or request-time network calls.
 
 ## 2026-10-24

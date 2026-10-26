@@ -470,7 +470,7 @@ async fn directory_filters_combine_and_preserve_selected_values() {
     assert!(body.contains("value=\"tokio\" selected"));
     assert!(body.contains("value=\"MIT\" selected"));
     assert!(body.contains("value=\"1\" checked"));
-    assert!(body.contains("<strong>1</strong> of 4 projects"));
+    assert!(body.contains("Showing <strong>1–1</strong> of <strong>1</strong> projects"));
     assert_eq!(headers[header::CACHE_CONTROL], "no-store");
     assert_eq!(state.cache.len(), cache_size, "arbitrary combinations must not grow the cache");
     let (_, _, body) = send(&app, get("/?source=unlisted")).await;
@@ -812,7 +812,7 @@ async fn python_guide_is_discoverable_canonical_and_cached() {
         sitemap
             .contains("<url><loc>http://test.local/guides/rust-python-tools</loc><lastmod>2026-10-10</lastmod></url>")
     );
-    for inbound in ["/", "/categories/developer-tools", "/projects/uv", "/projects/ruff", "/projects/polars"] {
+    for inbound in ["/guides", "/categories/developer-tools", "/projects/uv", "/projects/ruff", "/projects/polars"] {
         let (status, _, body) = send(&app, get(inbound)).await;
         assert_eq!(status, StatusCode::OK);
         assert!(body.contains("href=\"/guides/rust-python-tools\""), "{inbound}");
@@ -851,7 +851,7 @@ async fn terminal_guide_is_discoverable_canonical_and_cached() {
         )
     );
     for inbound in [
-        "/",
+        "/guides",
         "/categories/developer-tools",
         "/projects/alacritty",
         "/projects/nushell",
@@ -931,7 +931,7 @@ async fn standalone_guides_are_discoverable_canonical_and_cached_without_filter_
         let (_, _, sitemap) = send(&app, get("/sitemap.xml")).await;
         assert!(sitemap.contains(&format!("<url><loc>{canonical}</loc><lastmod>{published}</lastmod></url>")));
         assert!(sitemap.contains("<url><loc>http://test.local/</loc></url>"));
-        let mut inbound = vec!["/".to_string(), "/guides".to_string()];
+        let mut inbound = vec!["/guides".to_string()];
         inbound.extend(projects.iter().map(|slug| format!("/projects/{slug}")));
         for inbound in inbound {
             let (status, _, body) = send(&app, get(&inbound)).await;
@@ -954,8 +954,10 @@ async fn standalone_guides_are_discoverable_canonical_and_cached_without_filter_
             let category_hurl_entry = unrelated == "/categories/developer-tools" && path == "/guides/hurl-http-tests";
             assert_eq!(body.contains(&format!("href=\"{path}\"")), category_hurl_entry, "{unrelated}");
         }
-        // Warm filtered views must not displace the cached default homepage card.
-        assert!(send(&app, get("/")).await.2.contains(&format!("href=\"{path}\"")));
+        // Homepage links to the editorial index, not individual guide promotions.
+        let homepage = send(&app, get("/")).await.2;
+        assert!(!homepage.contains(&format!("href=\"{path}\"")));
+        assert!(homepage.contains("href=\"/guides\""));
     }
     // The editorial list must be a real, independently cached route, not a catalog filter.
     let (status, headers, body) = send(&app, get("/guides")).await;
@@ -967,4 +969,58 @@ async fn standalone_guides_are_discoverable_canonical_and_cached_without_filter_
     let conditional =
         Request::get("/guides").header(header::IF_NONE_MATCH, &headers[header::ETAG]).body(Body::empty()).unwrap();
     assert_eq!(send(&app, conditional).await.0, StatusCode::NOT_MODIFIED);
+}
+
+#[tokio::test]
+async fn directory_pagination_keeps_filters_and_never_loses_or_repeats_projects() {
+    let (state, app, _dir) = app().await;
+    let projects: Vec<_> = (0..31)
+        .map(|i| {
+            json!({
+                "slug": format!("tool-{i:02}"), "name": format!("Tool {i:02}"),
+                "tagline": "Rust pagination fixture", "website_url": "https://example.com",
+                "category": "tools", "stack": ["tokio"], "license": "MIT & Apache",
+                "verified": true, "published": true, "stars": 1200,
+                "repo_url": "https://github.com/example/tool"
+            })
+        })
+        .collect();
+    assert_eq!(send(&app, admin_json("POST", "/api/admin/projects/bulk", json!(projects))).await.0, StatusCode::OK);
+    let (_, _, homepage) = send(&app, get("/")).await;
+    assert_eq!(card_slugs(&homepage).len(), 15);
+    assert!(homepage.contains("aria-current=\"page\">1"));
+    assert!(!homepage.contains("class=\"task-guide\""));
+    let cache_size = state.cache.len();
+    let filters =
+        "q=Rust&category=tools&stack=tokio&license=MIT+%26+Apache&source=available&verified=1&stars=1000&sort=name";
+    let mut seen = Vec::new();
+    for (page, count) in [(1, 15), (2, 15), (3, 1)] {
+        let (status, _, body) = send(&app, get(&format!("/?{filters}&page={page}"))).await;
+        assert_eq!(status, StatusCode::OK);
+        let slugs = card_slugs(&body);
+        assert_eq!(slugs.len(), count);
+        seen.extend(slugs.into_iter().map(str::to_owned));
+        if page < 3 {
+            assert!(
+                body.contains(&format!("{filters}&amp;page={}#projects", page + 1)),
+                "filter state must survive Next"
+            );
+        }
+    }
+    assert_eq!(seen, (0..31).map(|i| format!("tool-{i:02}")).collect::<Vec<_>>());
+    for page in ["0", "-1", "garbage", "999999999999999999999999999999999999"] {
+        let (status, _, body) = send(&app, get(&format!("/?sort=name&page={page}"))).await;
+        assert_eq!(status, StatusCode::OK);
+        assert_eq!(card_slugs(&body).first(), Some(&"tool-00"));
+    }
+    let (_, _, last) = send(&app, get("/?sort=name&page=99999")).await;
+    assert_eq!(card_slugs(&last), ["tool-30"]);
+    assert!(last.contains("aria-disabled=\"true\">Next"));
+    let (_, _, empty) = send(&app, get("/?q=missing&page=2")).await;
+    assert!(card_slugs(&empty).is_empty());
+    assert!(!empty.contains("aria-label=\"Project pages\""));
+    let (_, _, second) = send(&app, get("/?page=2")).await;
+    assert!(second.contains("rel=\"canonical\" href=\"http://test.local/?page=2\""));
+    assert_eq!(state.cache.len(), cache_size, "page query variants must not grow the default cache");
+    assert_eq!(card_slugs(&send(&app, get("/")).await.2).len(), 15);
 }

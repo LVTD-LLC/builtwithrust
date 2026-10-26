@@ -42,18 +42,35 @@ pub fn body(site_url: &str) -> Markup {
         })).collect::<Vec<_>>()}
     });
     html! {
-        article class="python-guide page" {
+        article class="guides-index page" {
             nav class="small muted" aria-label="Breadcrumb" { a href="/" { "Projects" } " / Guides" }
-            h1 { "Rust tool guides" }
-            p class="guide-lead" { "Choose a Rust-powered application by the task you need to do. Our articles pair official sources with concrete checks and explicit limits." }
-            @for (slug, title, date, description) in &guides {
-                section {
-                    h2 { a href=(format!("/guides/{slug}")) { (title) } }
-                    p class="small muted" { "Published " time datetime=(date) { (date) } }
-                    p { (description) }
+            header class="guides-header" {
+                div {
+                    span class="eyebrow" { "The field guide" }
+                    h1 { "Rust tool guides" }
+                    p class="guide-lead" { "Find the right tool. Put it to work." }
+                }
+                p class="muted" { "Practical comparisons and hands-on walkthroughs for Rust-powered applications. Official sources, concrete checks and clear limits." }
+            }
+            div class="guides-list" {
+                @for (index, (slug, title, date, description)) in guides.iter().enumerate() {
+                    a class="guide-entry" href=(format!("/guides/{slug}")) {
+                        div class="guide-entry-meta" {
+                            span class="guide-number" { (format!("{:02}", index + 1)) }
+                            time datetime=(date) { (date) }
+                        }
+                        div class="guide-entry-copy" {
+                            h2 { (title) }
+                            p { (description) }
+                            span class="guide-read" { "Read guide" span aria-hidden="true" { " ↗" } }
+                        }
+                    }
                 }
             }
-            p { a href="/categories" { "Browse projects by category →" } }
+            aside class="guides-directory" {
+                div { h2 { "Looking for a specific tool?" } p class="muted" { "Explore the directory by category, stack or the job you need to do." } }
+                a class="btn" href="/categories" { "Browse categories →" }
+            }
             script type="application/ld+json" { (PreEscaped(schema.to_string())) }
         }
     }

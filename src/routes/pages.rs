@@ -66,7 +66,13 @@ async fn directory_page(
         || "Discover websites, apps and tools built with Rust.".to_string(),
         |c| format!("Explore {} built with Rust. Compare projects, GitHub stars, licenses and crates, then visit their websites or source repositories.", c.name),
     );
-    Ok(page(state, title, &description, path, body))
+    // Paginated catalog pages are distinct documents, not duplicates of page one.
+    let canonical = if browse.page_number(projects.len()) > 1 && browse.page_url(1) == "/#projects" {
+        format!("{path}?page={}", browse.page_number(projects.len()))
+    } else {
+        path.to_string()
+    };
+    Ok(page(state, title, &description, &canonical, body))
 }
 
 pub async fn categories(State(state): State<SharedState>, headers: HeaderMap) -> Result<Response, AppError> {
