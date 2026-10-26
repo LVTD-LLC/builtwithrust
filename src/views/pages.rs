@@ -54,6 +54,7 @@ pub fn home(d: HomeData<'_>) -> Markup {
                 (super::developer_guide::intro())
                 (super::developer_guide::javascript_workflows(site_url, d.projects))
                 (super::git_guide::workflows(site_url, d.projects))
+                (super::developer_guide::http_workflows(site_url, d.projects))
             }
             @if let Some(site_url) = d.data_guide_site_url {
                 (data_workflow_links(site_url))

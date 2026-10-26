@@ -943,7 +943,10 @@ async fn standalone_guides_are_discoverable_canonical_and_cached_without_filter_
         ] {
             let (status, _, body) = send(&app, get(unrelated)).await;
             assert_eq!(status, StatusCode::OK);
-            assert!(!body.contains(&format!("href=\"{path}\"")), "{unrelated}");
+            // The canonical category now intentionally introduces the Hurl exercise;
+            // filtered views and unrelated guides must still stay isolated.
+            let category_hurl_entry = unrelated == "/categories/developer-tools" && path == "/guides/hurl-http-tests";
+            assert_eq!(body.contains(&format!("href=\"{path}\"")), category_hurl_entry, "{unrelated}");
         }
         // Warm filtered views must not displace the cached default homepage card.
         assert!(send(&app, get("/")).await.2.contains(&format!("href=\"{path}\"")));
