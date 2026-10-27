@@ -58,11 +58,11 @@ pub fn body(site_url: &str) -> Markup {
             }
             ol { @for (name, text) in &steps { li { strong { (name) ": " } (text) } } }
             nav aria-label="On this page" { ol {
-                li { a href="#build" { "1. Check the installed build" } }
-                li { a href="#exercise" { "2. Run six validation cases" } }
-                li { a href="#schema" { "3. Write the import contract" } }
-                li { a href="#quarantine" { "4. Inspect accepted and rejected rows" } }
-                li { a href="#gate" { "5. Gate the import" } }
+                li { a href="#build" { "Check the installed build" } }
+                li { a href="#exercise" { "Run six validation cases" } }
+                li { a href="#schema" { "Write the import contract" } }
+                li { a href="#quarantine" { "Inspect accepted and rejected rows" } }
+                li { a href="#gate" { "Gate the import" } }
                 li { a href="#limits" { "Choose the right boundary" } }
                 li { a href="#questions" { "Common questions" } }
             } }
