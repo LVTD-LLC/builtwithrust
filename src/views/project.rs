@@ -166,6 +166,13 @@ pub fn show(p: &Project, related: &[Project]) -> Markup {
                     a href="/guides/difftastic-vs-git-diff" { "Compare Difftastic vs git diff with a reproducible exercise →" }
                 }
             }
+            @if p.slug == "qsv" {
+                section class="task-guide" aria-labelledby="qsv-guide-title" {
+                    h2 id="qsv-guide-title" { "Check a CSV before authorizing an import" }
+                    p { "Try six disposable fixtures that distinguish readable CSV, schema-valid rows and destination rules." }
+                    a href="/guides/qsv-csv-validation" { "Run the qsv CSV validation exercise →" }
+                }
+            }
             @if p.slug == "hurl" {
                 section class="task-guide" aria-labelledby="hurl-guide-title" {
                     h2 id="hurl-guide-title" { "Try Hurl against a local HTTP fixture" }
