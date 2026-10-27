@@ -15,3 +15,7 @@ Current 61-URL inventory and measurements are retained in private Rowset history
 - /guides — cached public article list; preserves established /guides URLs
 - /guides/difftastic-vs-git-diff — structural review versus native patch workflow; four-case disposable exercise and review worksheet
 - Private research locator only: dataset `947eec4f-d1b9-4c33-8999-a5ba0f6b1973`, index `builtwithrust:weekly-brief:2026-10-27:difftastic`
+
+- /guides/qsv-csv-validation — six-case CSV structural/schema admission exercise; inbounds from /guides, /projects/qsv and /categories/data-and-ai.
+- Scheduled-run research locator: dataset `947eec4f-d1b9-4c33-8999-a5ba0f6b1973`, index `builtwithrust:weekly-brief:2026-10-27:qsv-validation`.
+- Suggested guide anchor variants: qsv CSV validation; validate a CSV before import; CSV schema and quarantine exercise; qsv pre-import checks; reproducible CSV validation cases.

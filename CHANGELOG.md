@@ -112,3 +112,7 @@
 ## 2026-10-25
 
 - Added a cached Hurl HTTP-testing tutorial with downloadable loopback examples and deliberate status, header, JSON and connection failures. Linked it from the homepage and Hurl listing; added dated sitemap/schema and preserved earlier guide dates and category content.
+
+## 2026-10-27 — Scheduled weekly article
+
+- Publish a native cached qsv CSV validation guide with six executed fixtures, an explicit JSON Schema and fail-closed import boundaries. Add guide-list, qsv catalog and Data & AI discovery links plus sitemap/schema metadata. Preserve prior guide dates and URLs, the separate manual article, catalog storage and existing performance architecture. Keep research private; no dependencies, new JavaScript or request-time external calls.

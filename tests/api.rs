@@ -572,9 +572,9 @@ async fn category_workflow_discovery_is_cached_and_isolated_from_filters() {
             "Data & AI",
             ["polars", "qsv"],
             "data-workflows",
-            "2026-10-16",
+            "2026-10-27T12:06:00Z",
             "qsv’s optional SQL commands use Polars",
-            vec!["/projects/qsv", "/projects/polars", "/guides/rust-python-tools"],
+            vec!["/projects/qsv", "/projects/polars", "/guides/rust-python-tools", "/guides/qsv-csv-validation"],
         ),
         (
             "infrastructure",

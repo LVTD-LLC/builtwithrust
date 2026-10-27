@@ -385,7 +385,7 @@ fn data_workflow_links(site_url: &str) -> Markup {
         "hasPart": {
             "@type": "WebPageElement",
             "name": "Choose a data workflow",
-            "dateModified": "2026-10-16",
+            "dateModified": "2026-10-27T12:06:00Z",
             "url": format!("{site_url}/categories/data-and-ai#data-workflows")
         }
     });
@@ -414,6 +414,7 @@ fn data_workflow_links(site_url: &str) -> Markup {
             }
             p class="guide-jump" {
                 a href="/guides/rust-python-tools" { "Working in Python? See where Polars fits alongside uv and Ruff →" }
+                " · " a href="/guides/qsv-csv-validation" { "Validate a CSV before import with six qsv validation cases →" }
             }
             p class="small muted" { "Sources checked " time datetime="2026-10-16" { "October 16, 2026" } "." }
         }

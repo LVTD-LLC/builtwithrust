@@ -96,6 +96,19 @@ pub async fn guides(State(state): State<SharedState>, headers: HeaderMap) -> Res
     .await
 }
 
+pub async fn qsv_guide(State(state): State<SharedState>, headers: HeaderMap) -> Result<Response, AppError> {
+    cached_html(&state, &headers, "/guides/qsv-csv-validation".into(), || async {
+        Ok(page(
+            &state,
+            "qsv CSV validation: check before import",
+            "Try qsv CSV validation with six reproducible cases. Check schema rules, quarantine files and exit codes before authorizing an import.",
+            "/guides/qsv-csv-validation",
+            crate::views::qsv_guide::body(&state.cfg.site_url),
+        ))
+    })
+    .await
+}
+
 pub async fn difftastic_guide(State(state): State<SharedState>, headers: HeaderMap) -> Result<Response, AppError> {
     cached_html(&state, &headers, "/guides/difftastic-vs-git-diff".into(), || async {
         Ok(page(
