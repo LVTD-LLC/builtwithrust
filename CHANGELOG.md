@@ -2,6 +2,8 @@
 
 ## 2026-10-27
 
+- Fix doubled numbers in the qsv guide table of contents by using only the ordered list’s native numbering; preserve section headings and anchor links.
+
 - Publish a source-linked Difftastic vs git diff comparison with four executed disposable cases, a native patch round-trip and a review acceptance worksheet. Add a cached native `/guides` article list, sitemap entries and homepage/catalog discovery without changing old guide URLs, dates, catalog storage or request-path work. Keep research private; add no parser, dependencies or client-side JavaScript.
 
 ## 2026-10-26
