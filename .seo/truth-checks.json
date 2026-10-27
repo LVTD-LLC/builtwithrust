@@ -45,5 +45,19 @@
       "FoundationDB support was removed in SurrealDB 3\\.0\\.0",
       "Both support full-text search"
     ]
+  },
+  {
+    "claim": "rustic shared-format compatibility is not mixed-client write safety",
+    "paths": [
+      "src/views/project.rs"
+    ],
+    "must_match": [
+      "restic prune",
+      "official mixed-client locking and pruning guidance",
+      "separate disposable repository"
+    ],
+    "must_not_match": [
+      "allowing compatible repositories to be used with either tool\\."
+    ]
   }
 ]

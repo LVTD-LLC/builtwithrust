@@ -84,6 +84,25 @@ pub fn show(p: &Project, related: &[Project]) -> Markup {
                     p class="muted" { "Sources checked " time datetime="2026-10-17" { "October 17, 2026" } "." }
                 }
             }
+            @if p.slug == "rustic" {
+                section class="task-guide prose" aria-labelledby="rustic-repository-safety" {
+                    h2 id="rustic-repository-safety" { "Check repository access before switching backup tools" }
+                    p {
+                        "Using the same repository format is not a guarantee that two clients can write safely at the same time. "
+                        "Read the "
+                        a href="https://rustic.cli.rs/docs/FAQ.html#can-i-use-rustic-with-my-existing-restic-repositories" {
+                            "official mixed-client locking and pruning guidance"
+                        }
+                        " before using rustic with an existing restic repository. Keep restic prune from overlapping any rustic writes."
+                    }
+                    p {
+                        "For a first trial, use a separate disposable repository and restore into a separate directory. "
+                        "Compare the restored files with the originals before deciding whether the tool fits your backup workflow. "
+                        "A completed backup command alone is not a restore check."
+                    }
+                    p class="muted" { "Source checked " time datetime="2026-10-27" { "October 27, 2026" } "." }
+                }
+            }
             @if p.slug == "warp" {
                 section class="task-guide prose warp-context" aria-labelledby="warp-tools-title" {
                     h2 id="warp-tools-title" { "Warp terminal or the warp web framework?" }

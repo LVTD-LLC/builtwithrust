@@ -2,6 +2,8 @@
 
 ## 2026-10-27
 
+- Qualify rustic’s shared restic-format compatibility with the documented mixed-client pruning/write boundary, link the official guidance and suggest a disposable restore trial. Apply the catalog copy through a guarded reversible migration; preserve listing identity, stored stars and cached rendering.
+
 - Fix doubled numbers in the qsv guide table of contents by using only the ordered list’s native numbering; preserve section headings and anchor links.
 
 - Publish a source-linked Difftastic vs git diff comparison with four executed disposable cases, a native patch round-trip and a review acceptance worksheet. Add a cached native `/guides` article list, sitemap entries and homepage/catalog discovery without changing old guide URLs, dates, catalog storage or request-path work. Keep research private; add no parser, dependencies or client-side JavaScript.
