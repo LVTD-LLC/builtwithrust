@@ -188,6 +188,15 @@ pub fn home(d: HomeData<'_>) -> Markup {
         @if let Some(site_url) = d.developer_guide_site_url {
             (super::developer_guide::body(site_url))
         }
+        @if d.query.is_none() && d.active_category.is_none() && d.browse.is_default() {
+            section class="task-guide prose" aria-labelledby="restore-guide-title" {
+                h2 id="restore-guide-title" { "A backup is only useful if you can restore it" }
+                p {
+                    "Trying a Rust-powered backup tool? "
+                    a href="/guides/rustic-backup-restore" { "Verify restored files with a disposable rustic backup exercise →" }
+                }
+            }
+        }
 
     }
 }

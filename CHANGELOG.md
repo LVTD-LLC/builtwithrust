@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-28
+
+- Add a native Rustic backup restore guide and isolated downloadable acceptance exercise, with homepage, Guides and project discovery; distinguish file-content verification from command completion without touching real backups.
+
 ## 2026-10-27
 
 - Qualify rustic’s shared restic-format compatibility with the documented mixed-client pruning/write boundary, link the official guidance and suggest a disposable restore trial. Apply the catalog copy through a guarded reversible migration; preserve listing identity, stored stars and cached rendering.

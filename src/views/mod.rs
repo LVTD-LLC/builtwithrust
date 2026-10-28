@@ -12,6 +12,7 @@ pub mod presentation_guide;
 pub mod project;
 pub mod python_guide;
 pub mod qsv_guide;
+pub mod rustic_guide;
 pub mod terminal_guide;
 
 use crate::AppState;
@@ -47,7 +48,7 @@ pub fn layout(state: &AppState, page: Page<'_>) -> Markup {
                 meta property="og:title" content=(full_title);
                 meta property="og:description" content=(page.description);
                 meta property="og:url" content=(canonical);
-                meta property="og:type" content=(if matches!(page.path, "/guides/rust-python-tools" | "/guides/rust-terminal-tools" | "/guides/zed-vs-lapce" | "/guides/hurl-http-tests" | "/guides/difftastic-vs-git-diff" | "/guides/qsv-csv-validation") { "article" } else { "website" });
+                meta property="og:type" content=(if matches!(page.path, "/guides/rust-python-tools" | "/guides/rust-terminal-tools" | "/guides/zed-vs-lapce" | "/guides/hurl-http-tests" | "/guides/difftastic-vs-git-diff" | "/guides/qsv-csv-validation" | "/guides/rustic-backup-restore") { "article" } else { "website" });
                 @if page.path == "/guides/rust-python-tools" {
                     meta property="og:image" content=(format!("{}{}", state.cfg.site_url, state.asset_url("python-tools.png")));
                     meta property="og:image:alt" content="uv manages environments, Ruff checks source, Polars processes data. Choose one layer to change.";
