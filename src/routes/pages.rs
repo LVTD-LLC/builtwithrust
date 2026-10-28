@@ -96,6 +96,19 @@ pub async fn guides(State(state): State<SharedState>, headers: HeaderMap) -> Res
     .await
 }
 
+pub async fn rustic_guide(State(state): State<SharedState>, headers: HeaderMap) -> Result<Response, AppError> {
+    cached_html(&state, &headers, "/guides/rustic-backup-restore".into(), || async {
+        Ok(page(
+            &state,
+            "Rustic backup restore: verify the files",
+            "Try a disposable rustic backup and restore exercise. Compare restored bytes, test a failed check and keep live backup repositories out of the trial.",
+            "/guides/rustic-backup-restore",
+            crate::views::rustic_guide::body(&state.cfg.site_url),
+        ))
+    })
+    .await
+}
+
 pub async fn qsv_guide(State(state): State<SharedState>, headers: HeaderMap) -> Result<Response, AppError> {
     cached_html(&state, &headers, "/guides/qsv-csv-validation".into(), || async {
         Ok(page(

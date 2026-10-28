@@ -103,6 +103,13 @@ pub fn show(p: &Project, related: &[Project]) -> Markup {
                     p class="muted" { "Source checked " time datetime="2026-10-27" { "October 27, 2026" } "." }
                 }
             }
+            @if p.slug == "rustic" {
+                section class="task-guide" aria-labelledby="rustic-guide-title" {
+                    h2 id="rustic-guide-title" { "Can you recover the files you backed up?" }
+                    p { "Use a separate disposable repository to check restored contents before evaluating a real backup workflow." }
+                    a href="/guides/rustic-backup-restore" { "Run the rustic backup restore exercise and verify the files →" }
+                }
+            }
             @if p.slug == "warp" {
                 section class="task-guide prose warp-context" aria-labelledby="warp-tools-title" {
                     h2 id="warp-tools-title" { "Warp terminal or the warp web framework?" }

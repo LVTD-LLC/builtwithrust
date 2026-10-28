@@ -19,3 +19,6 @@ Current 61-URL inventory and measurements are retained in private Rowset history
 - /guides/qsv-csv-validation — six-case CSV structural/schema admission exercise; inbounds from /guides, /projects/qsv and /categories/data-and-ai.
 - Scheduled-run research locator: dataset `947eec4f-d1b9-4c33-8999-a5ba0f6b1973`, index `builtwithrust:weekly-brief:2026-10-27:qsv-validation`.
 - Suggested guide anchor variants: qsv CSV validation; validate a CSV before import; CSV schema and quarantine exercise; qsv pre-import checks; reproducible CSV validation cases.
+
+- /guides/rustic-backup-restore — disposable rustic backup/restore verification; inbounds from /, /guides and /projects/rustic; returns to the rustic catalog entry.
+- Suggested restore-guide anchor variants: rustic backup restore; verify restored files; disposable rustic restore exercise; compare a backup with restored contents; check recovery before trusting a backup.

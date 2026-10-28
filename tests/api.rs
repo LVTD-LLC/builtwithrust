@@ -879,11 +879,12 @@ async fn terminal_guide_is_discoverable_canonical_and_cached() {
 #[tokio::test]
 async fn standalone_guides_are_discoverable_canonical_and_cached_without_filter_leaks() {
     let (state, app, _dir) = app().await;
-    for slug in ["zed", "lapce", "hurl", "difftastic", "gitui", "unrelated-tool"] {
+    for slug in ["zed", "lapce", "hurl", "difftastic", "gitui", "rustic", "unrelated-tool"] {
         let (status, _, _) = send(&app, admin_json("POST", "/api/admin/projects", sample_project(slug))).await;
         assert_eq!(status, StatusCode::OK);
     }
     for (path, headline, published, projects) in [
+        ("/guides/rustic-backup-restore", "Rustic backup restore: verify the files", "2026-10-28", vec!["rustic"]),
         ("/guides/zed-vs-lapce", "Zed vs Lapce: choose by workflow", "2026-10-13", vec!["zed", "lapce"]),
         ("/guides/hurl-http-tests", "Hurl HTTP tests: catch a false green", "2026-10-25", vec!["hurl"]),
         (
@@ -954,9 +955,9 @@ async fn standalone_guides_are_discoverable_canonical_and_cached_without_filter_
             let category_hurl_entry = unrelated == "/categories/developer-tools" && path == "/guides/hurl-http-tests";
             assert_eq!(body.contains(&format!("href=\"{path}\"")), category_hurl_entry, "{unrelated}");
         }
-        // Homepage links to the editorial index, not individual guide promotions.
+        // The homepage promotes the restore exercise directly and retains the editorial index.
         let homepage = send(&app, get("/")).await.2;
-        assert!(!homepage.contains(&format!("href=\"{path}\"")));
+        assert_eq!(homepage.contains(&format!("href=\"{path}\"")), path == "/guides/rustic-backup-restore");
         assert!(homepage.contains("href=\"/guides\""));
     }
     // The editorial list must be a real, independently cached route, not a catalog filter.
