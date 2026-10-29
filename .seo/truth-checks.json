@@ -59,5 +59,21 @@
     "must_not_match": [
       "allowing compatible repositories to be used with either tool\\."
     ]
+  },
+  {
+    "claim": "Rustpad default storage is not a public-host durability guarantee; trial is recommended notperformed",
+    "paths": [
+      "src/views/rustpad_context.rs"
+    ],
+    "must_match": [
+      "SQLITE_URI",
+      "not a reported Rustpad deployment test",
+      "not guaranteed durable storage",
+      "not a statement about how the public rustpad.io service is configured"
+    ],
+    "must_not_match": [
+      "guaranteed permanent",
+      "end-to-end encrypted"
+    ]
   }
 ]

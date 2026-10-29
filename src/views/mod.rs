@@ -13,6 +13,7 @@ pub mod project;
 pub mod python_guide;
 pub mod qsv_guide;
 pub mod rustic_guide;
+pub mod rustpad_context;
 pub mod terminal_guide;
 
 use crate::AppState;

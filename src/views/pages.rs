@@ -76,6 +76,7 @@ pub fn home(d: HomeData<'_>) -> Markup {
             @if let Some(site_url) = d.document_guide_site_url {
                 (super::document_guide::workflows(site_url, d.projects))
                 (super::presentation_guide::workflows(site_url, d.projects))
+                (super::rustpad_context::discovery(d.projects))
             }
             @if d.query.is_none() && d.active_category.is_none() && d.browse.is_default() {
                 nav class="pills category-links" aria-label="Browse projects by category" {
