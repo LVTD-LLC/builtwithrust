@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-29
+
+- Enrich Rustpad’s existing listing with a source-linked collaboration and retention checklist, and add task-fit discovery from Productivity, Zed and Lapce. Preserve catalog data, guide experiments and cached rendering.
+
 ## 2026-10-28
 
 - Add a native Rustic backup restore guide and isolated downloadable acceptance exercise, with homepage, Guides and project discovery; distinguish file-content verification from command completion without touching real backups.

@@ -84,6 +84,9 @@ pub fn show(p: &Project, related: &[Project]) -> Markup {
                     p class="muted" { "Sources checked " time datetime="2026-10-17" { "October 17, 2026" } "." }
                 }
             }
+            @if p.slug == "rustpad" {
+                (super::rustpad_context::context())
+            }
             @if p.slug == "rustic" {
                 section class="task-guide prose" aria-labelledby="rustic-repository-safety" {
                     h2 id="rustic-repository-safety" { "Check repository access before switching backup tools" }
@@ -183,6 +186,11 @@ pub fn show(p: &Project, related: &[Project]) -> Markup {
                 section class="task-guide" aria-labelledby="editor-guide-title" {
                     h2 id="editor-guide-title" { "Is this editor a fit for your workflow?" }
                     a href="/guides/zed-vs-lapce" { "Compare Zed and Lapce by language support, remote work and collaboration →" }
+                    p {
+                        "Only need to edit a short example together in a browser? "
+                        a href="/projects/rustpad#rustpad-evaluation" { "Evaluate Rustpad as a shared scratchpad" }
+                        "; check document retention rather than treating a pad as a replacement for your project editor."
+                    }
                 }
             }
             @if matches!(p.slug.as_str(), "difftastic" | "gitui") {

@@ -1,0 +1,9 @@
+# Rustpad task-fit discovery — 2026-10-29
+
+- Daily run: `builtwithrust:daily-seo:2026-10-29`. Canonical private history: Rowset dataset `947eec4f-d1b9-4c33-8999-a5ba0f6b1973`, same index. Current merged SEO skill source moved to `lvtd/base/skills/seo`.
+- Enrich the existing Rustpad listing with a source-linked, recommended collaboration/reconnect/retention acceptance checklist; distinguish upstream defaults from unknown public-host settings. This is not a performed Rustpad deployment test or security/durability certification.
+- Add contextual discovery from Productivity, Zed and Lapce. Preserve listing data, title/meta, earlier category sections and all seven guide bodies/dates. No new URL, SQL, dependency, JavaScript or request-time network call.
+- Verification: independent pinned-source review and five critics; 30 Rust, 17 Python and 5 JavaScript tests; formatting, clippy, debug build and monitoring-bundle reproducibility. Four actual mobile/desktop light/dark preview states, 20 keyboard interactions; FAQ/schema agreement, canonical/indexability, sitemap content dates, filters, 16 internal routes, gzip and 304 verified. CI/release build and deployment must still pass before live completion.
+- Private evidence contains selection rationale, source windows, reservations, checks and exact outcome dates. No raw analytics or private research in this commit.
+- Not done: no acquisition/activation uplift established; public-host configuration and the proposed Rustpad trial are unverified. No paid panels, full-crawl replacement, field-CWV claim or outreach. Next scheduled run: October 30, develop qsv guide category discovery or a stronger fresh opportunity. November 3 intent checkpoint and November 5 bounded indexing watch retained; Rustpad outcome read November 29.
+- Paid SEO research: no paid calls, USD0 against USD0 cap. Agent/model/platform billing unknown and separate.
