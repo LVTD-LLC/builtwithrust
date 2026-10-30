@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-30
+
+- Add a task-facing CSV import checkpoint to Data & AI and an optional qsv exercise path from Polars. Preserve the existing guide, data workflow section and catalog fields; no new JavaScript or request-time network calls.
+
 ## 2026-10-29
 
 - Enrich Rustpad’s existing listing with a source-linked collaboration and retention checklist, and add task-fit discovery from Productivity, Zed and Lapce. Preserve catalog data, guide experiments and cached rendering.

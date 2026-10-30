@@ -207,6 +207,9 @@ pub fn show(p: &Project, related: &[Project]) -> Markup {
                     a href="/guides/qsv-csv-validation" { "Run the qsv CSV validation exercise →" }
                 }
             }
+            @if p.slug == "polars" {
+                (super::csv_discovery::polars_context())
+            }
             @if p.slug == "hurl" {
                 section class="task-guide" aria-labelledby="hurl-guide-title" {
                     h2 id="hurl-guide-title" { "Try Hurl against a local HTTP fixture" }
