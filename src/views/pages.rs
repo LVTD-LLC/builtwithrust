@@ -65,6 +65,7 @@ pub fn home(d: HomeData<'_>) -> Markup {
             }
             @if let Some(site_url) = d.data_guide_site_url {
                 (data_workflow_links(site_url))
+                (super::csv_discovery::workflows(d.projects))
             }
             @if let Some(site_url) = d.database_guide_site_url {
                 (database_workflow_links(site_url))
