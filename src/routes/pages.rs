@@ -96,6 +96,19 @@ pub async fn guides(State(state): State<SharedState>, headers: HeaderMap) -> Res
     .await
 }
 
+pub async fn polars_csv_guide(State(state): State<SharedState>, headers: HeaderMap) -> Result<Response, AppError> {
+    cached_html(&state, &headers, "/guides/polars-csv-schema-inference".into(), || async {
+        Ok(page(
+            &state,
+            "Polars CSV schema: preserve IDs",
+            "Keep leading-zero IDs and late mixed values in Polars CSV imports. Run a disposable Python exercise with schema_overrides and inference controls.",
+            "/guides/polars-csv-schema-inference",
+            crate::views::polars_csv_guide::body(&state.cfg.site_url),
+        ))
+    })
+    .await
+}
+
 pub async fn rustic_guide(State(state): State<SharedState>, headers: HeaderMap) -> Result<Response, AppError> {
     cached_html(&state, &headers, "/guides/rustic-backup-restore".into(), || async {
         Ok(page(

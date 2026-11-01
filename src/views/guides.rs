@@ -4,6 +4,12 @@ use maud::{Markup, PreEscaped, html};
 pub fn body(site_url: &str) -> Markup {
     let guides = [
         (
+            "polars-csv-schema-inference",
+            "Polars CSV schema: preserve IDs",
+            "2026-11-01",
+            "Preserve leading-zero identifiers and late mixed values with a disposable Python CSV inference exercise.",
+        ),
+        (
             "rustic-backup-restore",
             "Rustic backup restore: verify the files",
             "2026-10-28",
@@ -48,7 +54,7 @@ pub fn body(site_url: &str) -> Markup {
     ];
     let schema = serde_json::json!({
         "@context": "https://schema.org", "@type": "CollectionPage",
-        "url": format!("{site_url}/guides"), "name": "Rust tool guides", "dateModified": "2026-10-28",
+        "url": format!("{site_url}/guides"), "name": "Rust tool guides", "dateModified": "2026-11-01",
         "mainEntity": {"@type": "ItemList", "itemListElement": guides.iter().enumerate().map(|(i,(slug,title,_,_))| serde_json::json!({
             "@type": "ListItem", "position": i+1, "name": title, "url": format!("{site_url}/guides/{slug}")
         })).collect::<Vec<_>>()}

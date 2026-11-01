@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-11-01
+
+- Add a native cached Polars CSV schema guide and downloadable inference exercise, with homepage, Guides and Polars discovery. Distinguish identifier preservation, late mixed values and lossy error suppression; preserve existing CSV and category experiments with no new JavaScript, SQL or request-time network calls.
+
 ## 2026-10-30
 
 - Add a task-facing CSV import checkpoint to Data & AI and an optional qsv exercise path from Polars. Preserve the existing guide, data workflow section and catalog fields; no new JavaScript or request-time network calls.

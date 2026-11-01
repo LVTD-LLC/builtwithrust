@@ -209,6 +209,11 @@ pub fn show(p: &Project, related: &[Project]) -> Markup {
             }
             @if p.slug == "polars" {
                 (super::csv_discovery::polars_context())
+                section class="task-guide" aria-labelledby="polars-csv-guide-title" {
+                    h2 id="polars-csv-guide-title" { "Keep CSV identifiers intact in Python" }
+                    p { "Test leading-zero IDs and a mixed value after the inference sample before importing a real feed." }
+                    a href="/guides/polars-csv-schema-inference" { "Run the Polars CSV schema exercise →" }
+                }
             }
             @if p.slug == "hurl" {
                 section class="task-guide" aria-labelledby="hurl-guide-title" {

@@ -22,3 +22,6 @@ Current 61-URL inventory and measurements are retained in private Rowset history
 
 - /guides/rustic-backup-restore — disposable rustic backup/restore verification; inbounds from /, /guides and /projects/rustic; returns to the rustic catalog entry.
 - Suggested restore-guide anchor variants: rustic backup restore; verify restored files; disposable rustic restore exercise; compare a backup with restored contents; check recovery before trusting a backup.
+# Polars CSV schema exercise — 2026-11-01
+
+- `/guides/polars-csv-schema-inference`: Polars CSV schema exercise; preserve leading-zero IDs; inspect CSV inference; check exact CSV values; compare inference and String types. Inbound from homepage, Guides and Polars listing; this guide owns the pinned Python CSV representation trial, not general Polars identity or qsv validation.

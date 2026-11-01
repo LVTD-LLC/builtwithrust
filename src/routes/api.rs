@@ -207,7 +207,10 @@ pub async fn sitemap(State(state): State<SharedState>, headers: HeaderMap) -> Re
     for p in ["/", "/categories", "/submit", "/feature"] {
         xml.push_str(&format!("<url><loc>{base}{p}</loc></url>"));
     }
-    xml.push_str(&format!("<url><loc>{base}/guides</loc><lastmod>2026-10-28</lastmod></url>"));
+    xml.push_str(&format!("<url><loc>{base}/guides</loc><lastmod>2026-11-01</lastmod></url>"));
+    xml.push_str(&format!(
+        "<url><loc>{base}/guides/polars-csv-schema-inference</loc><lastmod>2026-11-01</lastmod></url>"
+    ));
     xml.push_str(&format!("<url><loc>{base}/guides/rustic-backup-restore</loc><lastmod>2026-10-28</lastmod></url>"));
     xml.push_str(&format!(
         "<url><loc>{base}/guides/qsv-csv-validation</loc><lastmod>2026-10-27T12:06:00Z</lastmod></url>"
@@ -225,7 +228,7 @@ pub async fn sitemap(State(state): State<SharedState>, headers: HeaderMap) -> Re
     for (slug, updated) in db::published_slugs(&state.pool).await? {
         // These listings gained editorial guide links; preserve newer catalog edits.
         let updated = if slug == "polars" {
-            updated.max("2026-10-30T00:00:00Z".to_string())
+            updated.max("2026-11-01T00:00:00Z".to_string())
         } else if matches!(slug.as_str(), "uv" | "ruff") {
             updated.max("2026-10-10T00:00:00Z".to_string())
         } else if matches!(slug.as_str(), "alacritty" | "nushell" | "atuin" | "yazi") {
