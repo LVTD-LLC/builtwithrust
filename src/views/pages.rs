@@ -191,6 +191,13 @@ pub fn home(d: HomeData<'_>) -> Markup {
             (super::developer_guide::body(site_url))
         }
         @if d.query.is_none() && d.active_category.is_none() && d.browse.is_default() {
+            section class="task-guide prose" aria-labelledby="polars-csv-guide-title" {
+                h2 id="polars-csv-guide-title" { "A numeric-looking ID is still an identifier" }
+                p {
+                    "Trying Polars for a CSV workflow? "
+                    a href="/guides/polars-csv-schema-inference" { "Preserve leading-zero IDs and late mixed values with a disposable exercise →" }
+                }
+            }
             section class="task-guide prose" aria-labelledby="restore-guide-title" {
                 h2 id="restore-guide-title" { "A backup is only useful if you can restore it" }
                 p {
