@@ -23,6 +23,12 @@ pub fn workflows(projects: &[Project]) -> Markup {
                     strong { "Explore the command-line tool →" }
                     span { "Find qsv’s project and source before deciding whether a separate shell-based check fits your workflow." }
                 }
+                @if projects.iter().any(|p| p.slug == "polars") {
+                    a href="/guides/polars-csv-schema-inference" {
+                        strong { "Preserve CSV identifiers with Python Polars →" }
+                        span { "Try eight synthetic Python Polars 2.1.0 cases covering leading-zero IDs, late mixed values and parse errors replaced with nulls. This is a separate typing check, not import approval." }
+                    }
+                }
             }
             p class="guide-note" {
                 "Keep the original file unchanged during a trial. Review rejected rows before choosing an all-or-nothing or partial import policy; "
@@ -32,7 +38,9 @@ pub fn workflows(projects: &[Project]) -> Markup {
             p class="small muted" {
                 "Based on our " a href="/guides/qsv-csv-validation#exercise" { "published exercise and its limits" }
                 " and the " a href="https://github.com/dathere/qsv/blob/26.0.0/docs/help/validate.md" { "qsv 26.0.0 validation reference" }
-                ". Checked " time datetime="2026-10-30" { "October 30, 2026" } "."
+                ". For Python CSV typing, see the "
+                a href="https://github.com/pola-rs/polars/blob/py-2.1.0/py-polars/src/polars/io/csv/functions.py" { "Polars 2.1.0 CSV reference" }
+                ". Checked " time datetime="2026-11-02" { "November 2, 2026" } "."
             }
         }
     }

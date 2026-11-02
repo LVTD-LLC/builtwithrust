@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-11-02
+
+- Add a task-facing path from the Data & AI CSV checkpoint to the existing Polars identifier-preservation exercise. Keep qsv validation separate from Python typing checks, preserve guide content and dates, and retain cached rendering without new JavaScript, SQL or request-time network calls.
+
 ## 2026-11-01
 
 - Add a native cached Polars CSV schema guide and downloadable inference exercise, with homepage, Guides and Polars discovery. Distinguish identifier preservation, late mixed values and lossy error suppression; preserve existing CSV and category experiments with no new JavaScript, SQL or request-time network calls.
