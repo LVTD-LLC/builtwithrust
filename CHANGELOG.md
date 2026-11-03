@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-11-03
+
+- Clarify rqbit's search and social previews with its BitTorrent desktop-app and web-interface scope. Preserve the listing body, catalog fields and cached rendering; record the metadata edit date without replacing newer catalog dates.
+
 ## 2026-11-02
 
 - Add a task-facing path from the Data & AI CSV checkpoint to the existing Polars identifier-preservation exercise. Keep qsv validation separate from Python typing checks, preserve guide content and dates, and retain cached rendering without new JavaScript, SQL or request-time network calls.

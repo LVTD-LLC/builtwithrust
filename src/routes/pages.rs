@@ -250,8 +250,15 @@ pub async fn project(
     };
     cached_html(&state, &headers, path.clone(), || async {
         let related = db::related_projects(&state.pool, &p).await?;
-        let desc = format!("{}: {} Built with Rust.", p.name, p.tagline);
-        Ok(page(&state, &p.name, &desc, &path, vp::show(&p, &related)))
+        let (title, desc) = if p.slug == "rqbit" {
+            (
+                "rqbit: BitTorrent desktop app & web UI",
+                "rqbit is a Rust BitTorrent client with a Tauri desktop app, CLI and web UI. Explore streaming support, source code and official project links.".to_string(),
+            )
+        } else {
+            (p.name.as_str(), format!("{}: {} Built with Rust.", p.name, p.tagline))
+        };
+        Ok(page(&state, title, &desc, &path, vp::show(&p, &related)))
     })
     .await
 }
