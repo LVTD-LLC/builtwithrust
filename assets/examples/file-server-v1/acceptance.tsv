@@ -1,13 +1,13 @@
 identity	path	interface/action	expected allow/deny/not-needed	observed HTTP/client result	file-state evidence	version/date
-anonymous	/release.txt	direct GET				
-reader	/release.txt	direct GET				
-reader	/inbox/reader.txt	browser upload				
-writer	/inbox/new.txt	browser upload				
-writer	/outside.txt	upload outside permitted subtree				
-writer	/inbox/new.txt	overwrite existing file				
-writer	/inbox/new.txt	DELETE				
-writer	/	WebDAV PROPFIND				
-writer	/inbox/dav.txt	WebDAV PUT and readback				
-uploader	/inbox/submitted.txt	direct GET for upload-only requirement				
-each intended identity	/fixture-symlink	ordinary file versus archive download				
-none	former share address	request after server shutdown				
+anonymous	/release.txt	direct GET	pending	not recorded	not recorded	not recorded
+reader	/release.txt	direct GET	pending	not recorded	not recorded	not recorded
+reader	/inbox/reader.txt	browser upload	pending	not recorded	not recorded	not recorded
+writer	/inbox/new.txt	browser upload	pending	not recorded	not recorded	not recorded
+writer	/outside.txt	upload outside permitted subtree	pending	not recorded	not recorded	not recorded
+writer	/inbox/new.txt	overwrite existing file	pending	not recorded	not recorded	not recorded
+writer	/inbox/new.txt	DELETE	pending	not recorded	not recorded	not recorded
+writer	/	WebDAV PROPFIND	pending	not recorded	not recorded	not recorded
+writer	/inbox/dav.txt	WebDAV PUT and readback	pending	not recorded	not recorded	not recorded
+uploader	/inbox/submitted.txt	direct GET for upload-only requirement	pending	not recorded	not recorded	not recorded
+each intended identity	/fixture-symlink	ordinary file versus archive download	pending	not recorded	not recorded	not recorded
+none	former share address	request after server shutdown	pending	not recorded	not recorded	not recorded
