@@ -25,3 +25,6 @@ Current 61-URL inventory and measurements are retained in private Rowset history
 # Polars CSV schema exercise — 2026-11-01
 
 - `/guides/polars-csv-schema-inference`: Polars CSV schema exercise; preserve leading-zero IDs; inspect CSV inference; check exact CSV values; compare inference and String types. Inbound from homepage, Guides and Polars listing; this guide owns the pinned Python CSV representation trial, not general Polars identity or qsv validation.
+
+- /guides/dufs-vs-miniserve — Rust file-server comparison with a disposable four-profile permission lab and acceptance worksheet; inbounds from /, /guides, /projects/dufs, /projects/miniserve and /categories/infrastructure.
+- Private weekly research: dataset `947eec4f-d1b9-4c33-8999-a5ba0f6b1973`, index `builtwithrust:weekly-brief:2026-11-03:dufs-vs-miniserve`.

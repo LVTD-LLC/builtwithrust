@@ -109,6 +109,18 @@ pub async fn polars_csv_guide(State(state): State<SharedState>, headers: HeaderM
     .await
 }
 
+pub async fn file_server_guide(State(state): State<SharedState>, headers: HeaderMap) -> Result<Response, AppError> {
+    cached_html(&state, &headers, "/guides/dufs-vs-miniserve".into(), || async {
+        Ok(page(
+            &state,
+            "Dufs vs miniserve: who can write?",
+            "Compare Dufs vs miniserve permissions with a reproducible 14-check exercise. Choose by account rules, browser uploads and WebDAV writes.",
+            "/guides/dufs-vs-miniserve",
+            crate::views::file_server_guide::body(&state.cfg.site_url),
+        ))
+    }).await
+}
+
 pub async fn rustic_guide(State(state): State<SharedState>, headers: HeaderMap) -> Result<Response, AppError> {
     cached_html(&state, &headers, "/guides/rustic-backup-restore".into(), || async {
         Ok(page(

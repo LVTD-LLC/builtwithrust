@@ -140,3 +140,9 @@
 ## 2026-10-27 — Scheduled weekly article
 
 - Publish a native cached qsv CSV validation guide with six executed fixtures, an explicit JSON Schema and fail-closed import boundaries. Add guide-list, qsv catalog and Data & AI discovery links plus sitemap/schema metadata. Preserve prior guide dates and URLs, the separate manual article, catalog storage and existing performance architecture. Keep research private; no dependencies, new JavaScript or request-time external calls.
+
+## 2026-11-03 — Dufs vs miniserve permission guide
+
+- Publish a native cached Maud comparison at `/guides/dufs-vs-miniserve`, with dated Article/FAQ/breadcrumb metadata and official version-pinned sources.
+- Add a disposable four-profile, fourteen-check Python exercise and an editable acceptance worksheet; distinguish browser uploads, DAV writes and account/path/global permissions without security or performance claims.
+- Include the article in Guides and the sitemap, and link it from the homepage, both project entries and the infrastructure file-sharing chooser. Preserve prior guide URLs, bodies and outcome dates.

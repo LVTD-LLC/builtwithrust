@@ -200,6 +200,13 @@ pub fn show(p: &Project, related: &[Project]) -> Markup {
                     a href="/guides/difftastic-vs-git-diff" { "Compare Difftastic vs git diff with a reproducible exercise →" }
                 }
             }
+            @if matches!(p.slug.as_str(), "dufs" | "miniserve") {
+                section class="task-guide" aria-labelledby="file-server-guide-title" {
+                    h2 id="file-server-guide-title" { "Who needs to write to this share?" }
+                    p { "Separate account rules, browser uploads and DAV writes with a disposable permission trial." }
+                    a href="/guides/dufs-vs-miniserve" { "Compare Dufs vs miniserve with fourteen checked outcomes →" }
+                }
+            }
             @if p.slug == "qsv" {
                 section class="task-guide" aria-labelledby="qsv-guide-title" {
                     h2 id="qsv-guide-title" { "Check a CSV before authorizing an import" }
