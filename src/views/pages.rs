@@ -191,6 +191,13 @@ pub fn home(d: HomeData<'_>) -> Markup {
             (super::developer_guide::body(site_url))
         }
         @if d.query.is_none() && d.active_category.is_none() && d.browse.is_default() {
+            section class="task-guide prose" aria-labelledby="file-server-home-title" {
+                h2 id="file-server-home-title" { "Who can write to your file share?" }
+                p {
+                    "Choosing a Rust file server? "
+                    a href="/guides/dufs-vs-miniserve" { "Compare Dufs and miniserve by account rules, browser uploads and WebDAV writes →" }
+                }
+            }
             section class="task-guide prose" aria-labelledby="polars-csv-guide-title" {
                 h2 id="polars-csv-guide-title" { "A numeric-looking ID is still an identifier" }
                 p {
@@ -267,6 +274,7 @@ fn file_sharing_workflow_links(site_url: &str, projects: &[Project]) -> Markup {
                 "Check the official " a href="https://github.com/svenstaro/miniserve#usage" { "miniserve usage and options" }
                 " and " a href="https://github.com/sigoden/dufs#access-control" { "Dufs access-control rules" } " for your installed version."
             }
+            p { a href="/guides/dufs-vs-miniserve" { "Compare Dufs vs miniserve with a reproducible account-and-path exercise →" } }
             p class="small muted" { "Sources checked " time datetime="2026-10-19" { "October 19, 2026" } "." }
         }
         script type="application/ld+json" { (maud::PreEscaped(schema.to_string().replace('<', "\\u003c"))) }

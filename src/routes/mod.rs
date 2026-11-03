@@ -36,6 +36,7 @@ pub fn router(state: SharedState) -> Router {
         .route("/categories/{slug}", get(pages::category))
         .route("/projects/{slug}", get(pages::project))
         .route("/guides", get(pages::guides))
+        .route("/guides/dufs-vs-miniserve", get(pages::file_server_guide))
         .route("/guides/polars-csv-schema-inference", get(pages::polars_csv_guide))
         .route("/guides/rustic-backup-restore", get(pages::rustic_guide))
         .route("/guides/qsv-csv-validation", get(pages::qsv_guide))

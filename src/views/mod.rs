@@ -4,6 +4,7 @@ pub mod developer_guide;
 pub mod difftastic_guide;
 pub mod document_guide;
 pub mod editor_guide;
+pub mod file_server_guide;
 pub mod git_guide;
 pub mod guides;
 pub mod hurl_guide;
@@ -50,7 +51,7 @@ pub fn layout(state: &AppState, page: Page<'_>) -> Markup {
                 meta property="og:title" content=(full_title);
                 meta property="og:description" content=(page.description);
                 meta property="og:url" content=(canonical);
-                meta property="og:type" content=(if matches!(page.path, "/guides/rust-python-tools" | "/guides/rust-terminal-tools" | "/guides/zed-vs-lapce" | "/guides/hurl-http-tests" | "/guides/difftastic-vs-git-diff" | "/guides/qsv-csv-validation" | "/guides/rustic-backup-restore" | "/guides/polars-csv-schema-inference") { "article" } else { "website" });
+                meta property="og:type" content=(if matches!(page.path, "/guides/rust-python-tools" | "/guides/rust-terminal-tools" | "/guides/zed-vs-lapce" | "/guides/hurl-http-tests" | "/guides/difftastic-vs-git-diff" | "/guides/qsv-csv-validation" | "/guides/rustic-backup-restore" | "/guides/polars-csv-schema-inference" | "/guides/dufs-vs-miniserve") { "article" } else { "website" });
                 @if page.path == "/guides/rust-python-tools" {
                     meta property="og:image" content=(format!("{}{}", state.cfg.site_url, state.asset_url("python-tools.png")));
                     meta property="og:image:alt" content="uv manages environments, Ruff checks source, Polars processes data. Choose one layer to change.";

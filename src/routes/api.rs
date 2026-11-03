@@ -203,11 +203,12 @@ pub async fn sitemap(State(state): State<SharedState>, headers: HeaderMap) -> Re
     xml.push_str(
         r#"<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">"#,
     );
+    xml.push_str(&format!("<url><loc>{base}/guides/dufs-vs-miniserve</loc><lastmod>2026-11-03</lastmod></url>"));
     // Catalog-driven hubs change independently of editorial releases; omit an untracked lastmod.
     for p in ["/", "/categories", "/submit", "/feature"] {
         xml.push_str(&format!("<url><loc>{base}{p}</loc></url>"));
     }
-    xml.push_str(&format!("<url><loc>{base}/guides</loc><lastmod>2026-11-01</lastmod></url>"));
+    xml.push_str(&format!("<url><loc>{base}/guides</loc><lastmod>2026-11-03</lastmod></url>"));
     xml.push_str(&format!(
         "<url><loc>{base}/guides/polars-csv-schema-inference</loc><lastmod>2026-11-01</lastmod></url>"
     ));
@@ -227,7 +228,9 @@ pub async fn sitemap(State(state): State<SharedState>, headers: HeaderMap) -> Re
     }
     for (slug, updated) in db::published_slugs(&state.pool).await? {
         // These listings gained editorial guide links; preserve newer catalog edits.
-        let updated = if slug == "polars" {
+        let updated = if matches!(slug.as_str(), "dufs" | "miniserve") {
+            updated.max("2026-11-03T00:00:00Z".to_string())
+        } else if slug == "polars" {
             updated.max("2026-11-01T00:00:00Z".to_string())
         } else if matches!(slug.as_str(), "uv" | "ruff") {
             updated.max("2026-10-10T00:00:00Z".to_string())
