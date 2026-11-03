@@ -227,8 +227,8 @@ pub async fn sitemap(State(state): State<SharedState>, headers: HeaderMap) -> Re
         xml.push_str(&format!("<url><loc>{base}/categories/{}</loc></url>", c.slug));
     }
     for (slug, updated) in db::published_slugs(&state.pool).await? {
-        // These listings gained editorial guide links; preserve newer catalog edits.
-        let updated = if matches!(slug.as_str(), "dufs" | "miniserve") {
+        // These listings gained editorial links or metadata; preserve newer catalog edits.
+        let updated = if matches!(slug.as_str(), "dufs" | "miniserve" | "rqbit") {
             updated.max("2026-11-03T00:00:00Z".to_string())
         } else if slug == "polars" {
             updated.max("2026-11-01T00:00:00Z".to_string())
