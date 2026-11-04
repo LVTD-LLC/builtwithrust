@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-11-04
+
+- Connect Developer Tools visitors to the existing Difftastic vs git diff exercise through a syntax-review task checkpoint. Keep structural reading separate from staging and patch export; preserve earlier category sections, guide content and experiment dates, with no new JavaScript, SQL or request-time network calls.
+
 ## 2026-11-03
 
 - Clarify rqbit's search and social previews with its BitTorrent desktop-app and web-interface scope. Preserve the listing body, catalog fields and cached rendering; record the metadata edit date without replacing newer catalog dates.

@@ -59,3 +59,52 @@ pub fn workflows(site_url: &str, projects: &[crate::db::Project]) -> Markup {
         script type="application/ld+json" { (PreEscaped(schema.to_string().replace('<', "\\u003c"))) }
     }
 }
+
+/// Independent discovery path; syntax review does not depend on GitUI being listed.
+pub fn syntax_review(site_url: &str, projects: &[crate::db::Project]) -> Markup {
+    if !projects.iter().any(|p| p.slug == "difftastic") {
+        return html! {};
+    }
+    let schema = serde_json::json!({
+        "@context": "https://schema.org",
+        "@type": "WebPageElement",
+        "@id": format!("{site_url}/categories/developer-tools#syntax-review-workflows"),
+        "name": "Read syntax changes without losing the Git patch",
+        "dateModified": "2026-11-04",
+        "isPartOf": { "@type": "CollectionPage", "@id": format!("{site_url}/categories/developer-tools") }
+    });
+    html! {
+        section id="syntax-review-workflows" class="task-guide" aria-labelledby="syntax-review-title" {
+            h2 id="syntax-review-title" { "Read syntax changes without losing the Git patch" }
+            p class="guide-intro" {
+                "Use Difftastic as an optional syntax-aware review view, not as your staging interface or patch format. "
+                "Compare it with native Git output on the same disposable change. A quiet structural diff is not proof "
+                "that behavior is unchanged; keep the textual view and relevant checks."
+            }
+            nav class="workflow-guides" aria-label="Syntax review and patch exercise" {
+                a href="/guides/difftastic-vs-git-diff" {
+                    strong { "Try Difftastic vs git diff →" }
+                    span {
+                        "Run the four-case exercise: formatting, a changed value, significant Python indentation and parser fallback. "
+                        "Check the native Git patch against the expected files."
+                    }
+                }
+                a href="/projects/difftastic" {
+                    strong { "Find Difftastic’s project and source →" }
+                    span {
+                        "Explore the Rust structural diff tool for reading changes. Use a separate staging workflow "
+                        "to select what enters a commit."
+                    }
+                }
+            }
+            p class="guide-note" {
+                "The guide’s recorded trial uses Difftastic 0.71.0 and Git 2.39.5; it is not a benchmark or a claim about every language. "
+                "See "
+                a href="https://github.com/Wilfred/difftastic/blob/b7d119e90ac9f972f03f69508da765dacd302c0c/manual/src/introduction.md" { "Difftastic’s syntax comparison explanation" }
+                " and " a href="https://git-scm.com/docs/git-diff" { "native Git diff documentation" } ". "
+                "Sources checked " time datetime="2026-11-04" { "November 4, 2026" } "."
+            }
+        }
+        script type="application/ld+json" { (PreEscaped(schema.to_string().replace('<', "\\u003c"))) }
+    }
+}
