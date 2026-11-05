@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-11-05
+
+- Explain Pueue's shell-command queue purpose in its search title and description; preserve the listing body and catalog snapshots. Record the editorial content date without replacing newer catalog dates.
+
 ## 2026-11-04
 
 - Connect Developer Tools visitors to the existing Difftastic vs git diff exercise through a syntax-review task checkpoint. Keep structural reading separate from staging and patch export; preserve earlier category sections, guide content and experiment dates, with no new JavaScript, SQL or request-time network calls.

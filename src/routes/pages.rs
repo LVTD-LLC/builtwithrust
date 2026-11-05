@@ -255,6 +255,11 @@ pub async fn project(
                 "rqbit: BitTorrent desktop app & web UI",
                 "rqbit is a Rust BitTorrent client with a Tauri desktop app, CLI and web UI. Explore streaming support, source code and official project links.".to_string(),
             )
+        } else if p.slug == "pueue" {
+            (
+                "Pueue: Rust task queue for shell commands",
+                "Pueue queues shell commands sequentially or in parallel. Inspect task output and control a single-user queue with its Rust client and background daemon.".to_string(),
+            )
         } else {
             (p.name.as_str(), format!("{}: {} Built with Rust.", p.name, p.tagline))
         };
