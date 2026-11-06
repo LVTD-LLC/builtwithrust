@@ -10,7 +10,7 @@ pub fn workflows(site_url: &str, projects: &[crate::db::Project]) -> Markup {
         "@type": "WebPageElement",
         "@id": format!("{site_url}/categories/productivity#presentation-workflows"),
         "name": "Present a Markdown slide deck in your terminal",
-        "dateModified": "2026-10-23",
+        "dateModified": "2026-11-06",
         "isPartOf": { "@type": "CollectionPage", "@id": format!("{site_url}/categories/productivity") }
     });
     html! {
@@ -52,6 +52,37 @@ pub fn workflows(site_url: &str, projects: &[crate::db::Project]) -> Markup {
                         "Mark display, export and code settings as pass, blocked or unverified. Keep your current presentation and a checked fallback until every essential requirement passes. "
                         "This is a rehearsal checklist, not a claim that we tested your terminal, projector or deck."
                     }
+                }
+            }
+            details {
+                summary { "Try a small HTML/PDF export before converting a deck" }
+                p {
+                    "HTML and PDF exports may combine steps shown separately in the terminal. "
+                    "Built with Rust checked presenterm 0.16.1 on Linux with a synthetic two-slide deck containing a pause and two code-highlight groups. "
+                    "Default HTML and PDF exports put the text before and after the pause together; "
+                    "setting export.pauses to new_slide produced three slides/pages instead of two. "
+                    "Neither setting turned the code-highlight groups into separate exported stages in this version."
+                }
+                ol {
+                    li {
+                        a href="/assets/examples/presenterm-export-v1/exercise.zip" { "Download the synthetic deck and two export configs (ZIP)." }
+                        " The included README gives version-pinned commands. Use an empty working directory; no snippet execution or validation is needed."
+                    }
+                    li {
+                        "For each format you need, export with both configs and open the resulting files. Check the reveal sequence and required text, then try a copy of your own representative deck. "
+                        "The 80-column/30-row setting is a terminal grid, not a pixel-size guarantee."
+                    }
+                    li {
+                        "Treat PDF as a separate check: our trial used WeasyPrint 66.0 and its system dependencies. "
+                        "Inspect fonts and wrapping in the file you will share. This fixture does not test images, your terminal or a projector."
+                    }
+                }
+                p class="guide-note" {
+                    "Trial checked " time datetime="2026-11-06" { "November 6, 2026" } ". "
+                    a href="https://github.com/mfontanini/presenterm/blob/v0.16.1/docs/src/configuration/settings.md#presentation-exports" { "Pinned export settings" }
+                    " · "
+                    a href="https://github.com/mfontanini/presenterm/blob/v0.16.1/src/presentation/builder/snippet.rs#L275" { "Pinned code-highlight export behavior" }
+                    ". Retest when versions or the display setup change; keep a checked fallback."
                 }
             }
             p class="guide-note" {

@@ -1,0 +1,5 @@
+export:
+  dimensions:
+    columns: 80
+    rows: 30
+  pauses: new_slide

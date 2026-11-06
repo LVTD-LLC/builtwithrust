@@ -554,7 +554,7 @@ async fn category_workflow_discovery_is_cached_and_isolated_from_filters() {
             "Productivity",
             ["presenterm", "other-productivity"],
             "presentation-workflows",
-            "2026-10-23",
+            "2026-11-06",
             "Snippet validation can also run code",
             vec!["/projects/presenterm"],
         ),
