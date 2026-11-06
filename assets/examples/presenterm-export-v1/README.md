@@ -26,7 +26,7 @@ Open both files in a browser and advance through every slide. In our fixture,
 `pauses.html` has three: before-only, before-plus-after, then code.
 In 0.16.1, neither export turns `{1|2}` into separate highlight stages;
 both code lines remain syntax-colored. Pause expansion and code-highlight
-expansion are different requirements. 
+expansion are different requirements.
 
 ## PDF: a separate handoff check
 
