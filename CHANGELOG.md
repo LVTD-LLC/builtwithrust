@@ -158,3 +158,8 @@
 - Publish a native cached Maud comparison at `/guides/dufs-vs-miniserve`, with dated Article/FAQ/breadcrumb metadata and official version-pinned sources.
 - Add a disposable four-profile, fourteen-check Python exercise and an editable acceptance worksheet; distinguish browser uploads, DAV writes and account/path/global permissions without security or performance claims.
 - Include the article in Guides and the sitemap, and link it from the homepage, both project entries and the infrastructure file-sharing chooser. Preserve prior guide URLs, bodies and outcome dates.
+
+## 2026-11-06 — Presenterm export handoff exercise
+
+- Added a small, version-pinned HTML/PDF export exercise to the existing Productivity presentation chooser: compare pause expansion with code-highlight stages before converting a deck.
+- Included a synthetic deck, explicit configs and sourced commands; preserved cached rendering, catalog data and existing article bodies/dates.
