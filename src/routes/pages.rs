@@ -255,6 +255,11 @@ pub async fn project(
                 "rqbit: BitTorrent desktop app & web UI",
                 "rqbit is a Rust BitTorrent client with a Tauri desktop app, CLI and web UI. Explore streaming support, source code and official project links.".to_string(),
             )
+        } else if p.slug == "caligula" {
+            (
+                "Caligula: Rust disk imaging for USB & SD",
+                "Caligula writes disk images to USB drives and SD cards from a Rust terminal UI, with input-hash checks and post-write verification. Explore its source.".to_string(),
+            )
         } else if p.slug == "pueue" {
             (
                 "Pueue: Rust task queue for shell commands",

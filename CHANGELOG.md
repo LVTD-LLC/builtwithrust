@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-11-07
+
+- Clarify Caligula's disk-imaging purpose for USB drives and SD cards in its search and social previews. Preserve the listing body, catalog snapshots and cached rendering; record the metadata edit date without replacing newer catalog dates.
+
 ## 2026-11-05
 
 - Explain Pueue's shell-command queue purpose in its search title and description; preserve the listing body and catalog snapshots. Record the editorial content date without replacing newer catalog dates.

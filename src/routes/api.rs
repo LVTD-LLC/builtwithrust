@@ -228,7 +228,9 @@ pub async fn sitemap(State(state): State<SharedState>, headers: HeaderMap) -> Re
     }
     for (slug, updated) in db::published_slugs(&state.pool).await? {
         // These listings gained editorial links or metadata; preserve newer catalog edits.
-        let updated = if slug == "pueue" {
+        let updated = if slug == "caligula" {
+            updated.max("2026-11-07T00:00:00Z".to_string())
+        } else if slug == "pueue" {
             updated.max("2026-11-05T00:00:00Z".to_string())
         } else if matches!(slug.as_str(), "dufs" | "miniserve" | "rqbit") {
             updated.max("2026-11-03T00:00:00Z".to_string())
