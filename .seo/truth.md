@@ -66,3 +66,7 @@ The existing Productivity presentation chooser owns the short acceptance exercis
 ## Caligula search-preview scope — verified 2026-11-07
 
 The [official README at revision ba1ace3d6a954272e1de6c1a2a24fa7deee02bf7](https://github.com/ifd3f/caligula/blob/ba1ace3d6a954272e1de6c1a2a24fa7deee02bf7/README.md) documents terminal disk imaging to USB drives and SD cards, input-hash validation and post-write verification. The Rust application is not an optical-disc burner; platform support varies and the existing listing retains those limits. Metadata describes documented features, not a performed hardware test, bootability guarantee or protection against choosing the wrong disk. Preserve the full listing body, H1, catalog snapshots and earlier experiments.
+
+## Rustpad search-preview scope — verified 2026-11-08
+
+The [official README at revision 54e4a9383c84d7317af42a7ddb177ce8bcba058d](https://github.com/ekzhang/rustpad/blob/54e4a9383c84d7317af42a7ddb177ce8bcba058d/README.md), still the upstream main revision on this date, documents browser-based collaborative code editing, a Rust server and WebAssembly text-operation logic, and a TypeScript/React interface. The self-hosted server uses memory-only document storage by default; `SQLITE_URI` enables optional SQLite snapshots. Search metadata describes these documented options, not the configuration of the public rustpad.io instance, a performed recovery test or a durability guarantee. Preserve the existing body/checklist and its October 29 source date; the sitemap date records this separate metadata edit.
