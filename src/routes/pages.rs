@@ -260,6 +260,11 @@ pub async fn project(
                 "Caligula: Rust disk imaging for USB & SD",
                 "Caligula writes disk images to USB drives and SD cards from a Rust terminal UI, with input-hash checks and post-write verification. Explore its source.".to_string(),
             )
+        } else if p.slug == "rustpad" {
+            (
+                "Rustpad: collaborative code editor",
+                "Explore Rustpad’s Rust-powered browser editor, source code and self-hosting options. Check default memory-only storage versus optional SQLite persistence.".to_string(),
+            )
         } else if p.slug == "pueue" {
             (
                 "Pueue: Rust task queue for shell commands",
