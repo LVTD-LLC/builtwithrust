@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-11-09
+
+- Add a task-facing Dust/dua disk-usage chooser and downloadable read-only Linux exercise. Explain sparse-file and hard-link accounting before cleanup; preserve catalog snapshots, older workflow dates and cached rendering without new JavaScript, SQL or request-time network calls.
+
 ## 2026-11-08
 
 - Clarify Rustpad’s collaborative browser-editor role and self-hosted storage options in search and social previews. Preserve the listing body, catalog snapshots and cached rendering; record the metadata edit date without replacing newer catalog dates.
