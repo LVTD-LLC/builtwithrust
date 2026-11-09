@@ -2,6 +2,7 @@
 
 pub mod developer_guide;
 pub mod difftastic_guide;
+pub mod disk_guide;
 pub mod document_guide;
 pub mod editor_guide;
 pub mod file_server_guide;
