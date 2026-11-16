@@ -1037,3 +1037,45 @@ async fn directory_pagination_keeps_filters_and_never_loses_or_repeats_projects(
     assert_eq!(state.cache.len(), cache_size, "page query variants must not grow the default cache");
     assert_eq!(card_slugs(&send(&app, get("/")).await.2).len(), 15);
 }
+
+#[tokio::test]
+async fn niri_checkpoint_is_scoped_cached_and_discoverable() {
+    let (_state, app, _dir) = app().await;
+    for slug in ["niri", "rustdesk", "unrelated"] {
+        let mut project = sample_project(slug);
+        project["category"] = json!("productivity");
+        send(&app, admin_json("POST", "/api/admin/projects", project)).await;
+    }
+    let (status, headers, body) = send(&app, get("/projects/niri")).await;
+    assert_eq!(status, StatusCode::OK);
+    assert!(body.contains("id=\"niri-compatibility\""));
+    assert!(body.contains("not a performed hardware"));
+    assert!(body.contains("689c1e914a5af782a476e433b79c15554bf5a312/docs/wiki/Xwayland.md"));
+    assert_eq!(body.matches("<h1").count(), 1);
+    assert!(body.contains("href=\"http://test.local/projects/niri\""));
+    let conditional = Request::get("/projects/niri")
+        .header(header::IF_NONE_MATCH, &headers[header::ETAG])
+        .body(Body::empty())
+        .unwrap();
+    assert_eq!(send(&app, conditional).await.0, StatusCode::NOT_MODIFIED);
+    let (_, _, category) = send(&app, get("/categories/productivity")).await;
+    assert!(category.contains("id=\"desktop-workflows\""));
+    assert!(category.contains("href=\"/projects/niri#niri-compatibility\""));
+    let (_, _, rustdesk) = send(&app, get("/projects/rustdesk")).await;
+    assert!(rustdesk.contains("does not establish RustDesk compatibility"));
+    assert!(rustdesk.contains("href=\"/projects/niri#niri-compatibility\""));
+    for path in ["/projects/unrelated", "/categories/productivity?q=niri", "/categories/productivity?sort=name"] {
+        let (_, _, isolated) = send(&app, get(path)).await;
+        assert!(!isolated.contains("id=\"desktop-workflows\""));
+        assert!(!isolated.contains("id=\"niri-compatibility\""));
+    }
+    let (_, _, sitemap) = send(&app, get("/sitemap.xml")).await;
+    for slug in ["niri", "rustdesk"] {
+        let marker = format!("/projects/{slug}</loc><lastmod>");
+        let modified = sitemap.split(&marker).nth(1).unwrap().split('<').next().unwrap();
+        assert!(modified >= "2026-11-16T00:00:00Z");
+    }
+    send(&app, admin_json("DELETE", "/api/admin/projects/niri", json!({}))).await;
+    let (_, _, category) = send(&app, get("/categories/productivity")).await;
+    assert!(!category.contains("id=\"desktop-workflows\""));
+}

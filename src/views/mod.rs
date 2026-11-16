@@ -9,6 +9,7 @@ pub mod file_server_guide;
 pub mod git_guide;
 pub mod guides;
 pub mod hurl_guide;
+pub mod niri_context;
 pub mod pages;
 pub mod polars_csv_guide;
 pub mod presentation_guide;

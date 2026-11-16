@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-11-16
+
+- Add a source-linked Niri application and desktop-service acceptance checklist, with Productivity and RustDesk discovery. Separate X11 integration, portals and screen sharing from remote-control requirements; preserve existing catalog fields, metadata and cached rendering without new SQL, JavaScript or request-time network calls.
+
 ## 2026-11-09
 
 - Add a task-facing Dust/dua disk-usage chooser and downloadable read-only Linux exercise. Explain sparse-file and hard-link accounting before cleanup; preserve catalog snapshots, older workflow dates and cached rendering without new JavaScript, SQL or request-time network calls.
