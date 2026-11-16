@@ -2,7 +2,7 @@ use super::{check_icon, external_icon, format_stars, project_grid};
 use crate::db::Project;
 use maud::{Markup, html};
 
-pub fn show(p: &Project, related: &[Project]) -> Markup {
+pub fn show(p: &Project, related: &[Project], site_url: &str) -> Markup {
     let stack = p.stack_list();
     html! {
         article class="project" {
@@ -82,6 +82,17 @@ pub fn show(p: &Project, related: &[Project]) -> Markup {
                         a href="/categories/databases-search#database-workflows" { "Choose by task: application search or document and graph storage →" }
                     }
                     p class="muted" { "Sources checked " time datetime="2026-10-17" { "October 17, 2026" } "." }
+                }
+            }
+            @if p.slug == "niri" {
+                (super::niri_context::context(site_url))
+            }
+            @if p.slug == "rustdesk" {
+                section class="task-guide" aria-labelledby="niri-desktop-context" {
+                    h2 id="niri-desktop-context" { "Evaluating a Niri desktop?" }
+                    p { "Keep compositor setup, screen capture and remote-control requirements separate. This checklist does not establish RustDesk compatibility with a particular desktop configuration." }
+                    a href="/projects/niri#niri-compatibility" { "Check Niri applications and desktop services →" }
+                    p class="small muted" { "Checklist added November 16, 2026." }
                 }
             }
             @if p.slug == "rustpad" {
