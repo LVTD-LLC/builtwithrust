@@ -1,6 +1,49 @@
 //! Native, cached guide with a disposable task-outcome exercise.
 use maud::{Markup, PreEscaped, html};
 
+/// A task-specific route into the existing guide, not another tutorial.
+pub fn discovery(site_url: &str, projects: &[crate::db::Project]) -> Markup {
+    if !projects.iter().any(|p| p.slug == "pueue") {
+        return html! {};
+    }
+    let schema = serde_json::json!({
+        "@context": "https://schema.org",
+        "@type": "WebPageElement",
+        "@id": format!("{site_url}/categories/productivity#command-queue-workflows"),
+        "name": "Queue shell work, then verify the result",
+        "dateModified": "2026-11-17",
+        "isPartOf": { "@type": "CollectionPage", "@id": format!("{site_url}/categories/productivity") }
+    });
+    html! {
+        section id="command-queue-workflows" class="task-guide" aria-labelledby="command-queue-title" {
+            h2 id="command-queue-title" { "Queue shell work, then verify the result" }
+            p class="guide-intro" {
+                "Evaluate Pueue when your work is already a set of shell commands and you need to queue their execution. "
+                "Keep three checks separate: the queue accepted the command, the selected task succeeded, and its output is correct. "
+                "A finished task alone does not answer all three."
+            }
+            nav class="workflow-guides" aria-label="Shell command queue evaluation" {
+                a href="/guides/pueue-task-queue" {
+                    strong { "Check task completion, success and output →" }
+                    span { "Six disposable Linux tasks contrast completion, process success, dependencies and expected files. Inspect the script and prerequisites before running it." }
+                }
+                a href="/projects/pueue" {
+                    strong { "Inspect Pueue’s project and upstream links →" }
+                    span { "Start with the tool’s scope and source before choosing a shell-command queue. This is a single-user shell workflow, not an application job service." }
+                }
+            }
+            p class="guide-note" {
+                "Need command recall or file navigation instead? Use the "
+                a href="/guides/rust-terminal-tools" { "terminal tools by task guide" }
+                ". The queue exercise is a controlled functional check, not a speed benchmark or a guarantee about your commands. "
+                "Source: " a href="https://github.com/Nukesor/pueue/blob/v4.0.4/README.md" { "Pueue 4.0.4 scope" }
+                "; links checked " time datetime="2026-11-17" { "November 17, 2026" } "."
+            }
+        }
+        script type="application/ld+json" { (PreEscaped(schema.to_string().replace('<', "\\u003c"))) }
+    }
+}
+
 pub fn body(site_url: &str) -> Markup {
     let url = format!("{site_url}/guides/pueue-task-queue");
     let wait_source = "https://github.com/Nukesor/pueue/blob/v4.0.4/pueue/src/client/commands/wait.rs";

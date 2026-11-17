@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-11-17
+
+- Add a task-labelled Productivity discovery path to the existing Pueue success-boundary exercise and project. Preserve the guide, listing metadata, earlier workflow sections and cached rendering; no new JavaScript, SQL or request-time network calls.
+
 ## 2026-11-16
 
 - Add a source-linked Niri application and desktop-service acceptance checklist, with Productivity and RustDesk discovery. Separate X11 integration, portals and screen sharing from remote-control requirements; preserve existing catalog fields, metadata and cached rendering without new SQL, JavaScript or request-time network calls.
