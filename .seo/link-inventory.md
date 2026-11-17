@@ -31,3 +31,5 @@ Current 61-URL inventory and measurements are retained in private Rowset history
 
 - /guides/pueue-task-queue — Pueue task queue: verify success; inbound from /, /guides and /projects/pueue; links to Pueue, Productivity and terminal workflow discovery.
 - Private weekly research: dataset `947eec4f-d1b9-4c33-8999-a5ba0f6b1973`, index `builtwithrust:weekly-brief:2026-11-17:pueue-task-queue`; run `builtwithrust:weekly-content:2026-11-17`.
+
+- `/categories/productivity#command-queue-workflows` — task-specific discovery to the existing Pueue guide and project, with terminal-history/navigation contrast; added November 17 without changing guide or listing metadata.
