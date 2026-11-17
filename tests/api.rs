@@ -879,13 +879,24 @@ async fn terminal_guide_is_discoverable_canonical_and_cached() {
 #[tokio::test]
 async fn standalone_guides_are_discoverable_canonical_and_cached_without_filter_leaks() {
     let (state, app, _dir) = app().await;
-    for slug in
-        ["zed", "lapce", "hurl", "difftastic", "gitui", "rustic", "polars", "dufs", "miniserve", "unrelated-tool"]
-    {
+    for slug in [
+        "zed",
+        "lapce",
+        "hurl",
+        "difftastic",
+        "gitui",
+        "rustic",
+        "polars",
+        "dufs",
+        "miniserve",
+        "pueue",
+        "unrelated-tool",
+    ] {
         let (status, _, _) = send(&app, admin_json("POST", "/api/admin/projects", sample_project(slug))).await;
         assert_eq!(status, StatusCode::OK);
     }
     for (path, headline, published, projects) in [
+        ("/guides/pueue-task-queue", "Pueue task queue: verify success", "2026-11-17", vec!["pueue"]),
         ("/guides/dufs-vs-miniserve", "Dufs vs miniserve: who can write?", "2026-11-03", vec!["dufs", "miniserve"]),
         ("/guides/polars-csv-schema-inference", "Polars CSV schema: preserve IDs", "2026-11-01", vec!["polars"]),
         ("/guides/rustic-backup-restore", "Rustic backup restore: verify the files", "2026-10-28", vec!["rustic"]),
@@ -966,7 +977,10 @@ async fn standalone_guides_are_discoverable_canonical_and_cached_without_filter_
             homepage.contains(&format!("href=\"{path}\"")),
             matches!(
                 path,
-                "/guides/rustic-backup-restore" | "/guides/polars-csv-schema-inference" | "/guides/dufs-vs-miniserve"
+                "/guides/rustic-backup-restore"
+                    | "/guides/polars-csv-schema-inference"
+                    | "/guides/dufs-vs-miniserve"
+                    | "/guides/pueue-task-queue"
             )
         );
         assert!(homepage.contains("href=\"/guides\""));
@@ -976,7 +990,7 @@ async fn standalone_guides_are_discoverable_canonical_and_cached_without_filter_
     assert_eq!(status, StatusCode::OK);
     assert!(body.contains("rel=\"canonical\" href=\"http://test.local/guides\""));
     assert!(body.contains("\"@type\":\"CollectionPage\""));
-    assert!(body.contains("\"dateModified\":\"2026-11-03\""));
+    assert!(body.contains("\"dateModified\":\"2026-11-17\""));
     assert_eq!(body.matches("<h1>").count(), 1);
     assert!(state.cache.get("/guides").is_some());
     let conditional =

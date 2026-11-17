@@ -179,3 +179,7 @@
 
 - Added a small, version-pinned HTML/PDF export exercise to the existing Productivity presentation chooser: compare pause expansion with code-highlight stages before converting a deck.
 - Included a synthetic deck, explicit configs and sourced commands; preserved cached rendering, catalog data and existing article bodies/dates.
+
+## 2026-11-17
+
+- Publish the native Pueue task-queue success guide and six-task disposable Linux exercise. Separate enqueue, completion, process success and artifact validation; include official-source caveats, guide index/sitemap entries and homepage/project discovery. Reuse cached Maud rendering without new dependencies, SQL or request-time external calls.

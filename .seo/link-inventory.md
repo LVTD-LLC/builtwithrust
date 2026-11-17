@@ -28,3 +28,6 @@ Current 61-URL inventory and measurements are retained in private Rowset history
 
 - /guides/dufs-vs-miniserve — Rust file-server comparison with a disposable four-profile permission lab and acceptance worksheet; inbounds from /, /guides, /projects/dufs, /projects/miniserve and /categories/infrastructure.
 - Private weekly research: dataset `947eec4f-d1b9-4c33-8999-a5ba0f6b1973`, index `builtwithrust:weekly-brief:2026-11-03:dufs-vs-miniserve`.
+
+- /guides/pueue-task-queue — Pueue task queue: verify success; inbound from /, /guides and /projects/pueue; links to Pueue, Productivity and terminal workflow discovery.
+- Private weekly research: dataset `947eec4f-d1b9-4c33-8999-a5ba0f6b1973`, index `builtwithrust:weekly-brief:2026-11-17:pueue-task-queue`; run `builtwithrust:weekly-content:2026-11-17`.
