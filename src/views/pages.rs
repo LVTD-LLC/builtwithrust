@@ -194,6 +194,10 @@ pub fn home(d: HomeData<'_>) -> Markup {
             (super::developer_guide::body(site_url))
         }
         @if d.query.is_none() && d.active_category.is_none() && d.browse.is_default() {
+            section class="task-guide prose" aria-labelledby="pueue-home-title" {
+                h2 id="pueue-home-title" { "A finished task is not always a successful task" }
+                p { a href="/guides/pueue-task-queue" { "Evaluate Pueue with a disposable queue and file-output checks →" } }
+            }
             section class="task-guide prose" aria-labelledby="file-server-home-title" {
                 h2 id="file-server-home-title" { "Who can write to your file share?" }
                 p {

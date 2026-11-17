@@ -109,6 +109,19 @@ pub async fn polars_csv_guide(State(state): State<SharedState>, headers: HeaderM
     .await
 }
 
+pub async fn pueue_guide(State(state): State<SharedState>, headers: HeaderMap) -> Result<Response, AppError> {
+    cached_html(&state, &headers, "/guides/pueue-task-queue".into(), || async {
+        Ok(page(
+            &state,
+            "Pueue task queue: verify success",
+            "Check a Pueue task queue with six disposable tasks. Separate enqueue, completion and success, catch masked pipelines, and validate output files.",
+            "/guides/pueue-task-queue",
+            crate::views::pueue_guide::body(&state.cfg.site_url),
+        ))
+    })
+    .await
+}
+
 pub async fn file_server_guide(State(state): State<SharedState>, headers: HeaderMap) -> Result<Response, AppError> {
     cached_html(&state, &headers, "/guides/dufs-vs-miniserve".into(), || async {
         Ok(page(

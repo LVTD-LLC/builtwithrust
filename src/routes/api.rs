@@ -208,7 +208,8 @@ pub async fn sitemap(State(state): State<SharedState>, headers: HeaderMap) -> Re
     for p in ["/", "/categories", "/submit", "/feature"] {
         xml.push_str(&format!("<url><loc>{base}{p}</loc></url>"));
     }
-    xml.push_str(&format!("<url><loc>{base}/guides</loc><lastmod>2026-11-03</lastmod></url>"));
+    xml.push_str(&format!("<url><loc>{base}/guides</loc><lastmod>2026-11-17</lastmod></url>"));
+    xml.push_str(&format!("<url><loc>{base}/guides/pueue-task-queue</loc><lastmod>2026-11-17</lastmod></url>"));
     xml.push_str(&format!(
         "<url><loc>{base}/guides/polars-csv-schema-inference</loc><lastmod>2026-11-01</lastmod></url>"
     ));
@@ -235,7 +236,7 @@ pub async fn sitemap(State(state): State<SharedState>, headers: HeaderMap) -> Re
         } else if slug == "caligula" {
             updated.max("2026-11-07T00:00:00Z".to_string())
         } else if slug == "pueue" {
-            updated.max("2026-11-05T00:00:00Z".to_string())
+            updated.max("2026-11-17T00:00:00Z".to_string())
         } else if matches!(slug.as_str(), "dufs" | "miniserve" | "rqbit") {
             updated.max("2026-11-03T00:00:00Z".to_string())
         } else if slug == "polars" {

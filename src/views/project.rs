@@ -98,6 +98,13 @@ pub fn show(p: &Project, related: &[Project], site_url: &str) -> Markup {
             @if p.slug == "rustpad" {
                 (super::rustpad_context::context())
             }
+            @if p.slug == "pueue" {
+                section class="task-guide" aria-labelledby="pueue-guide-title" {
+                    h2 id="pueue-guide-title" { "Did the task succeed, or only finish?" }
+                    p { "Keep task acceptance, process success and output validation separate." }
+                    a href="/guides/pueue-task-queue" { "Run the Pueue task queue success-boundary exercise →" }
+                }
+            }
             @if p.slug == "rustic" {
                 section class="task-guide prose" aria-labelledby="rustic-repository-safety" {
                     h2 id="rustic-repository-safety" { "Check repository access before switching backup tools" }
