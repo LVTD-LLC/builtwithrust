@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-11-18
+
+- Help Design visitors choose Graphite, Rnote or Satty by the file they need to share. Add source-linked recipient checks and measure project opens with the existing analytics schema. Preserve catalog entries, search metadata and cached rendering.
+
 ## 2026-11-17
 
 - Add a task-labelled Productivity discovery path to the existing Pueue success-boundary exercise and project. Preserve the guide, listing metadata, earlier workflow sections and cached rendering; no new JavaScript, SQL or request-time network calls.
