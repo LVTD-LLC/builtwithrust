@@ -220,6 +220,10 @@ p { margin: 0; }
 }
 
 /* Task guidance belongs to the canonical category, not filtered result sets. */
+/* The shared header stays sticky when opening a handoff link directly. */
+#design-handoffs { margin-bottom: 24px; scroll-margin-top: 104px; }
+#design-handoffs .workflow-guides { grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); }
+#design-handoffs .source-links a { text-decoration: underline; text-underline-offset: 3px; }
 .guide-intro { max-width: 76ch; color: var(--fg-muted); margin: 0 0 10px; }
 #data-workflows, #database-workflows, #network-workflows, #file-sharing-workflows { margin-bottom: 24px; }
 #database-workflows, #network-workflows, #file-sharing-workflows { scroll-margin-top: 90px; }

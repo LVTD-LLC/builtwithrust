@@ -577,6 +577,15 @@ async fn category_workflow_discovery_is_cached_and_isolated_from_filters() {
             vec!["/projects/qsv", "/projects/polars", "/guides/rust-python-tools", "/guides/qsv-csv-validation"],
         ),
         (
+            "design",
+            "Design",
+            ["graphite", "rnote"],
+            "design-handoffs",
+            "2026-11-18",
+            "check for clipped edges",
+            vec!["/projects/graphite", "/projects/rnote"],
+        ),
+        (
             "infrastructure",
             "Infrastructure",
             ["gping", "trippy"],
@@ -635,6 +644,7 @@ async fn category_workflow_discovery_is_cached_and_isolated_from_filters() {
             || marker.contains("javascript")
             || marker.contains("document")
             || marker.contains("presentation")
+            || marker.contains("design-handoffs")
         {
             let schema = schemas
                 .iter()
@@ -667,6 +677,17 @@ async fn category_workflow_discovery_is_cached_and_isolated_from_filters() {
             assert!(!body.contains(&marker), "{filtered}");
         }
         assert!(send(&app, get(&path)).await.2.contains(&marker));
+        if marker.contains("design-handoffs") {
+            assert!(body.contains("data-ph-capture-attribute-bwr-surface=\"design_handoffs\""));
+            assert!(!body.contains("href=\"/projects/satty\""));
+            let mut project = sample_project("rnote");
+            project["category"] = json!(category);
+            project["published"] = json!(false);
+            assert_eq!(send(&app, admin_json("POST", "/api/admin/projects", project)).await.0, StatusCode::OK);
+            let (_, _, body) = send(&app, get(&path)).await;
+            assert!(!body.contains("href=\"/projects/rnote\""));
+            assert!(!body.contains(&marker), "a single project is not a chooser");
+        }
         if marker.contains("presentation") {
             let mut project = sample_project("presenterm");
             project["category"] = json!(category);

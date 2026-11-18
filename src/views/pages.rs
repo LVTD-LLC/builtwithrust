@@ -7,6 +7,7 @@ pub struct HomeData<'a> {
     pub data_guide_site_url: Option<&'a str>,
     pub database_guide_site_url: Option<&'a str>,
     pub infrastructure_guide_site_url: Option<&'a str>,
+    pub design_guide_site_url: Option<&'a str>,
     pub document_guide_site_url: Option<&'a str>,
     pub browse: &'a crate::directory::Browse,
     pub facets: &'a crate::directory::Facets,
@@ -74,6 +75,9 @@ pub fn home(d: HomeData<'_>) -> Markup {
             @if let Some(site_url) = d.infrastructure_guide_site_url {
                 (network_workflow_links(site_url, d.projects))
                 (file_sharing_workflow_links(site_url, d.projects))
+            }
+            @if let Some(site_url) = d.design_guide_site_url {
+                (super::design_guide::handoffs(site_url, d.projects))
             }
             @if let Some(site_url) = d.document_guide_site_url {
                 (super::document_guide::workflows(site_url, d.projects))
