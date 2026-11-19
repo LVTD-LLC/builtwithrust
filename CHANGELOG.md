@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-11-19
+
+- Add a checked Linux exercise to the bottom listing for distinguishing same-name jobs by PID and clearing a hidden filter. Link from Infrastructure without changing listing metadata, cache behavior or the analytics schema.
+
 ## 2026-11-18
 
 - Help Design visitors choose Graphite, Rnote or Satty by the file they need to share. Add source-linked recipient checks and measure project opens with the existing analytics schema. Preserve catalog entries, search metadata and cached rendering.

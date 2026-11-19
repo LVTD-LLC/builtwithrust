@@ -229,7 +229,9 @@ pub async fn sitemap(State(state): State<SharedState>, headers: HeaderMap) -> Re
     }
     for (slug, updated) in db::published_slugs(&state.pool).await? {
         // These listings gained editorial links or metadata; preserve newer catalog edits.
-        let updated = if matches!(slug.as_str(), "niri" | "rustdesk") {
+        let updated = if slug == "bottom" {
+            updated.max("2026-11-19T00:00:00Z".to_string())
+        } else if matches!(slug.as_str(), "niri" | "rustdesk") {
             updated.max("2026-11-16T00:00:00Z".to_string())
         } else if slug == "rustpad" {
             updated.max("2026-11-08T00:00:00Z".to_string())

@@ -1,5 +1,6 @@
 //! HTML templates (maud, compile-time checked). `layout` wraps every page.
 
+mod bottom_context;
 pub mod developer_guide;
 pub mod difftastic_guide;
 pub mod disk_guide;
