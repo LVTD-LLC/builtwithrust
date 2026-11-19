@@ -74,6 +74,18 @@ pub fn home(d: HomeData<'_>) -> Markup {
             }
             @if let Some(site_url) = d.infrastructure_guide_site_url {
                 (network_workflow_links(site_url, d.projects))
+                @if d.projects.iter().any(|project| project.slug == "bottom") {
+                    p id="process-filter-discovery" class="guide-note" {
+                        "Looking at local processes rather than a remote host? "
+                        a href="/projects/bottom#bottom-process-filter"
+                            data-ph-capture-attribute-bwr-action="project_open"
+                            data-ph-capture-attribute-bwr-project="bottom"
+                            data-ph-capture-attribute-bwr-surface="infrastructure_process_filter"
+                            data-ph-capture-attribute-bwr-schema="1" {
+                            "Try bottom’s process filter with two same-name jobs →"
+                        }
+                    }
+                }
                 (file_sharing_workflow_links(site_url, d.projects))
             }
             @if let Some(site_url) = d.design_guide_site_url {

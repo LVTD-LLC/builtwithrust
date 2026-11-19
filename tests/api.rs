@@ -1114,3 +1114,25 @@ async fn niri_checkpoint_is_scoped_cached_and_discoverable() {
     let (_, _, category) = send(&app, get("/categories/productivity")).await;
     assert!(!category.contains("id=\"desktop-workflows\""));
 }
+
+#[tokio::test]
+async fn infrastructure_process_filter_link_requires_a_published_bottom_listing() {
+    let (_, app, _dir) = app().await;
+    let category = "/categories/infrastructure";
+    let link = "href=\"/projects/bottom#bottom-process-filter\"";
+    for slug in ["gping", "bottom"] {
+        let mut project = sample_project(slug);
+        project["category"] = json!("infrastructure");
+        assert_eq!(send(&app, admin_json("POST", "/api/admin/projects", project)).await.0, StatusCode::OK);
+    }
+    assert!(send(&app, get(category)).await.2.contains(link));
+    assert!(!send(&app, get("/categories/infrastructure?sort=name")).await.2.contains(link));
+    assert!(send(&app, get("/projects/bottom")).await.2.contains("id=\"bottom-process-filter\""));
+
+    let mut bottom = sample_project("bottom");
+    bottom["category"] = json!("infrastructure");
+    bottom["published"] = json!(false);
+    assert_eq!(send(&app, admin_json("POST", "/api/admin/projects", bottom)).await.0, StatusCode::OK);
+    assert!(!send(&app, get(category)).await.2.contains(link));
+    assert_eq!(send(&app, get("/projects/bottom")).await.0, StatusCode::NOT_FOUND);
+}

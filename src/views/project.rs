@@ -84,6 +84,9 @@ pub fn show(p: &Project, related: &[Project], site_url: &str) -> Markup {
                     p class="muted" { "Sources checked " time datetime="2026-10-17" { "October 17, 2026" } "." }
                 }
             }
+            @if p.slug == "bottom" {
+                (super::bottom_context::process_filter(site_url))
+            }
             @if p.slug == "niri" {
                 (super::niri_context::context(site_url))
             }
