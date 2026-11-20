@@ -35,6 +35,17 @@ pub fn context() -> Markup {
                 "For a local project and ongoing editor work, use the "
                 a href="/guides/zed-vs-lapce" { "Zed and Lapce workflow comparison" } " instead of treating a shared pad as a full development environment."
             }
+            h3 id="restart-trial" { "What survived a Rustpad server restart?" }
+            p {
+                "Built with Rust tested the same two-line pad on two disposable servers on November 20, 2026. "
+                "Before restart, both returned the complete text. After restart, the default in-memory server returned an empty pad at the same ID. "
+                "The SQLite server returned the original text, including the final newline, when restarted with the same database file."
+            }
+            p {
+                "For the SQLite trial, we waited until the stored document matched the local copy before stopping the server. "
+                "Reading the text back from the running server confirmed the edit had arrived, not that it had reached disk. "
+                "This checks recovery from one saved snapshot, not unsaved edits, disk loss or the public service."
+            }
             h3 { "Check these before sharing real work" }
             ol {
                 li {
@@ -55,7 +66,7 @@ pub fn context() -> Markup {
                 }
             }
             p {
-                "This is a suggested acceptance checklist, not a reported Rustpad deployment test, security audit or durability guarantee. "
+                "The restart trial checked server text, not two-browser collaboration. "
                 "Keep sensitive material out of the trial and confirm your host’s access and retention policy separately. "
                 a href="/categories/productivity" { "Browse other Rust productivity tools →" }
             }
