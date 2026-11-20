@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-11-20
+
+- Add a tested restart comparison to the Rustpad listing: default memory versus a confirmed SQLite snapshot.
+
 ## 2026-11-19
 
 - Add a checked Linux exercise to the bottom listing for distinguishing same-name jobs by PID and clearing a hidden filter. Link from Infrastructure without changing listing metadata, cache behavior or the analytics schema.

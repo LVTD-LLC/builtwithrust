@@ -234,7 +234,7 @@ pub async fn sitemap(State(state): State<SharedState>, headers: HeaderMap) -> Re
         } else if matches!(slug.as_str(), "niri" | "rustdesk") {
             updated.max("2026-11-16T00:00:00Z".to_string())
         } else if slug == "rustpad" {
-            updated.max("2026-11-08T00:00:00Z".to_string())
+            updated.max("2026-11-20T00:00:00Z".to_string())
         } else if slug == "caligula" {
             updated.max("2026-11-07T00:00:00Z".to_string())
         } else if slug == "pueue" {
