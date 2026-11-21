@@ -38,6 +38,15 @@ pub fn show(p: &Project, related: &[Project], site_url: &str) -> Markup {
                     } @else {
                         @for para in p.description.split("\n\n") { p { (para.trim()) } }
                     }
+                    @if p.slug == "figma" {
+                        p {
+                            "Read Figma Engineering on the "
+                            a href="https://www.figma.com/blog/rust-in-production-at-figma/" { "multiplayer server rewrite" }
+                            " and on how the "
+                            a href="https://www.figma.com/blog/how-figma-draws-inspiration-from-the-gaming-world/" { "browser canvas and UI fit together" }
+                            "."
+                        }
+                    }
                 }
                 aside class="project-meta" {
                     dl {

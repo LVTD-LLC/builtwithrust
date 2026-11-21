@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-11-21
+
+- Correct the Figma listing: distinguish the Rust multiplayer service from the C++ browser canvas and link both engineering accounts.
+
 ## 2026-11-20
 
 - Add a tested restart comparison to the Rustpad listing: default memory versus a confirmed SQLite snapshot.
