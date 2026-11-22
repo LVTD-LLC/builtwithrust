@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-11-22
+
+- Explain which spotify_player builds play audio locally and how to choose another Spotify Connect device from the terminal.
+
 ## 2026-11-21
 
 - Correct the Figma listing: distinguish the Rust multiplayer service from the C++ browser canvas and link both engineering accounts.
