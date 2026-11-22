@@ -38,6 +38,20 @@ pub fn show(p: &Project, related: &[Project], site_url: &str) -> Markup {
                     } @else {
                         @for para in p.description.split("\n\n") { p { (para.trim()) } }
                     }
+                    @if p.slug == "spotify-player" {
+                        h2 { "Where will the music play?" }
+                        p {
+                            "To hear music on the computer running the terminal, use a build with an audio backend. In v0.25.2, the default Cargo build includes Rodio and registers spotify-player as a Spotify Connect device."
+                        }
+                        p {
+                            "If music should come from another device, open Spotify on that device. In the terminal, press " kbd { "D" } " to list devices, then select it with " kbd { "Enter" } ". This is the playback path for the project's v0.25.2 Docker image: it can control another player, but it is built without local streaming."
+                        }
+                        p {
+                            a href="https://github.com/aome510/spotify-player/blob/v0.25.2/README.md#streaming" { "Audio backend options" }
+                            " · "
+                            a href="https://github.com/aome510/spotify-player/blob/v0.25.2/Dockerfile" { "Docker build settings" }
+                        }
+                    }
                     @if p.slug == "figma" {
                         p {
                             "Read Figma Engineering on the "
