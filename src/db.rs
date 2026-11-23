@@ -524,3 +524,18 @@ pub async fn payment_project_slug(pool: &Pool, session_id: &str) -> sqlx::Result
     .await?;
     Ok(rec.and_then(|r| r.slug))
 }
+
+/// Payment IDs are internal fulfillment references; never expose buyer email.
+pub async fn pending_newsletter_features(pool: &Pool) -> sqlx::Result<Vec<(i64, String)>> {
+    sqlx::query_as(
+        "SELECT payment_id, project_slug FROM newsletter_features WHERE fulfilled_issue IS NULL ORDER BY payment_id",
+    )
+    .fetch_all(pool)
+    .await
+}
+
+pub async fn record_newsletter_issue(pool: &Pool, payment: i64, issue: &str) -> sqlx::Result<bool> {
+    let res = sqlx::query("UPDATE newsletter_features SET fulfilled_issue = ? WHERE payment_id = ? AND (fulfilled_issue IS NULL OR fulfilled_issue = ?)")
+        .bind(issue).bind(payment).bind(issue).execute(pool).await?;
+    Ok(res.rows_affected() == 1)
+}

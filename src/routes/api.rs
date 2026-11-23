@@ -95,7 +95,8 @@ pub async fn checkout(
     let Some(stripe) = &state.stripe else {
         return feature_error(&state, StatusCode::SERVICE_UNAVAILABLE, "Payments are not enabled yet.").await;
     };
-    let Some(project) = db::project_by_slug(&state.pool, form.project_slug.trim()).await? else {
+    let Some(project) = db::project_by_slug(&state.pool, form.project_slug.trim()).await?.filter(|p| p.published != 0)
+    else {
         return feature_error(&state, StatusCode::UNPROCESSABLE_ENTITY, "That project is not listed. Submit it first.")
             .await;
     };
@@ -144,10 +145,6 @@ pub async fn stripe_webhook(
         tracing::warn!(error = %e, "rejected stripe webhook");
         bad_request(e.to_string())
     })?;
-    if !db::record_stripe_event(&state.pool, &event.id, &event.kind).await? {
-        // Already processed: Stripe retries, we stay idempotent.
-        return Ok(StatusCode::OK.into_response());
-    }
     if event.kind == "checkout.session.completed" || event.kind == "checkout.session.async_payment_succeeded" {
         let obj = &event.data.object;
         let paid = obj.get("payment_status").and_then(|v| v.as_str()) == Some("paid");
@@ -156,18 +153,10 @@ pub async fn stripe_webhook(
             let payment_intent = obj.get("payment_intent").and_then(|v| v.as_str());
             let amount = obj.get("amount_total").and_then(|v| v.as_i64());
             let currency = obj.get("currency").and_then(|v| v.as_str());
-            let mut project_id =
-                db::mark_payment_paid(&state.pool, session_id, payment_intent, amount, currency).await?;
-            if project_id.is_none() {
-                // Session was not created by us (or db was reset): fall back to metadata.
-                if let Some(slug) = obj.pointer("/metadata/project_slug").and_then(|v| v.as_str())
-                    && let Some(p) = db::project_by_slug(&state.pool, slug).await?
-                {
-                    project_id = Some(p.id);
-                }
+            if amount != Some(29900) || currency != Some("usd") {
+                return Ok(StatusCode::OK.into_response());
             }
-            if let Some(pid) = project_id {
-                db::extend_featured(&state.pool, pid, state.cfg.feature_days).await?;
+            if let Some(pid) = db::mark_payment_paid(&state.pool, session_id, payment_intent, amount, currency).await? {
                 state.cache.purge();
                 state.posthog.capture(
                     "payment_completed",
@@ -180,6 +169,7 @@ pub async fn stripe_webhook(
             }
         }
     }
+    db::record_stripe_event(&state.pool, &event.id, &event.kind).await?;
     Ok(StatusCode::OK.into_response())
 }
 

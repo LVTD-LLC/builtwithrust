@@ -335,7 +335,7 @@ async fn stripe_webhook_features_project_once() {
         "id": "evt_1", "type": "checkout.session.completed",
         "data": { "object": {
             "id": "cs_test_123", "payment_status": "paid", "payment_intent": "pi_1",
-            "amount_total": 4900, "currency": "usd", "metadata": { "project_slug": "paid" }
+            "amount_total": 29900, "currency": "usd", "metadata": { "project_slug": "paid" }
         }}
     });
     let payload = event.to_string();
@@ -371,6 +371,12 @@ async fn stripe_webhook_features_project_once() {
     assert_eq!(status, StatusCode::OK);
     let project = db::project_by_slug(&state.pool, "paid").await.unwrap().unwrap();
     assert_eq!(project.featured_until.unwrap(), first_until);
+
+    let slots = db::pending_newsletter_features(&state.pool).await.unwrap();
+    assert_eq!(slots.len(), 1);
+    assert_eq!(slots[0].1, "paid");
+    assert!(db::record_newsletter_issue(&state.pool, slots[0].0, "10").await.unwrap());
+    assert!(db::pending_newsletter_features(&state.pool).await.unwrap().is_empty());
 
     // Featured projects appear once, in the normal listing.
     let (_, _, body) = send(&app, get("/")).await;

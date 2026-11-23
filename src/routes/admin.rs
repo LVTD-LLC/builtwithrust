@@ -23,6 +23,8 @@ pub fn router(state: SharedState) -> Router<SharedState> {
         .route("/submissions", get(list_submissions))
         .route("/submissions/{id}/review", post(review_submission))
         .route("/cache/purge", post(purge_cache))
+        .route("/newsletter/features", get(newsletter_features))
+        .route("/newsletter/features/{payment}/delivered/{issue}", post(newsletter_delivered))
         .route("/stats", get(stats))
         .route_layer(middleware::from_fn_with_state(state, require_admin))
 }
@@ -182,4 +184,20 @@ async fn stats(State(state): State<SharedState>) -> Result<Response, AppError> {
         "posthog_enabled": state.posthog.enabled(),
     }))
     .into_response())
+}
+
+async fn newsletter_features(State(state): State<SharedState>) -> Result<Response, AppError> {
+    let pending = db::pending_newsletter_features(&state.pool).await?;
+    Ok(Json(pending.into_iter().map(|(id, slug)| json!({"payment_id": id, "project_slug": slug})).collect::<Vec<_>>())
+        .into_response())
+}
+
+async fn newsletter_delivered(
+    State(state): State<SharedState>,
+    Path((payment, issue)): Path<(i64, i64)>,
+) -> Result<Response, AppError> {
+    if issue <= 0 || !db::record_newsletter_issue(&state.pool, payment, &issue.to_string()).await? {
+        return Err(bad_request("Invalid payment or conflicting issue"));
+    }
+    Ok(StatusCode::NO_CONTENT.into_response())
 }

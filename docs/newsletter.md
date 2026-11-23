@@ -80,3 +80,10 @@ fixed-list payload, duplicate generic success, honeypot, provider failures and
 rate limiting. Preview browser checks passed at 1440/390 in light/dark with no
 overflow, native email validation, and a deliberate provider outage returning
 an accessible 503 form. CI runs fmt, clippy, tests and release build.
+
+## Paid placements
+
+Before assembling every issue, call `GET /api/admin/newsletter/features` with the site admin bearer token.
+Include each pending project as a clearly labeled sponsored link to its directory page.
+If the same project purchased twice, reserve the second placement for a later issue.
+After confirming delivery, call `POST /api/admin/newsletter/features/{payment_id}/delivered/{campaign_id}` for each included placement. Unsent slots remain pending even after the website highlight expires.

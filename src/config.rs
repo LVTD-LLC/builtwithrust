@@ -66,7 +66,7 @@ impl Config {
                 .map(|(url, list_uuid)| NewsletterConfig { url: url.trim_end_matches('/').into(), list_uuid }),
             posthog,
             stripe,
-            feature_days: opt("FEATURE_DAYS").and_then(|v| v.parse().ok()).unwrap_or(30),
+            feature_days: 7,
         }
     }
 

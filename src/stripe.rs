@@ -72,7 +72,6 @@ impl Stripe {
             ("cancel_url", cancel_url.into()),
             ("client_reference_id", project_slug.into()),
             ("metadata[project_slug]", project_slug.into()),
-            ("allow_promotion_codes", "true".into()),
         ];
         if let Some(email) = customer_email {
             form.push(("customer_email", email.into()));
