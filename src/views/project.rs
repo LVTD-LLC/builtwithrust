@@ -79,7 +79,7 @@ pub fn show(p: &Project, related: &[Project], site_url: &str, payments_enabled: 
                         h3 { "Rust stack" }
                         div class="pills" { @for s in &stack { span class="pill" { (s) } } }
                     }
-                    @if payments_enabled && !p.is_featured() {
+                    @if payments_enabled {
                         form method="post" action="/api/checkout" {
                             input type="hidden" name="project_slug" value=(p.slug);
                             button type="submit" class="btn btn-small" { "Feature this project" }

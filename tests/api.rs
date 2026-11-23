@@ -362,6 +362,9 @@ async fn stripe_webhook_features_project_once() {
     let project = db::project_by_slug(&state.pool, "paid").await.unwrap().unwrap();
     assert!(project.is_featured());
     let first_until = project.featured_until.clone().unwrap();
+    let (_, _, detail) = send(&app, get("/projects/paid")).await;
+    assert!(detail.contains("Feature this project"));
+    assert!(detail.contains(r#"name="project_slug" value="paid""#));
 
     // Replay of the same event id is ignored (no double extension).
     let req = Request::post("/api/stripe/webhook")
