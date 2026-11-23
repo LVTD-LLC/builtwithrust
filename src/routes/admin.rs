@@ -149,15 +149,37 @@ async fn review_submission(
     let Some(sub) = db::get_submission(&state.pool, id).await? else {
         return Ok(StatusCode::NOT_FOUND.into_response());
     };
+    if sub.feature_requested {
+        if sub.status != "pending" && sub.status != body.status {
+            return Err(bad_request("A sponsored submission already has a final review decision."));
+        }
+        if body.status == "approved" && sub.project_id.is_none() && !body.project.as_ref().is_some_and(|p| p.published)
+        {
+            return Err(bad_request("Approve this sponsored submission with a published project."));
+        }
+    }
     let mut project = None;
     if body.status == "approved"
-        && let Some(input) = &body.project
+        && let Some(mut input) = body.project
     {
-        project = Some(db::upsert_project(&state.pool, input).await.map_err(|e| bad_request(e.to_string()))?);
+        input.repo_url = input.repo_url.or_else(|| sub.repo_url.clone());
+        project = Some(db::upsert_project(&state.pool, &input).await.map_err(|e| bad_request(e.to_string()))?);
         state.cache.purge();
     }
     let project_id = project.as_ref().map(|p| p.id).or(sub.project_id);
     db::review_submission(&state.pool, id, &body.status, project_id).await?;
+    state.cache.purge();
+    if body.status == "rejected"
+        && let Some(intent) = db::rejected_payment(&state.pool, Some(id), None).await?
+    {
+        let stripe = state.stripe.as_ref().ok_or_else(|| {
+            AppError::Status(StatusCode::SERVICE_UNAVAILABLE, "Refund pending: Stripe unavailable".into())
+        })?;
+        stripe
+            .refund_rejected(&intent)
+            .await
+            .map_err(|_| AppError::Status(StatusCode::BAD_GATEWAY, "Refund pending; retry review.".into()))?;
+    }
     state.posthog.capture(
         "submission_reviewed",
         "admin",

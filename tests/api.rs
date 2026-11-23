@@ -291,7 +291,7 @@ async fn submission_flow() {
     assert!(body.contains("full URL"));
     // Good.
     let (status, headers, _) =
-        send(&app, form("/submit", "url=https%3A%2F%2Fgood.example&email=a%40b.co&note=hi")).await;
+        send(&app, form("/submit", "url=https%3A%2F%2Fgood.example&email=a%40b.co&note=hi&repo_url=https://github.com/example/good&twitter_url=https://x.com/good")).await;
     assert_eq!(status, StatusCode::SEE_OTHER);
     assert_eq!(headers.get(header::LOCATION).unwrap(), "/submit/thanks");
 
@@ -300,6 +300,8 @@ async fn submission_flow() {
     let subs: Vec<Value> = serde_json::from_str(&body).unwrap();
     assert_eq!(subs.len(), 1, "honeypot submission must not be stored");
     assert_eq!(subs[0]["url"], "https://good.example");
+    assert_eq!(subs[0]["repo_url"], "https://github.com/example/good");
+    assert_eq!(subs[0]["twitter_url"], "https://x.com/good");
     assert_eq!(subs[0]["status"], "pending");
     let id = subs[0]["id"].as_i64().unwrap();
 
@@ -311,7 +313,8 @@ async fn submission_flow() {
     let v: Value = serde_json::from_str(&body).unwrap();
     assert_eq!(v["submission"]["status"], "approved");
     assert_eq!(v["submission"]["project_id"], v["project"]["id"]);
-    let (status, _, _) = send(&app, get("/projects/good")).await;
+    let (status, _, detail) = send(&app, get("/projects/good")).await;
+    assert!(detail.contains("https://x.com/good"));
     assert_eq!(status, StatusCode::OK);
 
     // Rate limit: 5 per day per IP.

@@ -59,7 +59,8 @@ impl Stripe {
     /// webhook can find the project without a database round trip.
     pub async fn create_checkout_session(
         &self,
-        project_slug: &str,
+        reference: &str,
+        metadata_key: &str,
         customer_email: Option<&str>,
         success_url: &str,
         cancel_url: &str,
@@ -73,8 +74,8 @@ impl Stripe {
             ("line_items[0][quantity]", "1".into()),
             ("success_url", success_url.into()),
             ("cancel_url", cancel_url.into()),
-            ("client_reference_id", project_slug.into()),
-            ("metadata[project_slug]", project_slug.into()),
+            ("client_reference_id", reference.into()),
+            (metadata_key, reference.into()),
         ];
         if let Some(email) = customer_email {
             form.push(("customer_email", email.into()));
@@ -91,6 +92,24 @@ impl Stripe {
             return Err(StripeError::Api(body));
         }
         Ok(resp.json().await?)
+    }
+
+    pub async fn refund_rejected(&self, intent: &str) -> Result<(), StripeError> {
+        let response = self
+            .http
+            .post("https://api.stripe.com/v1/refunds")
+            .basic_auth(&self.cfg.secret_key, None::<&str>)
+            .header("Idempotency-Key", format!("rejected-submission-{intent}"))
+            .form(&[("payment_intent", intent)])
+            .send()
+            .await?;
+        if !response.status().is_success() {
+            let body: serde_json::Value = response.json().await?;
+            if body.pointer("/error/code").and_then(|v| v.as_str()) != Some("charge_already_refunded") {
+                return Err(StripeError::Api("Refund not confirmed".into()));
+            }
+        }
+        Ok(())
     }
 
     /// Verify a `Stripe-Signature` header against the raw body and parse the
