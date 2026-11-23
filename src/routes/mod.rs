@@ -9,6 +9,7 @@ pub mod api;
 pub mod assets;
 pub mod newsletter;
 pub mod pages;
+mod social_card;
 
 use crate::SharedState;
 use crate::views;
@@ -35,6 +36,7 @@ pub fn router(state: SharedState) -> Router {
         .route("/categories", get(pages::categories))
         .route("/categories/{slug}", get(pages::category))
         .route("/projects/{slug}", get(pages::project))
+        .route("/projects/{slug}/card.png", get(social_card::get))
         .route("/guides", get(pages::guides))
         .route("/guides/pueue-task-queue", get(pages::pueue_guide))
         .route("/guides/dufs-vs-miniserve", get(pages::file_server_guide))

@@ -59,7 +59,11 @@ pub fn layout(state: &AppState, page: Page<'_>) -> Markup {
             "See what ships with Rust. The Built with Rust crab on a stack of catalog folders.",
         ),
     };
-    let image_url = format!("{}{}", state.cfg.site_url, state.asset_url(image_asset));
+    let (image_url, image_alt) = if page.path.starts_with("/projects/") {
+        (format!("{canonical}/card.png"), page.title)
+    } else {
+        (format!("{}{}", state.cfg.site_url, state.asset_url(image_asset)), image_alt)
+    };
     html! {
         (DOCTYPE)
         html lang="en" {
