@@ -317,7 +317,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
 .footer-links { gap: 10px; align-items: flex-start; }
 .footer-links h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--fg); margin-bottom: 4px; }
 .footer-links a:hover, .footer-bottom a:hover { color: var(--accent); }
-.footer-bottom { display: flex; justify-content: space-between; gap: 20px; padding-top: 18px; padding-bottom: 22px; border-top: 1px solid var(--border); color: var(--fg-muted); font-size: 12px; }
+.footer-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 20px; padding-top: 18px; padding-bottom: 22px; border-top: 1px solid var(--border); color: var(--fg-muted); font-size: 12px; }
 .guides-index { padding-top: 40px; }
 .guides-header { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); align-items: end; gap: 48px; padding: 40px 0; }
 .guides-header .eyebrow { margin-bottom: 14px; }
@@ -359,6 +359,3 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
 }
 
 .traffic-count { color: var(--fg-muted); font-size: 12px; white-space: nowrap; }
-@media (max-width: 650px) {
-  .nav:has(.traffic-count) { flex-wrap: wrap; gap: 8px 16px; }
-}
