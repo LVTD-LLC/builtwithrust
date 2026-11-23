@@ -155,6 +155,20 @@ async fn warp_listing_scopes_licenses_and_distinguishes_framework_with_cached_re
 }
 
 #[tokio::test]
+async fn shiprust_is_featured_without_a_paid_campaign() {
+    let (state, app, _dir) = app().await;
+    for slug in ["shiprust", "other"] {
+        send(&app, admin_json("POST", "/api/admin/projects", sample_project(slug))).await;
+    }
+    let project = db::project_by_slug(&state.pool, "shiprust").await.unwrap().unwrap();
+    assert!(project.is_featured());
+    assert!(project.featured_until.is_none());
+    let (_, _, html) = send(&app, get("/")).await;
+    assert_eq!(card_slugs(&html), ["shiprust", "other"]);
+    assert!(db::pending_newsletter_features(&state.pool).await.unwrap().is_empty());
+}
+
+#[tokio::test]
 async fn public_pages_render() {
     let (_state, app, _dir) = app().await;
     assert_eq!(send(&app, get("/feature")).await.0, StatusCode::NOT_FOUND);
