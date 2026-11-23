@@ -250,7 +250,9 @@ pub async fn sitemap(State(state): State<SharedState>, headers: HeaderMap) -> Re
     }
     for (slug, updated) in db::published_slugs(&state.pool).await? {
         // These listings gained editorial links or metadata; preserve newer catalog edits.
-        let updated = if slug == "spotify-player" {
+        let updated = if slug == "octasine" {
+            updated.max("2026-11-23T00:00:00Z".to_string())
+        } else if slug == "spotify-player" {
             updated.max("2026-11-22T00:00:00Z".to_string())
         } else if slug == "bottom" {
             updated.max("2026-11-19T00:00:00Z".to_string())
