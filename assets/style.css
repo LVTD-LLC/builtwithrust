@@ -146,6 +146,7 @@ p { margin: 0; }
 .form { display: flex; flex-direction: column; gap: 16px; margin-top: 28px; }
 .form label { display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500; }
 .form input, .form textarea, .form select { font: inherit; font-size: 14px; font-weight: 400; padding: 9px 12px; border: 1px solid var(--border-strong); border-radius: 8px; background: var(--card); color: var(--fg); width: 100%; }
+.form input[type="checkbox"] { width: auto; accent-color: var(--accent); }
 .form input:focus, .form textarea:focus, .form select:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: transparent; }
 .form .btn { align-self: flex-start; }
 .req { color: var(--accent); }

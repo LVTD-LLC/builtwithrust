@@ -2,7 +2,7 @@ use super::{check_icon, external_icon, format_stars, project_grid};
 use crate::db::Project;
 use maud::{Markup, html};
 
-pub fn show(p: &Project, related: &[Project], site_url: &str, payments_enabled: bool) -> Markup {
+pub fn show(p: &Project, related: &[Project], site_url: &str, payments_enabled: bool, twitter: Option<&str>) -> Markup {
     let stack = p.stack_list();
     html! {
         article class="project" {
@@ -22,6 +22,9 @@ pub fn show(p: &Project, related: &[Project], site_url: &str, payments_enabled: 
                         data-ph-capture-attribute-bwr-project=(p.slug)
                         data-ph-capture-attribute-bwr-surface="project_detail"
                         data-ph-capture-attribute-bwr-schema="1" { "Visit " (p.domain()) (external_icon()) }
+                    @if let Some(profile) = twitter {
+                        a class="btn" href=(profile) rel="noopener nofollow" target="_blank" { "Twitter/X" (external_icon()) }
+                    }
                     @if let Some(repo) = &p.repo_url {
                         a class="btn" href=(repo) rel="noopener nofollow" target="_blank"
                             data-ph-capture-attribute-bwr-action="repository_visit"

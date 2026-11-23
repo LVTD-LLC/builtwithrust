@@ -2,6 +2,8 @@
 
 ## 2026-11-23
 
+- Accept GitHub and Twitter/X links and optional paid placement at submission. Start placement after review and payment; refund rejected paid submissions.
+
 - Keep direct checkout available on already-featured projects so their placement can be extended.
 
 - Start featured placement checkout directly from the project listing; retire the standalone feature page.

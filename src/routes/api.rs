@@ -14,13 +14,18 @@ use serde_json::json;
 
 const SUBMISSIONS_PER_DAY: i64 = 5;
 
-#[derive(Deserialize)]
+#[derive(Default, Deserialize)]
 pub struct SubmitForm {
     pub url: String,
     #[serde(default)]
     pub email: String,
     #[serde(default)]
     pub note: String,
+    #[serde(default)]
+    pub repo_url: String,
+    #[serde(default)]
+    pub twitter_url: String,
+    pub feature: Option<String>,
     /// Honeypot field, hidden from humans.
     #[serde(default)]
     pub website: String,
@@ -33,7 +38,7 @@ pub async fn submit(
 ) -> Result<Response, AppError> {
     let url = form.url.trim();
     let render_err = |msg: &str| {
-        let body = v::submit_form(Some(msg), url);
+        let body = v::submit_form(Some(msg), &form, state.cfg.payments_enabled());
         let mut resp = html_now(page(&state, "Submit a site", "Submit a site built with Rust.", "/submit", body));
         *resp.status_mut() = StatusCode::UNPROCESSABLE_ENTITY;
         resp
@@ -52,6 +57,17 @@ pub async fn submit(
     if !email.is_empty() && (!email.contains('@') || email.len() > 254) {
         return Ok(render_err("That email address does not look right."));
     }
+    let repo = form.repo_url.trim();
+    let twitter = form.twitter_url.trim();
+    if !repo.is_empty() && !valid_social_url(repo, &["github.com", "www.github.com"], 2) {
+        return Ok(render_err("Enter a GitHub repository URL, such as https://github.com/owner/project."));
+    }
+    if !twitter.is_empty() && !valid_social_url(twitter, &["twitter.com", "www.twitter.com", "x.com", "www.x.com"], 1) {
+        return Ok(render_err("Enter the project's Twitter or X profile URL."));
+    }
+    if form.feature.is_some() && state.stripe.is_none() {
+        return Ok(render_err("Checkout is unavailable. Uncheck the feature option to submit for free."));
+    }
     let note = form.note.trim().chars().take(2000).collect::<String>();
     let hash = ip_hash(&ip);
     if db::recent_submissions_from(&state.pool, &hash).await? >= SUBMISSIONS_PER_DAY {
@@ -63,6 +79,8 @@ pub async fn submit(
         (!email.is_empty()).then_some(email),
         (!note.is_empty()).then_some(note.as_str()),
         Some(&hash),
+        ((!repo.is_empty()).then_some(repo), (!twitter.is_empty()).then_some(twitter)),
+        form.feature.is_some(),
     )
     .await?;
     state.posthog.capture(
@@ -70,7 +88,28 @@ pub async fn submit(
         &hash,
         json!({ "submission_id": id, "url": url, "has_email": !email.is_empty() }),
     );
+    if form.feature.is_some()
+        && let Some(stripe) = &state.stripe
+    {
+        let thanks = format!("{}/submit/thanks", state.cfg.site_url);
+        let checkout = stripe.create_checkout_session(&id.to_string(), "metadata[submission_id]", (!email.is_empty()).then_some(email), &thanks, &thanks)
+            .await.map_err(|_| AppError::Status(StatusCode::BAD_GATEWAY, "Your submission is saved for review, but checkout could not start. You can feature the project once listed.".into()))?;
+        db::register_submission_checkout(&state.pool, id, &checkout.id).await?;
+        return Ok(Redirect::to(&checkout.url).into_response());
+    }
     Ok(Redirect::to("/submit/thanks").into_response())
+}
+
+fn valid_social_url(value: &str, hosts: &[&str], segments: usize) -> bool {
+    value.len() <= 2000
+        && reqwest::Url::parse(value).is_ok_and(|url| {
+            url.scheme() == "https"
+                && url.username().is_empty()
+                && url.password().is_none()
+                && url.port().is_none()
+                && url.host_str().is_some_and(|host| hosts.contains(&host))
+                && url.path().trim_matches('/').split('/').filter(|s| !s.is_empty()).count() == segments
+        })
 }
 
 pub async fn submit_thanks(State(state): State<SharedState>) -> Response {
@@ -102,8 +141,10 @@ pub async fn checkout(
     let email = form.email.as_deref().map(str::trim).filter(|s| !s.is_empty());
     let success_url = format!("{}/feature/success?session_id={{CHECKOUT_SESSION_ID}}", state.cfg.site_url);
     let cancel_url = format!("{}/projects/{}", state.cfg.site_url, project.slug);
-    let session =
-        stripe.create_checkout_session(&project.slug, email, &success_url, &cancel_url).await.map_err(|e| {
+    let session = stripe
+        .create_checkout_session(&project.slug, "metadata[project_slug]", email, &success_url, &cancel_url)
+        .await
+        .map_err(|e| {
             tracing::error!(error = %e, "stripe checkout session failed");
             AppError::Status(StatusCode::BAD_GATEWAY, "Could not start checkout. Please try again.".into())
         })?;
@@ -151,8 +192,11 @@ pub async fn stripe_webhook(
                     json!({ "project_id": pid, "amount_cents": amount, "currency": currency, "session_id": session_id }),
                 );
                 tracing::info!(project_id = pid, session_id, "project featured via stripe");
-            } else {
-                tracing::warn!(session_id, "paid session with no matching project");
+            } else if let Some(intent) = db::rejected_payment(&state.pool, None, Some(session_id)).await? {
+                stripe
+                    .refund_rejected(&intent)
+                    .await
+                    .map_err(|_| AppError::Status(StatusCode::BAD_GATEWAY, "Refund pending; retry.".into()))?;
             }
         }
     }

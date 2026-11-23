@@ -119,6 +119,9 @@ impl Project {
 
 #[derive(Debug, Clone, Serialize, FromRow)]
 pub struct Submission {
+    pub feature_requested: bool,
+    pub repo_url: Option<String>,
+    pub twitter_url: Option<String>,
     pub id: i64,
     pub url: String,
     pub email: Option<String>,
@@ -403,17 +406,41 @@ pub async fn create_submission(
     email: Option<&str>,
     note: Option<&str>,
     ip_hash: Option<&str>,
+    links: (Option<&str>, Option<&str>),
+    feature_requested: bool,
 ) -> sqlx::Result<i64> {
-    let rec = sqlx::query!(
-        r#"INSERT INTO submissions (url, email, note, ip_hash) VALUES (?, ?, ?, ?) RETURNING id"#,
-        url,
-        email,
-        note,
-        ip_hash
+    sqlx::query_scalar(
+        "INSERT INTO submissions(url,email,note,ip_hash,repo_url,twitter_url,feature_requested) VALUES(?,?,?,?,?,?,?) RETURNING id",
     )
+    .bind(url)
+    .bind(email)
+    .bind(note)
+    .bind(ip_hash)
+    .bind(links.0)
+    .bind(links.1)
+    .bind(feature_requested)
     .fetch_one(pool)
-    .await?;
-    Ok(rec.id)
+    .await
+}
+
+pub async fn approved_twitter_url(pool: &Pool, id: i64) -> sqlx::Result<Option<String>> {
+    sqlx::query_scalar("SELECT twitter_url FROM submissions WHERE project_id=? AND status='approved' AND twitter_url IS NOT NULL ORDER BY id DESC LIMIT 1")
+        .bind(id).fetch_optional(pool).await
+}
+
+pub async fn register_submission_checkout(pool: &Pool, id: i64, session: &str) -> sqlx::Result<()> {
+    sqlx::query("INSERT INTO payments(stripe_session_id,submission_id,project_id,email) SELECT ?,id,project_id,email FROM submissions WHERE id=?")
+        .bind(session).bind(id).execute(pool).await?;
+    Ok(())
+}
+
+pub async fn rejected_payment(
+    pool: &Pool,
+    submission: Option<i64>,
+    session: Option<&str>,
+) -> sqlx::Result<Option<String>> {
+    sqlx::query_scalar("SELECT stripe_payment_intent FROM payments p JOIN submissions s ON p.submission_id=s.id WHERE s.status='rejected' AND p.status='paid' AND (s.id=? OR p.stripe_session_id=?) AND stripe_payment_intent IS NOT NULL")
+        .bind(submission).bind(session).fetch_optional(pool).await
 }
 
 /// Count of submissions from one hashed IP in the last 24h, for rate limiting.
@@ -429,26 +456,14 @@ pub async fn recent_submissions_from(pool: &Pool, ip_hash: &str) -> sqlx::Result
 }
 
 pub async fn list_submissions(pool: &Pool, status: Option<&str>) -> sqlx::Result<Vec<Submission>> {
-    sqlx::query_as!(
-        Submission,
-        r#"SELECT id, url, email, note, status, project_id, created_at, reviewed_at
-           FROM submissions WHERE (?1 IS NULL OR status = ?1)
-           ORDER BY created_at DESC LIMIT 500"#,
-        status
-    )
-    .fetch_all(pool)
-    .await
+    sqlx::query_as("SELECT * FROM submissions WHERE (?1 IS NULL OR status=?1) ORDER BY created_at DESC LIMIT 500")
+        .bind(status)
+        .fetch_all(pool)
+        .await
 }
 
 pub async fn get_submission(pool: &Pool, id: i64) -> sqlx::Result<Option<Submission>> {
-    sqlx::query_as!(
-        Submission,
-        r#"SELECT id, url, email, note, status, project_id, created_at, reviewed_at
-           FROM submissions WHERE id = ?"#,
-        id
-    )
-    .fetch_optional(pool)
-    .await
+    sqlx::query_as("SELECT * FROM submissions WHERE id=?").bind(id).fetch_optional(pool).await
 }
 
 pub async fn review_submission(pool: &Pool, id: i64, status: &str, project_id: Option<i64>) -> sqlx::Result<bool> {

@@ -265,6 +265,7 @@ pub async fn project(
         return Ok(not_found(State(state)).await);
     };
     cached_html(&state, &headers, path.clone(), || async {
+        let twitter = db::approved_twitter_url(&state.pool, p.id).await?;
         let related = db::related_projects(&state.pool, &p).await?;
         let (title, desc) = if p.slug == "rqbit" {
             (
@@ -289,7 +290,7 @@ pub async fn project(
         } else {
             (p.name.as_str(), format!("{}: {} Built with Rust.", p.name, p.tagline))
         };
-        Ok(page(&state, title, &desc, &path, vp::show(&p, &related, &state.cfg.site_url, state.cfg.payments_enabled())))
+        Ok(page(&state, title, &desc, &path, vp::show(&p, &related, &state.cfg.site_url, state.cfg.payments_enabled(), twitter.as_deref())))
     })
     .await
 }
@@ -301,7 +302,7 @@ pub async fn submit(State(state): State<SharedState>, headers: HeaderMap) -> Res
             "Submit a site",
             "Submit a website, app or tool built with Rust for review.",
             "/submit",
-            v::submit_form(None, ""),
+            v::submit_form(None, &Default::default(), state.cfg.payments_enabled()),
         ))
     })
     .await

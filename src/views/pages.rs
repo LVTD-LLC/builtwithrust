@@ -505,7 +505,7 @@ pub fn categories(cats: &[CategoryCount]) -> Markup {
     }
 }
 
-pub fn submit_form(error: Option<&str>, url: &str) -> Markup {
+pub fn submit_form(error: Option<&str>, form: &crate::routes::api::SubmitForm, payments_enabled: bool) -> Markup {
     html! {
         section class="page narrow" {
             h1 { "Submit a site built with Rust" }
@@ -516,13 +516,25 @@ pub fn submit_form(error: Option<&str>, url: &str) -> Markup {
             @if let Some(e) = error { p class="alert" { (e) } }
             form class="form" method="post" action="/submit" {
                 label { "Website URL" span class="req" { "*" }
-                    input type="url" name="url" required placeholder="https://example.com" value=(url);
+                    input type="url" name="url" required placeholder="https://example.com" value=(form.url);
+                }
+                label { "GitHub repository URL (optional)"
+                    input type="url" name="repo_url" placeholder="https://github.com/owner/project" value=(form.repo_url);
+                }
+                label { "Project Twitter/X URL (optional)"
+                    input type="url" name="twitter_url" placeholder="https://x.com/project" value=(form.twitter_url);
                 }
                 label { "Your email " span class="muted" { "(optional, so we can tell you when it is listed)" }
-                    input type="email" name="email" placeholder="you@example.com";
+                    input type="email" name="email" value=(form.email) placeholder="you@example.com";
                 }
                 label { "Anything we should know? " span class="muted" { "(optional)" }
-                    textarea name="note" rows="4" placeholder="How do you know it is built with Rust? Which parts? Any links to blog posts or repos help."{}
+                    textarea name="note" rows="4" placeholder="How do you know it is built with Rust? Which parts? Any links to blog posts or repos help."{ (form.note) }
+                }
+                @if payments_enabled {
+                    label {
+                        span { input type="checkbox" name="feature" value="yes" checked[form.feature.is_some()]; " Feature this project — $299 USD" }
+                        span class="muted small" { "Pay once with Stripe for 7 days of highlighted placement and one newsletter feature. Placement starts once approved and paid. Rejected submissions are refunded." }
+                    }
                 }
                 // Honeypot: real users never see or fill this.
                 div class="hp" aria-hidden="true" { input type="text" name="website" tabindex="-1" autocomplete="off"; }
