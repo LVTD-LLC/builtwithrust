@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-11-23
+
+- Offer seven days of featured placement and a newsletter slot for a one-time $299 purchase.
+
 ## 2026-11-22
 
 - Explain which spotify_player builds play audio locally and how to choose another Spotify Connect device from the terminal.

@@ -335,7 +335,7 @@ async fn stripe_webhook_features_project_once() {
         "id": "evt_1", "type": "checkout.session.completed",
         "data": { "object": {
             "id": "cs_test_123", "payment_status": "paid", "payment_intent": "pi_1",
-            "amount_total": 4900, "currency": "usd", "metadata": { "project_slug": "paid" }
+            "amount_total": 29900, "currency": "usd", "metadata": { "project_slug": "paid" }
         }}
     });
     let payload = event.to_string();

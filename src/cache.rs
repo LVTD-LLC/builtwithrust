@@ -18,6 +18,7 @@ use std::sync::Arc;
 const MAX_ENTRIES: usize = 10_000;
 
 pub struct Cached {
+    rendered_at: std::time::Instant,
     pub identity: Bytes,
     pub gzip: Bytes,
     pub br: Bytes,
@@ -33,7 +34,7 @@ pub struct PageCache {
 
 impl PageCache {
     pub fn get(&self, key: &str) -> Option<Arc<Cached>> {
-        self.map.get(key).map(|e| e.value().clone())
+        self.map.get(key).filter(|e| e.rendered_at.elapsed().as_secs() < 60).map(|e| e.value().clone())
     }
 
     pub fn insert(&self, key: String, body: Bytes, content_type: &str, cache_control: &str) -> Arc<Cached> {
@@ -78,6 +79,7 @@ impl Cached {
             Bytes::from(out)
         };
         Self {
+            rendered_at: std::time::Instant::now(),
             identity: body,
             gzip,
             br,

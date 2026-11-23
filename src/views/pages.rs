@@ -547,13 +547,14 @@ pub fn feature(projects: &[Project], payments_enabled: bool, feature_days: i64, 
         section class="page narrow" {
             h1 { "Feature your project" }
             p class="lede" {
-                "Put your project at the top of the homepage and first in its category for " (feature_days) " days. "
-                "One flat payment, no subscription."
+                "Put your project at the top of the homepage and highlight it in project lists for " (feature_days) " days. "
+                "$299 USD, paid once. No subscription."
             }
             div class="pricing" {
                 ul class="checks" {
-                    li { "Pinned to the top of the homepage" }
-                    li { "First in its category and in search results" }
+                    li { "Highlighted on the homepage" }
+                    li { "One sponsored placement in the Built with Rust newsletter" }
+                    li { "Highlighted in its category and matching search results" }
                     li { "“Featured” badge on the card and project page" }
                     li { "Runs for " (feature_days) " days from payment" }
                 }

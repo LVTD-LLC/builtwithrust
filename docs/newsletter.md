@@ -80,3 +80,12 @@ fixed-list payload, duplicate generic success, honeypot, provider failures and
 rate limiting. Preview browser checks passed at 1440/390 in light/dark with no
 overflow, native email validation, and a deliberate provider outage returning
 an accessible 503 form. CI runs fmt, clippy, tests and release build.
+
+## Paid placements
+
+Before assembling every issue, read the site SQLite queue:
+`SELECT payment_id, project_slug FROM newsletter_features WHERE fulfilled_issue IS NULL ORDER BY payment_id`.
+Include each pending project as a clearly labeled sponsored link to its directory page.
+If the same project purchased twice, reserve the second placement for a later issue.
+After confirming delivery, set `fulfilled_issue` to that campaign's ID for the
+specific payment IDs included. Unsent slots remain pending even after the website highlight expires.
