@@ -61,6 +61,9 @@ pub async fn build(cfg: Config) -> anyhow::Result<(SharedState, axum::Router)> {
         .timeout(std::time::Duration::from_secs(15))
         .build()?;
     let posthog = Posthog::new(cfg.posthog.clone(), http.clone());
+    if let Ok(key) = std::env::var("POSTHOG_QUERY_KEY") {
+        posthog.refresh_views(key);
+    }
     let stripe = cfg.stripe.clone().map(|s| Stripe::new(s, http.clone()));
     let asset_version = {
         let mut h = Sha256::new();
