@@ -2,6 +2,8 @@
 
 ## 2026-11-23
 
+- Introduce the folder-crab logo, browser and home-screen icons, and branded link previews.
+
 - Feature ShipRust permanently in the directory, independent of paid weekly placements.
 
 - Accept GitHub and Twitter/X links and optional paid placement at submission. Start placement after review and payment; refund rejected paid submissions.

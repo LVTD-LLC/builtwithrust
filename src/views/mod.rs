@@ -41,6 +41,25 @@ pub fn layout(state: &AppState, page: Page<'_>) -> Markup {
     } else {
         format!("{} — Built with Rust", page.title)
     };
+    let (image_asset, image_alt) = match page.path {
+        "/guides/rust-python-tools" => (
+            "python-tools.png",
+            "uv manages environments, Ruff checks source, Polars processes data. Choose one layer to change.",
+        ),
+        "/guides/rust-terminal-tools" => (
+            "terminal-tools.png",
+            "Alacritty for the terminal window, Nushell for structured data, Atuin for command history, Yazi for file browsing.",
+        ),
+        "/guides/zed-vs-lapce" => (
+            "editor-choice.png",
+            "Zed vs Lapce: choose by workflow. Compare language support, remote development and collaboration with a reversible trial.",
+        ),
+        _ => (
+            "brand/directory-card.png",
+            "See what ships with Rust. The Built with Rust crab on a stack of catalog folders.",
+        ),
+    };
+    let image_url = format!("{}{}", state.cfg.site_url, state.asset_url(image_asset));
     html! {
         (DOCTYPE)
         html lang="en" {
@@ -50,27 +69,23 @@ pub fn layout(state: &AppState, page: Page<'_>) -> Markup {
                 title { (full_title) }
                 meta name="description" content=(page.description);
                 link rel="canonical" href=(canonical);
-                link rel="icon" href=(state.asset_url("favicon.svg")) type="image/svg+xml";
+                link rel="icon" type="image/png" sizes="32x32" href=(state.asset_url("favicon-32.png"));
+                link rel="apple-touch-icon" sizes="180x180" href=(state.asset_url("apple-touch-icon.png"));
+                link rel="icon" sizes="any" href=(state.asset_url("favicon.svg")) type="image/svg+xml";
                 link rel="stylesheet" href=(state.asset_url("style.css"));
                 meta property="og:title" content=(full_title);
                 meta property="og:description" content=(page.description);
                 meta property="og:url" content=(canonical);
                 meta property="og:type" content=(if matches!(page.path, "/guides/rust-python-tools" | "/guides/rust-terminal-tools" | "/guides/zed-vs-lapce" | "/guides/hurl-http-tests" | "/guides/difftastic-vs-git-diff" | "/guides/qsv-csv-validation" | "/guides/rustic-backup-restore" | "/guides/polars-csv-schema-inference" | "/guides/dufs-vs-miniserve" | "/guides/pueue-task-queue") { "article" } else { "website" });
-                @if page.path == "/guides/rust-python-tools" {
-                    meta property="og:image" content=(format!("{}{}", state.cfg.site_url, state.asset_url("python-tools.png")));
-                    meta property="og:image:alt" content="uv manages environments, Ruff checks source, Polars processes data. Choose one layer to change.";
-                }
-                @if page.path == "/guides/rust-terminal-tools" {
-                    meta property="og:image" content=(format!("{}{}", state.cfg.site_url, state.asset_url("terminal-tools.png")));
-                    meta property="og:image:alt" content="Alacritty for the terminal window, Nushell for structured data, Atuin for command history, Yazi for file browsing.";
-                }
-                @if page.path == "/guides/zed-vs-lapce" {
-                    meta property="og:image" content=(format!("{}{}", state.cfg.site_url, state.asset_url("editor-choice.png")));
-                    meta property="og:image:width" content="1200";
-                    meta property="og:image:height" content="630";
-                    meta property="og:image:alt" content="Zed vs Lapce: choose by workflow. Compare language support, remote development and collaboration with a reversible trial.";
-                }
-                meta name="twitter:card" content=(if page.path == "/guides/zed-vs-lapce" { "summary_large_image" } else { "summary" });
+                meta property="og:site_name" content="Built with Rust";
+                meta property="og:image" content=(image_url);
+                meta property="og:image:type" content="image/png";
+                meta property="og:image:width" content="1200";
+                meta property="og:image:height" content="630";
+                meta property="og:image:alt" content=(image_alt);
+                meta name="twitter:card" content="summary_large_image";
+                meta name="twitter:image" content=(image_url);
+                meta name="twitter:image:alt" content=(image_alt);
                 @if let Some(dsn) = &state.cfg.sentry_dsn {
                     meta name="sentry-dsn" content=(dsn);
                     meta name="sentry-environment" content=(&state.cfg.sentry_environment);
@@ -86,10 +101,7 @@ pub fn layout(state: &AppState, page: Page<'_>) -> Markup {
             body {
                 header class="site-header" {
                     div class="container header-inner" {
-                        a class="brand" href="/" {
-                            (crab_icon())
-                            span { "Built with Rust" }
-                        }
+                        (brand_link(state))
                         nav class="nav" aria-label="Main navigation" {
                             a href="/" { "Projects" }
                             a href="/guides" { "Guides" }
@@ -109,7 +121,7 @@ pub fn layout(state: &AppState, page: Page<'_>) -> Markup {
                 footer class="site-footer" {
                     div class="container footer-inner" {
                         div {
-                            a class="brand" href="/" { (crab_icon()) span { "Built with Rust" } }
+                            (brand_link(state))
                             p class="muted" { "A curated directory of websites, apps and tools built with Rust. Itself built with Rust." }
                         }
                         nav class="footer-links" aria-label="Explore" {
@@ -125,7 +137,7 @@ pub fn layout(state: &AppState, page: Page<'_>) -> Markup {
                         }
                     }
                     div class="container footer-bottom" {
-                        span { "Discover what Rust can do." }
+                        span { "See what ships with Rust." }
                         a href="/privacy" { "Privacy" }
 
                     }
@@ -201,12 +213,15 @@ pub fn format_stars(stars: Option<i64>) -> String {
     }
 }
 
-pub fn crab_icon() -> Markup {
-    html! { svg class="icon brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" {
-        path d="M12 2a5 5 0 0 1 5 5v2.3a7 7 0 1 1-10 0V7a5 5 0 0 1 5-5z";
-        path d="M3 10l3 2M21 10l-3 2M4 16l3-1M20 16l-3-1M9 9h.01M15 9h.01";
-    } }
+fn brand_link(state: &AppState) -> Markup {
+    html! {
+        a class="brand" href="/" aria-label="Built with Rust" {
+            img class="wordmark-light" src=(state.asset_url("brand/wordmark-ink.svg")) alt="" width="162" height="30";
+            img class="wordmark-dark" src=(state.asset_url("brand/wordmark-cream.svg")) alt="" width="162" height="30";
+        }
+    }
 }
+
 pub fn check_icon() -> Markup {
     html! { svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" { path d="M12 2l2.4 2.1 3.1-.5 1 3 2.9 1.3-.6 3.1L22 13.5l-1.9 2.6.3 3.1-3.1.9-1.6 2.7L12 21.6l-3.7 1.2-1.6-2.7-3.1-.9.3-3.1L2 13.5l1.2-2.5-.6-3.1L5.5 6.6l1-3 3.1.5L12 2zm-1.2 13.4l5.6-5.6-1.4-1.4-4.2 4.2-2-2-1.4 1.4 3.4 3.4z"; } }
 }

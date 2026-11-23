@@ -76,6 +76,24 @@ fn sample_project(slug: &str) -> Value {
 }
 
 #[tokio::test]
+async fn home_and_guides_expose_one_versioned_share_image() {
+    let (state, app, _dir) = app().await;
+    for (path, asset) in [
+        ("/", "brand/directory-card.png"),
+        ("/guides/rust-python-tools", "python-tools.png"),
+        ("/guides/rust-terminal-tools", "terminal-tools.png"),
+        ("/guides/zed-vs-lapce", "editor-choice.png"),
+    ] {
+        let (_, _, body) = send(&app, get(path)).await;
+        let url = format!("http://test.local{}", state.asset_url(asset));
+        assert_eq!(body.matches(r#"property="og:image""#).count(), 1);
+        assert!(body.contains(&format!(r#"property="og:image" content="{url}""#)));
+        assert!(body.contains(&format!(r#"name="twitter:image" content="{url}""#)));
+        assert!(body.contains(r#"name="twitter:card" content="summary_large_image""#));
+    }
+}
+
+#[tokio::test]
 async fn fish_listing_distinguishes_shell_and_language_servers_without_leaking_to_other_projects() {
     let (_state, app, _dir) = app().await;
     let seed: Vec<Value> = serde_json::from_str(include_str!("../seed/projects.json")).unwrap();

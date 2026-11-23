@@ -4,7 +4,11 @@ use super::AppError;
 use crate::{Assets, SharedState};
 use axum::extract::{Path, State};
 use axum::http::{HeaderMap, StatusCode};
-use axum::response::{IntoResponse, Response};
+use axum::response::{IntoResponse, Redirect, Response};
+
+pub async fn favicon(State(state): State<SharedState>) -> Redirect {
+    Redirect::temporary(&state.asset_url("favicon.ico"))
+}
 
 pub async fn serve(
     State(state): State<SharedState>,
