@@ -2,6 +2,8 @@
 
 ## 2026-11-23
 
+- Keep direct checkout available on already-featured projects so their placement can be extended.
+
 - Start featured placement checkout directly from the project listing; retire the standalone feature page.
 
 - Route directory advertising through standard Stripe Checkout in USD.
