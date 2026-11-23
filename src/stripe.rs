@@ -66,6 +66,9 @@ impl Stripe {
     ) -> Result<CheckoutSession, StripeError> {
         let mut form: Vec<(&str, String)> = vec![
             ("mode", "payment".into()),
+            // Advertising is not eligible for Stripe merchant-of-record checkout.
+            ("managed_payments[enabled]", "false".into()),
+            ("adaptive_pricing[enabled]", "false".into()),
             ("line_items[0][price]", self.cfg.price_id.clone()),
             ("line_items[0][quantity]", "1".into()),
             ("success_url", success_url.into()),

@@ -2,6 +2,8 @@
 
 ## 2026-11-23
 
+- Route directory advertising through standard Stripe Checkout in USD.
+
 - Offer seven days of featured placement and a newsletter slot for a one-time $299 purchase.
 
 ## 2026-11-22
