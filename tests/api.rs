@@ -472,7 +472,7 @@ async fn directory_filters_combine_and_preserve_selected_values() {
     let (state, app, _dir) = app().await;
     browse_catalog(&app).await;
     let (_, _, default) = send(&app, get("/")).await;
-    assert_eq!(card_slugs(&default), ["gamma", "alpha", "beta", "delta"]);
+    assert_eq!(card_slugs(&default), ["gamma", "delta", "beta", "alpha"]);
     assert!(!default.contains("private-stack"));
     assert!(!default.contains("private-license"));
     let cache_size = state.cache.len();
@@ -505,6 +505,7 @@ async fn directory_sorts_override_featured_and_category_cache_cannot_leak() {
     let (state, app, _dir) = app().await;
     browse_catalog(&app).await;
     for (path, expected) in [
+        ("/?sort=recommended", vec!["gamma", "alpha", "beta", "delta"]),
         ("/?sort=stars", vec!["alpha", "beta", "delta", "gamma"]),
         ("/?sort=name", vec!["alpha", "beta", "delta", "gamma"]),
         ("/?sort=gems", vec!["delta", "beta", "alpha"]),
@@ -512,7 +513,7 @@ async fn directory_sorts_override_featured_and_category_cache_cannot_leak() {
         ("/categories/tools?q=rust&sort=gems&category=apps", vec!["beta", "alpha"]),
         ("/categories/tools?sort=stars", vec!["alpha", "beta", "gamma"]),
         ("/categories/tools", vec!["gamma", "alpha", "beta"]),
-        ("/?sort=invalid&stars=garbage", vec!["gamma", "alpha", "beta", "delta"]),
+        ("/?sort=invalid&stars=garbage", vec!["gamma", "delta", "beta", "alpha"]),
     ] {
         let (status, _, body) = send(&app, get(path)).await;
         assert_eq!(status, StatusCode::OK, "{path}");
