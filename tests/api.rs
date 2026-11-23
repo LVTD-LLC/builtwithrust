@@ -157,7 +157,8 @@ async fn warp_listing_scopes_licenses_and_distinguishes_framework_with_cached_re
 #[tokio::test]
 async fn public_pages_render() {
     let (_state, app, _dir) = app().await;
-    for path in ["/", "/categories", "/submit", "/feature", "/sitemap.xml", "/robots.txt", "/healthz"] {
+    assert_eq!(send(&app, get("/feature")).await.0, StatusCode::NOT_FOUND);
+    for path in ["/", "/categories", "/submit", "/sitemap.xml", "/robots.txt", "/healthz"] {
         let (status, _, _) = send(&app, get(path)).await;
         assert_eq!(status, StatusCode::OK, "{path}");
     }

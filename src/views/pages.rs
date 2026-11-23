@@ -542,45 +542,6 @@ pub fn submit_thanks() -> Markup {
     }
 }
 
-pub fn feature(projects: &[Project], payments_enabled: bool, feature_days: i64, error: Option<&str>) -> Markup {
-    html! {
-        section class="page narrow" {
-            h1 { "Feature your project" }
-            p class="lede" {
-                "Put your project at the top of the homepage and highlight it in project lists for " (feature_days) " days. "
-                "$299 USD, paid once. No subscription."
-            }
-            div class="pricing" {
-                ul class="checks" {
-                    li { "Highlighted on the homepage" }
-                    li { "One sponsored placement in the Built with Rust newsletter" }
-                    li { "Highlighted in its category and matching search results" }
-                    li { "“Featured” badge on the card and project page" }
-                    li { "Runs for " (feature_days) " days from payment" }
-                }
-            }
-            @if let Some(e) = error { p class="alert" { (e) } }
-            @if payments_enabled {
-                form class="form" method="post" action="/api/checkout" {
-                    label { "Project" span class="req" { "*" }
-                        select name="project_slug" required {
-                            option value="" { "Choose a listed project…" }
-                            @for p in projects { option value=(p.slug) { (p.name) } }
-                        }
-                    }
-                    label { "Receipt email" span class="req" { "*" }
-                        input type="email" name="email" required placeholder="you@example.com";
-                    }
-                    button class="btn btn-primary" type="submit" { "Continue to payment" }
-                    p class="muted small" { "Payments are handled by Stripe. Your project must already be listed; " a href="/submit" { "submit it first" } " if it is not." }
-                }
-            } @else {
-                p class="alert" { "Featured slots are not open yet. Check back soon." }
-            }
-        }
-    }
-}
-
 pub fn feature_success(project: Option<&Project>) -> Markup {
     html! {
         section class="page narrow" {
@@ -600,7 +561,7 @@ pub fn feature_cancel() -> Markup {
         section class="page narrow" {
             h1 { "No charge was made." }
             p class="lede" { "You can come back any time." }
-            a class="btn" href="/feature" { "Try again" }
+            a class="btn" href="/" { "Browse projects" }
         }
     }
 }

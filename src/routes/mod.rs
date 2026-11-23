@@ -48,7 +48,6 @@ pub fn router(state: SharedState) -> Router {
         .route("/guides/hurl-http-tests", get(pages::hurl_guide))
         .route("/submit", get(pages::submit).post(api::submit))
         .route("/submit/thanks", get(api::submit_thanks))
-        .route("/feature", get(pages::feature))
         .route("/feature/success", get(pages::feature_success))
         .route("/feature/cancel", get(pages::feature_cancel))
         .route("/api/checkout", post(api::checkout))

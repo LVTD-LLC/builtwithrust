@@ -84,7 +84,7 @@ pub async fn submit_thanks(State(state): State<SharedState>) -> Response {
 #[derive(Deserialize)]
 pub struct CheckoutForm {
     pub project_slug: String,
-    pub email: String,
+    pub email: Option<String>,
 }
 
 pub async fn checkout(
@@ -93,40 +93,27 @@ pub async fn checkout(
     Form(form): Form<CheckoutForm>,
 ) -> Result<Response, AppError> {
     let Some(stripe) = &state.stripe else {
-        return feature_error(&state, StatusCode::SERVICE_UNAVAILABLE, "Payments are not enabled yet.").await;
+        return Err(AppError::Status(StatusCode::SERVICE_UNAVAILABLE, "Payments are unavailable.".into()));
     };
     let Some(project) = db::project_by_slug(&state.pool, form.project_slug.trim()).await?.filter(|p| p.published != 0)
     else {
-        return feature_error(&state, StatusCode::UNPROCESSABLE_ENTITY, "That project is not listed. Submit it first.")
-            .await;
+        return Err(AppError::Status(StatusCode::NOT_FOUND, "Project not found.".into()));
     };
-    let email = form.email.trim();
-    if !email.contains('@') {
-        return feature_error(&state, StatusCode::UNPROCESSABLE_ENTITY, "Please enter a valid email for the receipt.")
-            .await;
-    }
+    let email = form.email.as_deref().map(str::trim).filter(|s| !s.is_empty());
     let success_url = format!("{}/feature/success?session_id={{CHECKOUT_SESSION_ID}}", state.cfg.site_url);
-    let cancel_url = format!("{}/feature/cancel", state.cfg.site_url);
+    let cancel_url = format!("{}/projects/{}", state.cfg.site_url, project.slug);
     let session =
-        stripe.create_checkout_session(&project.slug, Some(email), &success_url, &cancel_url).await.map_err(|e| {
+        stripe.create_checkout_session(&project.slug, email, &success_url, &cancel_url).await.map_err(|e| {
             tracing::error!(error = %e, "stripe checkout session failed");
             AppError::Status(StatusCode::BAD_GATEWAY, "Could not start checkout. Please try again.".into())
         })?;
-    db::create_payment(&state.pool, &session.id, project.id, Some(email)).await?;
+    db::create_payment(&state.pool, &session.id, project.id, email).await?;
     state.posthog.capture(
         "checkout_started",
         &ip_hash(&ip),
         json!({ "project": project.slug, "session_id": session.id }),
     );
     Ok(Redirect::to(&session.url).into_response())
-}
-
-async fn feature_error(state: &SharedState, status: StatusCode, msg: &str) -> Result<Response, AppError> {
-    let projects = db::list_projects(&state.pool, None, None).await?;
-    let body = v::feature(&projects, state.cfg.payments_enabled(), state.cfg.feature_days, Some(msg));
-    let mut resp = html_now(page(state, "Feature your project", "Feature your project.", "/feature", body));
-    *resp.status_mut() = status;
-    Ok(resp)
 }
 
 pub async fn stripe_webhook(
@@ -195,7 +182,7 @@ pub async fn sitemap(State(state): State<SharedState>, headers: HeaderMap) -> Re
     );
     xml.push_str(&format!("<url><loc>{base}/guides/dufs-vs-miniserve</loc><lastmod>2026-11-03</lastmod></url>"));
     // Catalog-driven hubs change independently of editorial releases; omit an untracked lastmod.
-    for p in ["/", "/categories", "/submit", "/feature"] {
+    for p in ["/", "/categories", "/submit"] {
         xml.push_str(&format!("<url><loc>{base}{p}</loc></url>"));
     }
     xml.push_str(&format!("<url><loc>{base}/guides</loc><lastmod>2026-11-17</lastmod></url>"));

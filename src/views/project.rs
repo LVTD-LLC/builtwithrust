@@ -2,7 +2,7 @@ use super::{check_icon, external_icon, format_stars, project_grid};
 use crate::db::Project;
 use maud::{Markup, html};
 
-pub fn show(p: &Project, related: &[Project], site_url: &str) -> Markup {
+pub fn show(p: &Project, related: &[Project], site_url: &str, payments_enabled: bool) -> Markup {
     let stack = p.stack_list();
     html! {
         article class="project" {
@@ -79,8 +79,12 @@ pub fn show(p: &Project, related: &[Project], site_url: &str) -> Markup {
                         h3 { "Rust stack" }
                         div class="pills" { @for s in &stack { span class="pill" { (s) } } }
                     }
-                    @if !p.is_featured() {
-                        a class="btn btn-small" href="/feature" { "Feature this project" }
+                    @if payments_enabled && !p.is_featured() {
+                        form method="post" action="/api/checkout" {
+                            input type="hidden" name="project_slug" value=(p.slug);
+                            button type="submit" class="btn btn-small" { "Feature this project" }
+                            p class="small muted" { "$299 once · 7 days of highlighted placement and one newsletter feature." }
+                        }
                     }
                 }
             }

@@ -49,7 +49,7 @@ async fn run(cfg: Config) -> anyhow::Result<()> {
         tracing::warn!("ADMIN_TOKEN is not set: /api/admin/* is disabled");
     }
     if !cfg.payments_enabled() {
-        tracing::info!("Stripe keys not set: payments disabled, /feature shows a placeholder");
+        tracing::info!("Stripe keys not set: project checkout disabled");
     }
     if cfg.posthog.is_none() {
         tracing::info!("POSTHOG_KEY not set: analytics disabled");

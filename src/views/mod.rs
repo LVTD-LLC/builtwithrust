@@ -93,7 +93,6 @@ pub fn layout(state: &AppState, page: Page<'_>) -> Markup {
                         nav class="nav" aria-label="Main navigation" {
                             a href="/" { "Projects" }
                             a href="/guides" { "Guides" }
-                            a class="nav-feature" href="/feature" { "Feature your project" }
                         }
                         div class="header-actions" {
                             form class="search-mini" action="/" method="get" role="search" {
