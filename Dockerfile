@@ -12,12 +12,13 @@ RUN cargo build --locked --release
 
 FROM debian:bookworm-slim
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends ca-certificates curl \
+    && apt-get install -y --no-install-recommends ca-certificates curl python3-pil fonts-dejavu-core \
     && rm -rf /var/lib/apt/lists/* \
     && useradd --system --uid 10001 --create-home app \
     && mkdir /data && chown app:app /data
 WORKDIR /app
 COPY --from=builder /app/target/release/builtwithrust /usr/local/bin/builtwithrust
+COPY assets/apple-touch-icon.png /app/card-icon.png
 COPY seed/projects.json seed/projects.json
 ENV RUST_LIB_BACKTRACE=1 \
     BIND_ADDR=0.0.0.0:3000 \
