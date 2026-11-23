@@ -181,6 +181,7 @@ p { margin: 0; }
 
 /* Newsletter: static markup keeps the directory's pre-compressed hot path. */
 .newsletter { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center; margin: 0 0 36px; padding: 28px; border: 1px solid var(--accent); border-radius: var(--radius); background: var(--accent-soft); }
+.project > .newsletter { margin-top: 32px; }
 .newsletter h2 { font-size: 22px; margin-bottom: 10px; }
 .newsletter p { line-height: 1.5; }
 .newsletter-form { min-width: 0; }
