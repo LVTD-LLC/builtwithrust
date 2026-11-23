@@ -2,6 +2,8 @@
 
 ## 2026-11-23
 
+- Explain how to check OctaSine patch recall when a CLAP session reopens with the wrong sound.
+
 - Introduce the folder-crab logo, browser and home-screen icons, and branded link previews.
 
 - Feature ShipRust permanently in the directory, independent of paid weekly placements.
