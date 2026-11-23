@@ -59,6 +59,7 @@ pub fn router(state: SharedState) -> Router {
             &format!("/{}.txt", include_str!("../../indexnow-key.txt").trim()),
             get(|| async { include_str!("../../indexnow-key.txt") }),
         )
+        .route("/favicon.ico", get(assets::favicon))
         .route("/assets/{*path}", get(assets::serve))
         .nest("/api/admin", admin::router(state.clone()))
         .fallback(pages::not_found)

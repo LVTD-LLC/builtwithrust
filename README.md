@@ -11,6 +11,8 @@ A directory of websites, apps and tools built with Rust. Itself built with Rust.
 - Public submission form with review queue, bearer-token admin JSON API for
   agents, Stripe-powered "featured" slots, PostHog analytics.
 
+The [brand kit](docs/brand/README.md) includes the logo, profile pictures, X cover and social artwork.
+
 ## Run it
 
 ```bash
