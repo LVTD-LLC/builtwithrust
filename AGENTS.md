@@ -168,7 +168,7 @@ Fully wired; disabled until all three env vars are set:
 - Stripe calls `POST /api/stripe/webhook`. Signature is verified with
   HMAC-SHA256 (`stripe.rs`), event ids are deduplicated, and
   `checkout.session.completed` with `payment_status=paid` extends
-  `projects.featured_until` by `FEATURE_DAYS` (default 30), then purges cache.
+  `projects.featured_until` by seven days and queues one newsletter placement, then purges cache.
 - Success page: `/feature/success?session_id={CHECKOUT_SESSION_ID}`.
 
 To go live: create a one-time Price in Stripe, add a webhook endpoint for

@@ -372,6 +372,12 @@ async fn stripe_webhook_features_project_once() {
     let project = db::project_by_slug(&state.pool, "paid").await.unwrap().unwrap();
     assert_eq!(project.featured_until.unwrap(), first_until);
 
+    let slots = db::pending_newsletter_features(&state.pool).await.unwrap();
+    assert_eq!(slots.len(), 1);
+    assert_eq!(slots[0].1, "paid");
+    assert!(db::record_newsletter_issue(&state.pool, slots[0].0, "10").await.unwrap());
+    assert!(db::pending_newsletter_features(&state.pool).await.unwrap().is_empty());
+
     // Featured projects appear once, in the normal listing.
     let (_, _, body) = send(&app, get("/")).await;
     assert!(!body.contains("Featured projects"));

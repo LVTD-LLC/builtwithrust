@@ -95,7 +95,8 @@ pub async fn checkout(
     let Some(stripe) = &state.stripe else {
         return feature_error(&state, StatusCode::SERVICE_UNAVAILABLE, "Payments are not enabled yet.").await;
     };
-    let Some(project) = db::project_by_slug(&state.pool, form.project_slug.trim()).await? else {
+    let Some(project) = db::project_by_slug(&state.pool, form.project_slug.trim()).await?.filter(|p| p.published != 0)
+    else {
         return feature_error(&state, StatusCode::UNPROCESSABLE_ENTITY, "That project is not listed. Submit it first.")
             .await;
     };
