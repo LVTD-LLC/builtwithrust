@@ -12,7 +12,7 @@ route category overrides a conflicting query parameter.
 - `verified=1`: existing editorial Rust verification.
 - `stars`: `under-1000`, `1000` (at least), `10000` (at least). Unknown counts
   do not qualify; zero is a known count. Stars are catalog snapshots, not live.
-- `sort`: empty = recommended (existing featured-first, stars ordering), `stars`,
+- `sort`: empty = featured first, then recently added on the homepage (recommended on category pages); `recommended` = featured first, then stars, `stars`,
   `newest` (directory creation, not repository activity), `name`, or `gems`
   (only known counts under 10,000, smallest first). Explicit sorts override
   featured placement but preserve the featured styling; ties use name then slug.

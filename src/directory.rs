@@ -30,7 +30,7 @@ impl Browse {
             (&mut self.source, &["available", "unlisted"][..]),
             (&mut self.verified, &["1"][..]),
             (&mut self.stars, &["under-1000", "1000", "10000"][..]),
-            (&mut self.sort, &["stars", "newest", "name", "gems"][..]),
+            (&mut self.sort, &["recommended", "stars", "newest", "name", "gems"][..]),
         ] {
             if !allowed.contains(&value.as_str()) {
                 value.clear();
@@ -100,7 +100,7 @@ impl Browse {
                 }
                 && (self.sort != "gems" || p.stars.is_some_and(|n| (0..10000).contains(&n)))
         });
-        if !self.sort.is_empty() {
+        if !self.sort.is_empty() && self.sort != "recommended" {
             projects.sort_by_cached_key(|p| (p.name.to_lowercase(), p.slug.clone()));
             // Stable sorts retain alphabetical tie breaks. Unknown stars always go last.
             match self.sort.as_str() {
