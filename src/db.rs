@@ -73,6 +73,7 @@ pub struct Project {
     pub category_id: Option<i64>,
     pub verified: i64,
     pub published: i64,
+    pub permanently_featured: bool,
     pub featured_until: Option<String>,
     pub created_at: String,
     pub updated_at: String,
@@ -86,7 +87,7 @@ impl Project {
     }
 
     pub fn is_featured(&self) -> bool {
-        self.featured_until.as_deref().is_some_and(|until| until > now().as_str())
+        self.permanently_featured || self.featured_until.as_deref().is_some_and(|until| until > now().as_str())
     }
 
     pub fn is_verified(&self) -> bool {
@@ -251,8 +252,9 @@ macro_rules! project_select {
         concat!(
             "SELECT p.id, p.slug, p.name, p.tagline, p.description, p.website_url, p.repo_url, ",
             "p.logo_url, p.stars, p.license, p.stack, p.category_id, p.verified, p.published, ",
-            "p.featured_until, p.created_at, p.updated_at, c.slug AS category_slug, c.name AS category_name ",
+            "(pf.project_slug IS NOT NULL) AS permanently_featured, p.featured_until, p.created_at, p.updated_at, c.slug AS category_slug, c.name AS category_name ",
             "FROM projects p LEFT JOIN categories c ON c.id = p.category_id ",
+            "LEFT JOIN permanent_features pf ON pf.project_slug = p.slug ",
             $tail
         )
     };
@@ -267,7 +269,7 @@ pub async fn list_projects(pool: &Pool, category_id: Option<i64>, q: Option<&str
         "WHERE p.published = 1 \
            AND (?1 IS NULL OR p.category_id = ?1) \
            AND (?2 IS NULL OR p.name LIKE ?2 OR p.tagline LIKE ?2 OR p.description LIKE ?2 OR p.stack LIKE ?2) \
-         ORDER BY (p.featured_until IS NOT NULL AND p.featured_until > ?3) DESC, \
+         ORDER BY (pf.project_slug IS NOT NULL OR (p.featured_until IS NOT NULL AND p.featured_until > ?3)) DESC, \
                   p.stars IS NULL, p.stars DESC, p.name"
     ))
     .bind(category_id)
@@ -280,7 +282,7 @@ pub async fn list_projects(pool: &Pool, category_id: Option<i64>, q: Option<&str
 pub async fn featured_projects(pool: &Pool) -> sqlx::Result<Vec<Project>> {
     let now = now();
     sqlx::query_as::<_, Project>(project_select!(
-        "WHERE p.published = 1 AND p.featured_until > ?1 ORDER BY p.featured_until DESC LIMIT 6"
+        "WHERE p.published = 1 AND (pf.project_slug IS NOT NULL OR p.featured_until > ?1) ORDER BY p.featured_until DESC LIMIT 6"
     ))
     .bind(now)
     .fetch_all(pool)
