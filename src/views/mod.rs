@@ -105,9 +105,6 @@ pub fn layout(state: &AppState, page: Page<'_>) -> Markup {
                         nav class="nav" aria-label="Main navigation" {
                             a href="/" { "Projects" }
                             a href="/guides" { "Guides" }
-                            @if let Some(count) = state.posthog.recent_views() {
-                                span class="traffic-count" title="Pageviews measured by PostHog" { (count) " " (if count == 1 { "view" } else { "views" }) " in the last 24 hours" }
-                            }
                         }
                         div class="header-actions" {
                             form class="search-mini" action="/" method="get" role="search" {
@@ -140,7 +137,9 @@ pub fn layout(state: &AppState, page: Page<'_>) -> Markup {
                         }
                     }
                     div class="container footer-bottom" {
-                        span { "See what ships with Rust." }
+                        @if let Some(count) = state.posthog.recent_views() {
+                            span class="traffic-count" title="Pageviews measured by PostHog" { (count) " " (if count == 1 { "view" } else { "views" }) " in the last 24 hours" }
+                        }
                         a href="/privacy" { "Privacy" }
 
                     }
