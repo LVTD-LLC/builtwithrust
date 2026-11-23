@@ -162,7 +162,7 @@ curl -s -X POST -H "Authorization: Bearer $ADMIN_TOKEN" -H 'content-type: applic
 Fully wired; disabled until all three env vars are set:
 `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_ID`.
 
-- `/feature` shows a form (project + email) → `POST /api/checkout` creates a
+- `/projects/{slug}` has a project-specific sponsorship button (Stripe collects the receipt email) → `POST /api/checkout` creates a
   Checkout Session (`mode=payment`, the configured price, metadata
   `project_slug`) and 303s to Stripe.
 - Stripe calls `POST /api/stripe/webhook`. Signature is verified with

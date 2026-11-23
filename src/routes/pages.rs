@@ -289,7 +289,7 @@ pub async fn project(
         } else {
             (p.name.as_str(), format!("{}: {} Built with Rust.", p.name, p.tagline))
         };
-        Ok(page(&state, title, &desc, &path, vp::show(&p, &related, &state.cfg.site_url)))
+        Ok(page(&state, title, &desc, &path, vp::show(&p, &related, &state.cfg.site_url, state.cfg.payments_enabled())))
     })
     .await
 }
@@ -302,21 +302,6 @@ pub async fn submit(State(state): State<SharedState>, headers: HeaderMap) -> Res
             "Submit a website, app or tool built with Rust for review.",
             "/submit",
             v::submit_form(None, ""),
-        ))
-    })
-    .await
-}
-
-pub async fn feature(State(state): State<SharedState>, headers: HeaderMap) -> Result<Response, AppError> {
-    cached_html(&state, &headers, "/feature".into(), || async {
-        let projects = db::list_projects(&state.pool, None, None).await?;
-        let body = v::feature(&projects, state.cfg.payments_enabled(), state.cfg.feature_days, None);
-        Ok(page(
-            &state,
-            "Feature your project",
-            "Pin your Rust project to the top of Built with Rust.",
-            "/feature",
-            body,
         ))
     })
     .await
