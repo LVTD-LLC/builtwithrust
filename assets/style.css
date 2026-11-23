@@ -358,7 +358,7 @@ a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px soli
   .site-header .brand img { width: 144px; }
 }
 
-.traffic-count { color: var(--muted); font-size: 12px; white-space: nowrap; }
+.traffic-count { color: var(--fg-muted); font-size: 12px; white-space: nowrap; }
 @media (max-width: 650px) {
   .nav:has(.traffic-count) { flex-wrap: wrap; gap: 8px 16px; }
 }

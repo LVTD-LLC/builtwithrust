@@ -4,11 +4,13 @@
 use crate::config::PosthogConfig;
 use serde_json::{Value, json};
 
+type ViewsSnapshot = std::sync::Arc<std::sync::RwLock<Option<(std::time::Instant, u64)>>>;
+
 #[derive(Clone)]
 pub struct Posthog {
     cfg: Option<PosthogConfig>,
     http: reqwest::Client,
-    views: std::sync::Arc<std::sync::RwLock<Option<(std::time::Instant, u64)>>>,
+    views: ViewsSnapshot,
 }
 
 impl Posthog {
