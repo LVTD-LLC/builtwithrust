@@ -295,7 +295,15 @@ pub async fn project(
         } else {
             (p.name.as_str(), format!("{}: {} Built with Rust.", p.name, p.tagline))
         };
-        Ok(page(&state, title, &desc, &path, vp::show(&p, &related, &state.cfg.site_url, state.cfg.payments_enabled(), twitter.as_deref())))
+        let body = vp::show(
+            &p,
+            &related,
+            &state.cfg.site_url,
+            state.cfg.payments_enabled(),
+            state.cfg.newsletter.is_some(),
+            twitter.as_deref(),
+        );
+        Ok(page(&state, title, &desc, &path, body))
     })
     .await
 }

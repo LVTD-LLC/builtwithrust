@@ -2,7 +2,7 @@ use super::{check_icon, external_icon, format_stars, project_grid};
 use crate::db::Project;
 use maud::{Markup, html};
 
-pub fn show(p: &Project, related: &[Project], site_url: &str, payments_enabled: bool, twitter: Option<&str>) -> Markup {
+pub fn show(p: &Project, related: &[Project], site_url: &str, payments_enabled: bool, newsletter_enabled: bool, twitter: Option<&str>) -> Markup {
     let stack = p.stack_list();
     html! {
         article class="project" {
@@ -288,6 +288,9 @@ pub fn show(p: &Project, related: &[Project], site_url: &str, payments_enabled: 
                     h2 id="hurl-guide-title" { "Try Hurl against a local HTTP fixture" }
                     a href="/guides/hurl-http-tests" { "Check status, headers and JSON, then prove the test catches a broken response →" }
                 }
+            }
+            @if newsletter_enabled {
+                (super::pages::newsletter_form(None, ""))
             }
             @if !related.is_empty() {
                 section class="related" {
