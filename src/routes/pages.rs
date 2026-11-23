@@ -32,8 +32,8 @@ async fn directory_page(
     let facets = crate::directory::Facets::from_projects(&projects);
     let categories = db::categories_with_counts(&state.pool).await?;
     browse.apply(&mut projects);
-    let landing_default = path == "/" && browse.sort.is_empty();
-    if landing_default {
+    let is_landing = path == "/";
+    if is_landing && browse.sort.is_empty() {
         projects.sort_by_cached_key(|p| std::cmp::Reverse((p.is_featured(), p.created_at.clone(), p.id)));
     }
     if !browse.q.is_empty() {
@@ -59,7 +59,7 @@ async fn directory_page(
         document_guide_site_url: (path == "/categories/productivity"
             && *browse == crate::directory::Browse { category: "productivity".into(), ..Default::default() })
         .then_some(state.cfg.site_url.as_str()),
-        landing_default,
+        is_landing,
         projects: &projects,
         categories: &categories,
         total,
