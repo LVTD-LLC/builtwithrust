@@ -41,6 +41,16 @@ pub fn show(p: &Project, related: &[Project], site_url: &str, payments_enabled: 
                     } @else {
                         @for para in p.description.split("\n\n") { p { (para.trim()) } }
                     }
+                    @if p.slug == "octasine" {
+                        h2 { "Why did my session reopen on the first patch?" }
+                        p {
+                            "A patch bank stores the sounds; the selected patch tells OctaSine which one to play. In a CLAP state test with OctaSine v0.9.1 for Linux, a fresh instance restored both the eighth patch and its edited parameter. With the selection missing from the same bank, the plug-in opened on the first patch instead. The edit was still there in the eighth slot."
+                        }
+                        p {
+                            "If a session opens with the wrong sound, check the original patch slot before recreating it. To check recall in your own workstation, select a patch other than the first, change one control, save a copy of the session, then reopen it and check both the slot and the control."
+                        }
+                        p { a href="https://github.com/greatest-ape/OctaSine/releases/tag/v0.9.1" { "OctaSine v0.9.1 patch-recall release notes" } }
+                    }
                     @if p.slug == "spotify-player" {
                         h2 { "Where will the music play?" }
                         p {
