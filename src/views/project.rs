@@ -148,6 +148,13 @@ pub fn show(
             @if p.slug == "rustpad" {
                 (super::rustpad_context::context())
             }
+            @if p.slug == "fd" {
+                section class="task-guide prose" aria-labelledby="fd-content-search" {
+                    h2 id="fd-content-search" { "Searching for text rather than a filename?" }
+                    p { "Use fd to find paths by name. To look inside files instead, "
+                        a href="/guides/ripgrep-hidden-ignored-files" { "see which files ripgrep includes in a text search" } "." }
+                }
+            }
             @if p.slug == "pueue" {
                 section class="task-guide" aria-labelledby="pueue-guide-title" {
                     h2 id="pueue-guide-title" { "Did the task succeed, or only finish?" }

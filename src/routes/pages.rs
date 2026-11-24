@@ -117,6 +117,19 @@ pub async fn polars_csv_guide(State(state): State<SharedState>, headers: HeaderM
     .await
 }
 
+pub async fn ripgrep_guide(State(state): State<SharedState>, headers: HeaderMap) -> Result<Response, AppError> {
+    cached_html(&state, &headers, "/guides/ripgrep-hidden-ignored-files".into(), || async {
+        Ok(page(
+            &state,
+            "ripgrep: search hidden and ignored files",
+            "Diagnose missing ripgrep matches with a disposable search tree. Compare hidden paths, ignore rules and binary detection before widening a search.",
+            "/guides/ripgrep-hidden-ignored-files",
+            crate::views::ripgrep_guide::body(&state.cfg.site_url),
+        ))
+    })
+    .await
+}
+
 pub async fn pueue_guide(State(state): State<SharedState>, headers: HeaderMap) -> Result<Response, AppError> {
     cached_html(&state, &headers, "/guides/pueue-task-queue".into(), || async {
         Ok(page(

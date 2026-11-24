@@ -957,12 +957,14 @@ async fn standalone_guides_are_discoverable_canonical_and_cached_without_filter_
         "dufs",
         "miniserve",
         "pueue",
+        "fd",
         "unrelated-tool",
     ] {
         let (status, _, _) = send(&app, admin_json("POST", "/api/admin/projects", sample_project(slug))).await;
         assert_eq!(status, StatusCode::OK);
     }
     for (path, headline, published, projects) in [
+        ("/guides/ripgrep-hidden-ignored-files", "ripgrep: search hidden and ignored files", "2026-11-24", vec!["fd"]),
         ("/guides/pueue-task-queue", "Pueue task queue: verify success", "2026-11-17", vec!["pueue"]),
         ("/guides/dufs-vs-miniserve", "Dufs vs miniserve: who can write?", "2026-11-03", vec!["dufs", "miniserve"]),
         ("/guides/polars-csv-schema-inference", "Polars CSV schema: preserve IDs", "2026-11-01", vec!["polars"]),
@@ -1048,6 +1050,7 @@ async fn standalone_guides_are_discoverable_canonical_and_cached_without_filter_
                     | "/guides/polars-csv-schema-inference"
                     | "/guides/dufs-vs-miniserve"
                     | "/guides/pueue-task-queue"
+                    | "/guides/ripgrep-hidden-ignored-files"
             )
         );
         assert!(homepage.contains("href=\"/guides\""));
@@ -1057,7 +1060,7 @@ async fn standalone_guides_are_discoverable_canonical_and_cached_without_filter_
     assert_eq!(status, StatusCode::OK);
     assert!(body.contains("rel=\"canonical\" href=\"http://test.local/guides\""));
     assert!(body.contains("\"@type\":\"CollectionPage\""));
-    assert!(body.contains("\"dateModified\":\"2026-11-17\""));
+    assert!(body.contains("\"dateModified\":\"2026-11-24\""));
     assert_eq!(body.matches("<h1>").count(), 1);
     assert!(state.cache.get("/guides").is_some());
     let conditional =

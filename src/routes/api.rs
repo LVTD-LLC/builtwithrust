@@ -229,7 +229,10 @@ pub async fn sitemap(State(state): State<SharedState>, headers: HeaderMap) -> Re
     for p in ["/", "/categories", "/submit"] {
         xml.push_str(&format!("<url><loc>{base}{p}</loc></url>"));
     }
-    xml.push_str(&format!("<url><loc>{base}/guides</loc><lastmod>2026-11-17</lastmod></url>"));
+    xml.push_str(&format!("<url><loc>{base}/guides</loc><lastmod>2026-11-24</lastmod></url>"));
+    xml.push_str(&format!(
+        "<url><loc>{base}/guides/ripgrep-hidden-ignored-files</loc><lastmod>2026-11-24</lastmod></url>"
+    ));
     xml.push_str(&format!("<url><loc>{base}/guides/pueue-task-queue</loc><lastmod>2026-11-17</lastmod></url>"));
     xml.push_str(&format!(
         "<url><loc>{base}/guides/polars-csv-schema-inference</loc><lastmod>2026-11-01</lastmod></url>"

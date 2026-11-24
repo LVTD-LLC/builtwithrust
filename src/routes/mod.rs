@@ -38,6 +38,7 @@ pub fn router(state: SharedState) -> Router {
         .route("/projects/{slug}", get(pages::project))
         .route("/projects/{slug}/card.png", get(social_card::get))
         .route("/guides", get(pages::guides))
+        .route("/guides/ripgrep-hidden-ignored-files", get(pages::ripgrep_guide))
         .route("/guides/pueue-task-queue", get(pages::pueue_guide))
         .route("/guides/dufs-vs-miniserve", get(pages::file_server_guide))
         .route("/guides/polars-csv-schema-inference", get(pages::polars_csv_guide))
