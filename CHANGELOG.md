@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-11-24
+
+- Link directly to synth sound design, MIDI piano practice and guitar chord lookup from Music & Audio.
+
 ## 2026-11-23
 
 - Explain how to check OctaSine patch recall when a CLAP session reopens with the wrong sound.

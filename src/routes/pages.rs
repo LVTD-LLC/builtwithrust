@@ -43,6 +43,8 @@ async fn directory_page(
     let show_guide = path == "/categories/developer-tools"
         && *browse == crate::directory::Browse { category: "developer-tools".into(), ..Default::default() };
     let body = v::home(v::HomeData {
+        show_music_tasks: path == "/categories/music-and-audio"
+            && *browse == crate::directory::Browse { category: "music-and-audio".into(), ..Default::default() },
         developer_guide_site_url: show_guide.then_some(state.cfg.site_url.as_str()),
         data_guide_site_url: (path == "/categories/data-and-ai"
             && *browse == crate::directory::Browse { category: "data-and-ai".into(), ..Default::default() })
