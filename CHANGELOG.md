@@ -225,3 +225,7 @@
 ## 2026-11-17
 
 - Publish the native Pueue task-queue success guide and six-task disposable Linux exercise. Separate enqueue, completion, process success and artifact validation; include official-source caveats, guide index/sitemap entries and homepage/project discovery. Reuse cached Maud rendering without new dependencies, SQL or request-time external calls.
+
+## 2026-11-24 — ripgrep search coverage
+
+- Added a native guide to hidden and ignored files in ripgrep with a reproducible search exercise. Linked it from Guides, the homepage and the fd listing, and included the canonical URL in the sitemap.

@@ -4,6 +4,12 @@ use maud::{Markup, PreEscaped, html};
 pub fn body(site_url: &str) -> Markup {
     let guides = [
         (
+            "ripgrep-hidden-ignored-files",
+            "ripgrep: search hidden and ignored files",
+            "2026-11-24",
+            "Find out which files ripgrep skipped, and choose the narrowest search that includes the text you need.",
+        ),
+        (
             "pueue-task-queue",
             "Pueue task queue: verify success",
             "2026-11-17",
@@ -66,7 +72,7 @@ pub fn body(site_url: &str) -> Markup {
     ];
     let schema = serde_json::json!({
         "@context": "https://schema.org", "@type": "CollectionPage",
-        "url": format!("{site_url}/guides"), "name": "Rust tool guides", "dateModified": "2026-11-17",
+        "url": format!("{site_url}/guides"), "name": "Rust tool guides", "dateModified": "2026-11-24",
         "mainEntity": {"@type": "ItemList", "itemListElement": guides.iter().enumerate().map(|(i,(slug,title,_,_))| serde_json::json!({
             "@type": "ListItem", "position": i+1, "name": title, "url": format!("{site_url}/guides/{slug}")
         })).collect::<Vec<_>>()}
