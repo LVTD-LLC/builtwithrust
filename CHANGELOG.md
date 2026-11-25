@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-11-25
+
+- Keep browsing the selected category after a filtered search returns no projects.
+
 ## 2026-11-24
 
 - Link directly to synth sound design, MIDI piano practice and guitar chord lookup from Music & Audio.

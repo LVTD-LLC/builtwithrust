@@ -201,7 +201,18 @@ pub fn home(d: HomeData<'_>) -> Markup {
                 p class="small muted browse-note" { "Stars are catalog snapshots, not live counts. Unknown counts are excluded from star filters." }
             }
             @if d.projects.is_empty() && !d.browse.is_default() {
-                p class="browse-empty" { "No projects match this combination. Try removing a filter or " a href="/#projects" { "reset all filters" } "." }
+                p class="browse-empty" {
+                    "No projects match this combination. "
+                    @if let Some(category) = d.active_category.filter(|c| c.count > 0) {
+                        a href={ "/categories/" (category.slug) "#projects" }
+                            data-ph-capture-attribute-bwr-action="category_recovery"
+                            data-ph-capture-attribute-bwr-schema="1" { "Browse all " (category.name) " projects" }
+                        " or "
+                    } @else {
+                        "Try removing a filter or "
+                    }
+                    a href="/#projects" { "reset all filters" } "."
+                }
             }
             (project_grid(&d.projects[start..end]))
             @if pages > 1 {
