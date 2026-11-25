@@ -530,6 +530,12 @@ async fn directory_filters_combine_and_preserve_selected_values() {
     let (_, _, body) = send(&app, get("/?category=unknown")).await;
     assert!(card_slugs(&body).is_empty());
     assert!(body.contains("unknown (unavailable)"));
+    assert!(!body.contains("category_recovery"));
+    for path in ["/?q=missing&category=tools", "/categories/tools?q=missing"] {
+        let (_, _, body) = send(&app, get(path)).await;
+        assert!(body.contains("href=\"/categories/tools#projects\""));
+        assert!(body.contains("category_recovery"));
+    }
 }
 
 #[tokio::test]
