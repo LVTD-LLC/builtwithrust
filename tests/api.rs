@@ -1093,6 +1093,17 @@ async fn directory_pagination_keeps_filters_and_never_loses_or_repeats_projects(
     assert_eq!(card_slugs(&homepage).len(), 15);
     assert!(homepage.contains("aria-current=\"page\">1"));
     assert!(!homepage.contains("class=\"task-guide\""));
+    let (_, _, category) = send(&app, get("/categories/tools")).await;
+    assert!(category.contains("rel=\"next\" href=\"/categories/tools?page=2#projects\""));
+    let (_, _, page_two) = send(&app, get("/categories/tools?page=2")).await;
+    assert!(page_two.contains("rel=\"prev\" href=\"/categories/tools#projects\""));
+    assert!(page_two.contains("rel=\"canonical\" href=\"http://test.local/categories/tools?page=2\""));
+    let first = card_slugs(&category);
+    let second = card_slugs(&page_two);
+    assert_eq!((first.len(), second.len()), (15, 15));
+    assert!(second.iter().all(|slug| !first.contains(slug)));
+    let (_, _, filtered) = send(&app, get("/categories/tools?sort=name&stack=tokio")).await;
+    assert!(filtered.contains("/categories/tools?stack=tokio&amp;sort=name&amp;page=2#projects"));
     let cache_size = state.cache.len();
     let filters =
         "q=Rust&category=tools&stack=tokio&license=MIT+%26+Apache&source=available&verified=1&stars=1000&sort=name";

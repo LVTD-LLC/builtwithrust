@@ -3,6 +3,7 @@ use crate::db::{CategoryCount, Project};
 use maud::{Markup, html};
 
 pub struct HomeData<'a> {
+    pub path: &'a str,
     pub is_landing: bool,
     pub show_music_tasks: bool,
     pub developer_guide_site_url: Option<&'a str>,
@@ -56,7 +57,7 @@ pub fn home(d: HomeData<'_>) -> Markup {
                 }
                 @if !d.browse.is_default() {
                     a class="muted" href="/#projects" {
-                        @if d.browse.page_url(1) == "/#projects" { "Back to first page" } @else { "Clear filters" }
+                        @if d.browse.page_url("/", 1) == "/#projects" { "Back to first page" } @else { "Clear filters" }
                     }
                 }
             }
@@ -220,21 +221,21 @@ pub fn home(d: HomeData<'_>) -> Markup {
                     p class="small muted" { "Page " (current_page) " of " (pages) }
                     div class="pagination-controls" {
                         @if current_page > 1 {
-                            a class="btn pagination-step" rel="prev" href=(d.browse.page_url(current_page - 1)) { "← Previous" }
+                            a class="btn pagination-step" rel="prev" href=(d.browse.page_url(d.path, current_page - 1)) { "← Previous" }
                         } @else { span class="btn pagination-step" aria-disabled="true" { "← Previous" } }
                         @for number in 1..=pages {
                             @if number == 1 || number == pages || number.abs_diff(current_page) <= 1 {
                                 @if number == current_page {
                                     span class="btn pagination-number current" aria-current="page" { (number) }
                                 } @else {
-                                    a class="btn pagination-number" href=(d.browse.page_url(number)) aria-label=(format!("Page {number}")) { (number) }
+                                    a class="btn pagination-number" href=(d.browse.page_url(d.path, number)) aria-label=(format!("Page {number}")) { (number) }
                                 }
                             } @else if number == 2 || number == pages - 1 {
                                 span class="pagination-gap" aria-hidden="true" { "…" }
                             }
                         }
                         @if current_page < pages {
-                            a class="btn pagination-step" rel="next" href=(d.browse.page_url(current_page + 1)) { "Next →" }
+                            a class="btn pagination-step" rel="next" href=(d.browse.page_url(d.path, current_page + 1)) { "Next →" }
                         } @else { span class="btn pagination-step" aria-disabled="true" { "Next →" } }
                     }
                 }
