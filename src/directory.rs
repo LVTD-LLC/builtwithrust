@@ -47,7 +47,7 @@ impl Browse {
     }
 
     /// Preserve every active filter, with percent-encoding supplied by the URL library.
-    pub fn page_url(&self, page: usize) -> String {
+    pub fn page_url(&self, path: &str, page: usize) -> String {
         let mut url = reqwest::Url::parse("https://directory.invalid/").expect("static URL");
         {
             let mut query = url.query_pairs_mut();
@@ -61,7 +61,7 @@ impl Browse {
                 ("stars", &self.stars),
                 ("sort", &self.sort),
             ] {
-                if !value.is_empty() {
+                if !value.is_empty() && (key != "category" || path == "/") {
                     query.append_pair(key, value);
                 }
             }
@@ -70,8 +70,8 @@ impl Browse {
             }
         }
         match url.query().filter(|q| !q.is_empty()) {
-            Some(query) => format!("/?{query}#projects"),
-            None => "/#projects".into(),
+            Some(query) => format!("{path}?{query}#projects"),
+            None => format!("{path}#projects"),
         }
     }
 

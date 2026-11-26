@@ -61,6 +61,7 @@ async fn directory_page(
         document_guide_site_url: (path == "/categories/productivity"
             && *browse == crate::directory::Browse { category: "productivity".into(), ..Default::default() })
         .then_some(state.cfg.site_url.as_str()),
+        path,
         is_landing,
         projects: &projects,
         categories: &categories,
@@ -77,7 +78,7 @@ async fn directory_page(
         |c| format!("Explore {} built with Rust. Compare projects, GitHub stars, licenses and crates, then visit their websites or source repositories.", c.name),
     );
     // Paginated catalog pages are distinct documents, not duplicates of page one.
-    let canonical = if browse.page_number(projects.len()) > 1 && browse.page_url(1) == "/#projects" {
+    let canonical = if browse.page_number(projects.len()) > 1 && !browse.page_url(path, 1).contains('?') {
         format!("{path}?page={}", browse.page_number(projects.len()))
     } else {
         path.to_string()

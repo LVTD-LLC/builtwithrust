@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-11-26
+
+- Keep category pagination in the same sort order so browsing the next page reveals new projects instead of repeating earlier ones.
+
 ## 2026-11-25
 
 - Keep browsing the selected category after a filtered search returns no projects.
