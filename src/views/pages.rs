@@ -5,6 +5,7 @@ use maud::{Markup, html};
 pub struct HomeData<'a> {
     pub path: &'a str,
     pub is_landing: bool,
+    pub show_website_examples: bool,
     pub show_music_tasks: bool,
     pub developer_guide_site_url: Option<&'a str>,
     pub data_guide_site_url: Option<&'a str>,
@@ -58,6 +59,21 @@ pub fn home(d: HomeData<'_>) -> Markup {
                 @if !d.browse.is_default() {
                     a class="muted" href="/#projects" {
                         @if d.browse.page_url("/", 1) == "/#projects" { "Back to first page" } @else { "Clear filters" }
+                    }
+                }
+            }
+            @if d.show_website_examples {
+                @for (slug, label, detail) in [
+                    ("builtwithrust", "Built with Rust", " serves the directory you’re reading. Axum routes requests, Maud renders the HTML, and SQLite stores the catalog."),
+                    ("docs-rs", "Docs.rs", " builds documentation for crates published on crates.io. The pages it hosts come from rustdoc."),
+                ] {
+                    @if d.projects.iter().any(|project| project.slug == slug) {
+                        p class="guide-note" {
+                            a href={ "/projects/" (slug) } data-ph-capture-attribute-bwr-action="project_open"
+                                data-ph-capture-attribute-bwr-project=(slug)
+                                data-ph-capture-attribute-bwr-surface="website_examples" data-ph-capture-attribute-bwr-schema="1" { (label) }
+                            (detail)
+                        }
                     }
                 }
             }

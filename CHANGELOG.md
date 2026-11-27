@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-11-27
+
+- Show how two Rust websites use Rust before the category filters, with links to their project details.
+
 ## 2026-11-26
 
 - Keep category pagination in the same sort order so browsing the next page reveals new projects instead of repeating earlier ones.
